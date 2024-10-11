@@ -1,0 +1,4 @@
+package mainmenu
+
+class MainMenuViewState {
+}
