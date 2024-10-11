@@ -10,16 +10,16 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun main() {
-startKoin{
-    modules(mainModules)
-}
+    startKoin{
+        modules(mainModules)
+    }
+    println("Run main.kt")
 }
 
 val mainModules = module {
     single {
         DefaultTerminalFactory().createScreen()
     } bind Screen::class
-   single { MultiWindowTextGUI(get()) }
+    single { MultiWindowTextGUI(get()) }
     factory { NavigationController(get()) } binds arrayOf(NavigateToAppWindow::class, NavigateToMainMenu::class)
-
 }
