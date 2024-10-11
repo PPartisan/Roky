@@ -1,10 +1,13 @@
 package navigation
 
+import StopApp
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.gui2.Window
+import mainmenu.MainMenuWindow
 
 class NavigationController (
-    private val gui: MultiWindowTextGUI
+    private val gui: MultiWindowTextGUI,
+    private val quit : StopApp
 ) : NavigateToAppWindow, NavigateToMainMenu {
 
     override fun toLogin() {
@@ -28,7 +31,7 @@ class NavigationController (
     }
 
     override fun toMainMenu() {
-        println("Main Menu")
+        setActiveWindow(MainMenuWindow(quit = quit))
     }
 
     private fun setActiveWindow(window:Window) {
