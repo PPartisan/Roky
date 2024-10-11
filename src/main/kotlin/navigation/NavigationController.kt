@@ -1,14 +1,12 @@
 package navigation
 
-import com.googlecode.lanterna.gui2.AbstractTextGUI
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.gui2.Window
 
 class NavigationController (
-
     private val gui: MultiWindowTextGUI
-
 ) : NavigateToAppWindow, NavigateToMainMenu {
+
     override fun toLogin() {
         println("Login")
     }
@@ -39,7 +37,6 @@ class NavigationController (
             gui.removeWindow(activeWindow)
             activeWindow.close()
         }
-
         gui.addWindowAndWait(window)
     }
 
