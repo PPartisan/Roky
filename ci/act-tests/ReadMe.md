@@ -12,13 +12,13 @@ The tests serve two main functions:
 
 ## Branching Strategy
 
-This project utilises the Git Flow branching model, which includes the following branch types:
+This project uses the Git Flow branching model, which includes the following branch types:
 
 - **Main**: The production branch containing stable code.
 - **Develop**: The branch where ongoing development occurs.
-- **Feature**: Branches created off of `develop` for new features.
+- **Feature/Bugfix**: Branches created off of `develop` for new features/bugfixes.
 - **Release**: Branches created to prepare for production releases.
-- **Hotfix**: Branches created from `main` for urgent fixes.
+- **Hotfix**: Branches created from `main` or release branches for urgent fixes.
 
 ## Prerequisites
 
@@ -46,3 +46,23 @@ To run the test suite, follow these steps:
 
    ```bash
    cd /path/to/your/repo
+   ```
+2. **Execute the Test Script**: Run the test script using the following command:
+
+   ```bash
+   ci/act-tests/run_tests.sh
+   ```
+   This will execute each test file using **Act** and print the results to the terminal.
+
+## Test Output
+The script will output the results of each test case, indicating whether each test passed or failed. In case of failure, you will see an error message detailing the issue.
+
+## Contributing
+If you would like to contribute to this test suite or modify the branching policy, please feel free to submit a pull request or open an issue.
+
+## Resources
+- [Git Flow - What is Git Flow](https://www.gitkraken.com/learn/git/git-flow)
+- [Act - Run GitHub Actions locally](https://github.com/nektos/act)
+
+## License
+This project is licensed under the GNU GPL-3.0 License.
