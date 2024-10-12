@@ -23,7 +23,7 @@ This project uses the Git Flow branching model, which includes the following bra
 ## Prerequisites
 
 - Ensure that you have [Docker](https://www.docker.com/get-started/) installed and running on your machine.
-- Install **Act**. You can find the installation instructions [here](https://github.com/nektos/act#installation).
+- Install **Act**. You can find the installation instructions [here](https://nektosact.com/installation/index.html).
 
 ## Test Files
 
@@ -56,9 +56,6 @@ To run the test suite, follow these steps:
 
 ## Test Output
 The script will output the results of each test case, indicating whether each test passed or failed. In case of failure, you will see an error message detailing the issue.
-
-## Contributing
-If you would like to contribute to this test suite or modify the branching policy, please feel free to submit a pull request or open an issue.
 
 ## Resources
 - [Git Flow - What is Git Flow](https://www.gitkraken.com/learn/git/git-flow)
