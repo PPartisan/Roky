@@ -1,0 +1,11 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "head": {
+      "ref": "hotfix/15_my-hotfix"
+    },
+    "base": {
+      "ref": "main"
+    }
+  }
+}

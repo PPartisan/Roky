@@ -1,0 +1,11 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "head": {
+      "ref": "chore/a_chore_branch"
+    },
+    "base": {
+      "ref": "develop"
+    }
+  }
+}
