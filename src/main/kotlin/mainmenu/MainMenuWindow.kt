@@ -5,7 +5,7 @@ import com.googlecode.lanterna.gui2.*
 import javax.swing.Action
 
 class MainMenuWindow(private val window: Window = BasicWindow("Roky"),
-    private val quit : StopApp): Window by window, MainMenuView {
+    private val presenter: MainMenuPresenter): Window by window, MainMenuView {
 
     private val options : ActionListBox
 
@@ -19,12 +19,19 @@ class MainMenuWindow(private val window: Window = BasicWindow("Roky"),
         list.addComponent(options)
         root.addComponent(list)
 
-        options.addItem("Login"){}
-        options.addItem("Help"){}
-        options.addItem("About"){}
-        options.addItem("Quit"){quit()}
+        presenter.attach(this)
     }
     override fun show(state: MainMenuViewState) {
-        TODO("Not yet implemented")
+        options.clearItems()
+        state.rows.forEach{
+            options.addItem(it.title){
+                presenter.onEvent(it.event)
+            }
+        }
+    }
+
+    override fun close() {
+        presenter.detach()
+        window.close()
     }
 }

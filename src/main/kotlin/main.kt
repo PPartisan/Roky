@@ -20,12 +20,12 @@ fun main() {
 }
 
 val mainModules = module {
-    includes(mainMenuModules)
+    includes(mainMenuModules, authenticationModule)
     single {
         DefaultTerminalFactory().createScreen()
     } bind Screen::class
     single { MultiWindowTextGUI(get()) }
-    factory { NavigationController(get(),get()) } binds arrayOf(NavigateToAppWindow::class, NavigateToMainMenu::class)
+    factory { NavigationController(get(),get(),get()) } binds arrayOf(NavigateToAppWindow::class, NavigateToMainMenu::class)
     single {StartApp(get(), get())}
     single {StopApp(get(), get())}
 }
