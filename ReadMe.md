@@ -15,7 +15,7 @@
 During development:
 1. Clone the repository using git CLI or "Import from VCS" in IntelliJ. See our Wiki for more information on using git and the IDE.
 2. If using IntelliJ, start the app with the "Run" button in a virtual terminal.
-3. From the command line, build the project using `./gradlew build`, navigate to `<project-root>/build/libs`, and run the `.jar` file with `java -jar <jar-file-name>`.
+3. From the command line, build the project using `./gradlew assemble`, navigate to `<project-root>/build/libs`, and run the `.jar` file with `java -jar <jar-file-name>`.
 
 No prerequisites are required if using the IntelliJ IDE.
 

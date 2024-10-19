@@ -3,8 +3,10 @@ package mainmenu
 import StopApp
 import arch.RokyDispatchers
 import authentication.Authenticator
-import io.mockk.*
-import kotlinx.coroutines.Dispatchers
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -13,7 +15,6 @@ import mainmenu.MainMenuEvent.*
 import mainmenu.MainMenuViewState.Companion.loggedIn
 import mainmenu.MainMenuViewState.Companion.loggedOut
 import navigation.NavigateToAppWindow
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -32,18 +33,14 @@ class MainMenuPresenterTest {
         authenticator = mockk(relaxed = true)
         view = mockk(relaxed = true)
 
-        mockkStatic(Dispatchers::class)
-        every { Dispatchers.IO } returns dispatcher
+        val dispatchers : RokyDispatchers = mockk<RokyDispatchers>().apply {
+            every { io } returns dispatcher
+            every { main } returns dispatcher
+        }
 
-        RokyDispatchers.Gui = dispatcher
-
-        presenter = MainMenuPresenter(quit, navigate, authenticator)
+        presenter = MainMenuPresenter(quit, navigate, authenticator, dispatchers)
     }
 
-    @AfterEach
-    fun tearDown() {
-        RokyDispatchers.resetToDefaultGuiDispatcher()
-    }
 
     @Test
     fun `when user clicks quit button, then quit application`() {

@@ -1,17 +1,11 @@
 package navigation
 
-import StopApp
-import authentication.Authenticator
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.gui2.Window
-import com.sun.tools.javac.Main
-import mainmenu.MainMenuPresenter
 import mainmenu.MainMenuWindow
 
 class NavigationController (
-    private val gui: MultiWindowTextGUI,
-    private val quit : StopApp,
-    private val authenticator: Authenticator
+    private val gui: MultiWindowTextGUI
 ) : NavigateToAppWindow, NavigateToMainMenu {
 
     override fun toLogin() {
@@ -35,7 +29,7 @@ class NavigationController (
     }
 
     override fun toMainMenu() {
-        setActiveWindow(MainMenuWindow(presenter = MainMenuPresenter(quit, navigate = this, authenticator)))
+        setActiveWindow(MainMenuWindow())
     }
 
     private fun setActiveWindow(window:Window) {

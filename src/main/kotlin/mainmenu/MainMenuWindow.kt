@@ -2,11 +2,18 @@ package mainmenu
 
 import com.googlecode.lanterna.gui2.*
 import com.googlecode.lanterna.gui2.Window.Hint.CENTERED
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.createScope
+import org.koin.core.component.inject
+import org.koin.core.scope.Scope
 
 class MainMenuWindow(
-    private val window: Window = BasicWindow("Roky"),
-    private val presenter: MainMenuPresenter
-): Window by window, MainMenuView {
+    private val window: Window = BasicWindow("Roky")
+): Window by window, MainMenuView, KoinScopeComponent {
+
+    override val scope: Scope by lazy { createScope(this) }
+
+    private val presenter : MainMenuPresenter by inject()
 
     private val options : ActionListBox
     private val message : Label
@@ -50,5 +57,7 @@ class MainMenuWindow(
     override fun close() {
         presenter.detach()
         window.close()
+        scope.close()
     }
+
 }

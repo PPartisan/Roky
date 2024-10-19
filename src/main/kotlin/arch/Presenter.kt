@@ -1,14 +1,15 @@
 package arch
 
-abstract class Presenter<V> {
+abstract class Presenter<V>(
+    protected val dispatchers: RokyDispatchers
+) {
+
     private var view:V?=null
     abstract fun onAttach(view: V)
     abstract fun onDetach(view: V)
 
     fun attach(view:V){
-        if(view == null) {
-            throw IllegalArgumentException("View must not be null")
-        }
+        require(view != null) { "View should not be null." }
         this.view = view
         onAttach(view)
     }
