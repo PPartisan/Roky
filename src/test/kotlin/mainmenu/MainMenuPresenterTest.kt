@@ -1,21 +1,23 @@
 package mainmenu
 
-import StartApp
 import StopApp
+import arch.RokyDispatchers
 import authentication.Authenticator
-import com.sun.tools.javac.Main
-import io.mockk.MockK
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import mainmenu.MainMenuEvent.*
 import mainmenu.MainMenuViewState.Companion.loggedIn
 import mainmenu.MainMenuViewState.Companion.loggedOut
 import navigation.NavigateToAppWindow
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainMenuPresenterTest {
     private lateinit var quit : StopApp
     private lateinit var authenticator: Authenticator
@@ -29,7 +31,18 @@ class MainMenuPresenterTest {
         quit = mockk(relaxed = true)
         authenticator = mockk(relaxed = true)
         view = mockk(relaxed = true)
+
+        mockkStatic(Dispatchers::class)
+        every { Dispatchers.IO } returns dispatcher
+
+        RokyDispatchers.Gui = dispatcher
+
         presenter = MainMenuPresenter(quit, navigate, authenticator)
+    }
+
+    @AfterEach
+    fun tearDown() {
+        RokyDispatchers.resetToDefaultGuiDispatcher()
     }
 
     @Test
@@ -46,7 +59,7 @@ class MainMenuPresenterTest {
 
     @Test
     fun `when user clicks help button, then open the help page`() {
-       presenter.onEvent(SelectHelp)
+        presenter.onEvent(SelectHelp)
         verify { navigate.toHelp() }
     }
 
@@ -69,16 +82,29 @@ class MainMenuPresenterTest {
     }
 
     @Test
-    fun `when user is logged out, then show logged out options`() {
-        every { authenticator.isLoggedIn() } returns false
+    fun `when user is logged out, then show logged out options`() = runTest(dispatcher) {
+        coEvery { authenticator.isLoggedIn() } returns false
         presenter.attach(view)
-        verify { view.show(loggedOut) }
+        advanceUntilIdle()
+        verify {
+            view.show(Loading)
+            view.show(loggedOut)
+        }
     }
 
     @Test
-    fun `when user is logged in, then show logged in options`() {
-        every { authenticator.isLoggedIn() } returns true
+    fun `when user is logged in, then show logged in options`() = runTest(dispatcher) {
+        coEvery { authenticator.isLoggedIn() } returns true
         presenter.attach(view)
-        verify { view.show(loggedIn) }
+        advanceUntilIdle()
+        verify {
+            view.show(Loading)
+            view.show(loggedIn)
+        }
     }
+
+    companion object {
+        private val dispatcher = StandardTestDispatcher()
+    }
+
 }

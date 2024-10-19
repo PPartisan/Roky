@@ -1,10 +1,25 @@
 package authentication
 
-class Authenticator {
-    fun login(username: String, password: String){
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
+class Authenticator {
+
+    private var isLoggedIn : Boolean = true
+
+    suspend fun login(username: String, password: String) : Boolean {
+        delay(3.seconds.inWholeMilliseconds)
+        return (username in validUsers && password == PASSWORD).also { isLoggedIn = it }
     }
-    fun isLoggedIn(): Boolean{
-        return true
+
+    suspend fun isLoggedIn(): Boolean{
+        delay(5.seconds.inWholeMilliseconds)
+        return isLoggedIn
     }
+
+    companion object {
+        private val validUsers = listOf("Tom", "Dunia")
+        private const val PASSWORD = "ILoveRoky"
+    }
+
 }

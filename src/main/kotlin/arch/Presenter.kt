@@ -19,4 +19,8 @@ abstract class Presenter<V> {
         }
         view = null
     }
+
+    protected fun withView(block: (V) -> Unit) =
+        view?.also(block)
+
 }

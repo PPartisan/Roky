@@ -1,5 +1,7 @@
 package view
 
+import arch.WindowScope
+import arch.WindowScopeProvider
 import com.googlecode.lanterna.gui2.BasicWindow
 import com.googlecode.lanterna.gui2.Window
 import com.googlecode.lanterna.input.KeyStroke
@@ -9,7 +11,8 @@ import navigation.NavigateToMainMenu
 class AppWindow (
     private val window: BasicWindow,
     private val menu: NavigateToMainMenu
-) :Window by window {
+) :Window by window, WindowScope by WindowScopeProvider() {
+
     constructor(title:String, menu: NavigateToMainMenu):this(BasicWindow(title), menu)
 
     override fun handleInput(key: KeyStroke?): Boolean {
