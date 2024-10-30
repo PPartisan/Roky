@@ -1,9 +1,10 @@
 package mainmenu
 
+import org.koin.core.module.dsl.scopedOf
 import org.koin.dsl.module
 
 val mainMenuModules = module {
     scope<MainMenuWindow> {
-        scoped { MainMenuPresenter(get(), get(), get(), get()) }
+        scopedOf(::MainMenuPresenter)
     }
 }

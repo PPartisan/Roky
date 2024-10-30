@@ -18,7 +18,7 @@ class Authenticator {
     }
 
     companion object {
-        private val validUsers = listOf("Tom", "Dunia", "Max")
+        private val validUsers = listOf("ROBERT", "Dunia", "Tom", "Max")
         private const val PASSWORD = "ILoveRoky"
     }
 

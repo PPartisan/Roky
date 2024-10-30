@@ -3,11 +3,9 @@ package mainmenu
 import StopApp
 import arch.RokyDispatchers
 import authentication.Authenticator
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -80,7 +78,7 @@ class MainMenuPresenterTest {
 
     @Test
     fun `when user is logged out, then show logged out options`() = runTest(dispatcher) {
-        coEvery { authenticator.isLoggedIn() } returns false
+        coEvery { authenticator.isLoggedIn() } coAnswersDelayed { false }
         presenter.attach(view)
         advanceUntilIdle()
         verify {
@@ -91,7 +89,7 @@ class MainMenuPresenterTest {
 
     @Test
     fun `when user is logged in, then show logged in options`() = runTest(dispatcher) {
-        coEvery { authenticator.isLoggedIn() } returns true
+        coEvery { authenticator.isLoggedIn() } coAnswersDelayed {true}
         presenter.attach(view)
         advanceUntilIdle()
         verify {
@@ -102,6 +100,10 @@ class MainMenuPresenterTest {
 
     companion object {
         private val dispatcher = StandardTestDispatcher()
+        private infix fun <T,B> MockKStubScope<T, B>.coAnswersDelayed(answer: suspend MockKAnswerScope<T, B>.(Call) -> T): MockKAdditionalAnswerScope<T, B> = coAnswers {
+            delay(1)
+            answer(it)
+        }
     }
 
 }
