@@ -15,9 +15,7 @@ abstract class Presenter<V>(
     }
 
     fun detach(){
-        if (view !=null){
-            onDetach(view!!)
-        }
+        view?.also(::onDetach)
         view = null
     }
 

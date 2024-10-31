@@ -1,6 +1,7 @@
 package mainmenu
 
 import com.googlecode.lanterna.gui2.*
+import com.googlecode.lanterna.gui2.Direction.VERTICAL
 import com.googlecode.lanterna.gui2.Window.Hint.CENTERED
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
@@ -26,7 +27,7 @@ class MainMenuWindow(
         message = Label("Loading…").setVisible(false)
 
         component = root
-        val list = Panel(LinearLayout(Direction.VERTICAL))
+        val list = Panel(LinearLayout(VERTICAL))
         list.addComponent(options)
         root.addComponent(list)
         root.addComponent(message)
