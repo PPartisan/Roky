@@ -1,8 +1,11 @@
 package mainmenu
 
+import arch.WindowScope
+import arch.WindowScopeProvider
 import com.googlecode.lanterna.gui2.*
 import com.googlecode.lanterna.gui2.Direction.VERTICAL
 import com.googlecode.lanterna.gui2.Window.Hint.CENTERED
+import kotlinx.coroutines.cancel
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
 import org.koin.core.component.inject
@@ -10,7 +13,7 @@ import org.koin.core.scope.Scope
 
 class MainMenuWindow(
     private val window: Window = BasicWindow("Roky")
-): Window by window, MainMenuView, KoinScopeComponent {
+): Window by window, MainMenuView, KoinScopeComponent, WindowScope by WindowScopeProvider() {
 
     override val scope: Scope by lazy { createScope(this) }
 
@@ -57,6 +60,7 @@ class MainMenuWindow(
 
     override fun close() {
         presenter.detach()
+        windowScope.cancel()
         window.close()
         scope.close()
     }

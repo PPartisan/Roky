@@ -8,10 +8,10 @@ import com.googlecode.lanterna.input.KeyStroke
 import com.googlecode.lanterna.input.KeyType
 import navigation.NavigateToMainMenu
 
-class AppWindow (
+open class AppWindow (
     private val window: BasicWindow,
     private val menu: NavigateToMainMenu
-) :Window by window, WindowScope by WindowScopeProvider() {
+) :Window by window {
 
     constructor(title:String, menu: NavigateToMainMenu):this(BasicWindow(title), menu)
 

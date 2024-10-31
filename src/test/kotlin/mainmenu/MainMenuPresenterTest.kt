@@ -4,6 +4,7 @@ import StopApp
 import arch.RokyDispatchers
 import authentication.Authenticator
 import io.mockk.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -36,7 +37,7 @@ class MainMenuPresenterTest {
             every { main } returns dispatcher
         }
 
-        presenter = MainMenuPresenter(quit, navigate, authenticator, dispatchers)
+        presenter = MainMenuPresenter(quit, navigate, authenticator, CoroutineScope(dispatcher), dispatchers)
     }
 
 

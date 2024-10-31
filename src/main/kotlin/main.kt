@@ -3,6 +3,7 @@ import authentication.authenticationModule
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.screen.Screen
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory
+import login.loginModules
 import mainmenu.mainMenuModules
 import navigation.NavigateToAppWindow
 import navigation.NavigateToMainMenu
@@ -25,7 +26,7 @@ fun main() {
 }
 
 val mainModules = module {
-    includes(mainMenuModules, authenticationModule, rokyDispatchersModule)
+    includes(mainMenuModules, authenticationModule, rokyDispatchersModule, loginModules)
     single {
         DefaultTerminalFactory().createScreen()
     } bind Screen::class

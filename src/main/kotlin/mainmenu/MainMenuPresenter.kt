@@ -6,6 +6,7 @@ import arch.RokyDispatchers
 import arch.WindowScope
 import arch.WindowScopeProvider
 import authentication.Authenticator
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import mainmenu.MainMenuEvent.*
@@ -17,8 +18,9 @@ class MainMenuPresenter(
     private val quit : StopApp,
     private val navigate : NavigateToAppWindow,
     private val authenticator: Authenticator,
+    private val windowScope: CoroutineScope,
     dispatchers: RokyDispatchers
-) : Presenter<MainMenuView>(dispatchers), WindowScope by WindowScopeProvider() {
+) : Presenter<MainMenuView>(dispatchers) {
 
     private val state : MutableStateFlow<MainMenuViewState> = MutableStateFlow(Loading)
     override fun onAttach(view: MainMenuView) {

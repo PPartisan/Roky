@@ -1,0 +1,4 @@
+package login
+
+interface LoginViewState {
+}
