@@ -8,7 +8,6 @@ import arch.WindowScopeProvider
 import authentication.Authenticator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import mainmenu.MainMenuEvent.*
 import mainmenu.MainMenuViewState.Companion.loggedIn
 import mainmenu.MainMenuViewState.Companion.loggedOut
@@ -23,7 +22,7 @@ class MainMenuPresenter(
 
     private val state : MutableStateFlow<MainMenuViewState> = MutableStateFlow(Loading)
     override fun onAttach(view: MainMenuView) {
-//        state.value = Loading
+        state.value = Loading
         windowScope.launch(dispatchers.io){
             state.value = if (authenticator.isLoggedIn()) loggedIn else loggedOut
         }
@@ -33,7 +32,7 @@ class MainMenuPresenter(
     }
 
     override fun onDetach(view: MainMenuView) {
-        TODO("Not yet implemented")
+        // empty
     }
 
     fun onEvent(event: MainMenuEvent) {
