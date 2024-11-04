@@ -2,6 +2,7 @@ package navigation
 
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.gui2.Window
+import login.LoginWindow
 import mainmenu.MainMenuWindow
 
 class NavigationController (
@@ -9,7 +10,7 @@ class NavigationController (
 ) : NavigateToAppWindow, NavigateToMainMenu {
 
     override fun toLogin() {
-        println("Login")
+        setActiveWindow(LoginWindow(this))
     }
 
     override fun toChatRoom() {
