@@ -5,6 +5,12 @@ import org.koin.dsl.module
 
 val mainMenuModules = module {
     scope<MainMenuWindow> {
-        scopedOf(::MainMenuPresenter)
+        scoped { MainMenuPresenter(
+            quit = get(),
+            navigate = get(),
+            authenticator = get(),
+            windowScope = get<MainMenuWindow>().windowScope,
+            dispatchers = get()
+        ) }
     }
 }
