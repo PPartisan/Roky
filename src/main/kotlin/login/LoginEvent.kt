@@ -1,5 +1,8 @@
 package login
 
 sealed interface LoginEvent {
-    // empty
+    data class Login (
+        val username: String,
+        val password: String
+    ) : LoginEvent
 }

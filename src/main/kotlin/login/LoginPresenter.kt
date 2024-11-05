@@ -9,10 +9,13 @@ class LoginPresenter(
     dispatchers: RokyDispatchers
 ) : Presenter<LoginView>(dispatchers), WindowScope by WindowScopeProvider() {
     override fun onAttach(view: LoginView) {
-        TODO("Not yet implemented")
+        // empty
     }
 
     override fun onDetach(view: LoginView) {
         TODO("Not yet implemented")
+    }
+    fun onEvent(event: LoginEvent) {
+        println(event)
     }
 }

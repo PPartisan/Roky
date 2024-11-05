@@ -11,6 +11,9 @@ import com.googlecode.lanterna.gui2.WindowDecorationRenderer
 import com.googlecode.lanterna.gui2.WindowPostRenderer
 import java.util.*
 
+const val DEFAULT_TERMINAL_WIDTH = 40
+const val DEFAULT_TERMINAL_HEIGHT = 20
+
 val rokyTheme : Theme = object : Theme {
     override fun getDefaultDefinition(): ThemeDefinition {
         return rokyThemeDefinition
