@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TerminalSize
 import com.googlecode.lanterna.gui2.*
 import com.googlecode.lanterna.gui2.LinearLayout.Alignment.Fill
 import com.googlecode.lanterna.gui2.BorderLayout.Location.*
+import com.googlecode.lanterna.gui2.GridLayout.Alignment.*
 import com.googlecode.lanterna.gui2.LinearLayout.Alignment.Beginning
 import com.googlecode.lanterna.gui2.LinearLayout.Alignment.End
 
@@ -18,7 +19,7 @@ fun Panel.paddingStart(cols: Int = 1) : Panel {
     val data = when(layoutManager) {
         is BorderLayout -> LEFT
         is LinearLayout -> LinearLayout.createLayoutData(Beginning)
-        is GridLayout -> GridLayout.createLayoutData(GridLayout.Alignment.END, GridLayout.Alignment.FILL, false, true)
+        is GridLayout -> GridLayout.createLayoutData(END, FILL, false, true)
         else -> null
     }
     if(data == null) {
@@ -33,7 +34,7 @@ fun Panel.paddingEnd(cols: Int = 1) : Panel {
     val data = when(layoutManager) {
         is BorderLayout -> RIGHT
         is LinearLayout -> LinearLayout.createLayoutData(End)
-        is GridLayout -> GridLayout.createLayoutData(GridLayout.Alignment.BEGINNING, GridLayout.Alignment.FILL, false, true)
+        is GridLayout -> GridLayout.createLayoutData(BEGINNING, FILL, false, true)
         else -> null
     }
     if(data == null) {

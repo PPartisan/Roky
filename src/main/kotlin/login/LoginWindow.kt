@@ -14,21 +14,21 @@ import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
-import org.w3c.dom.Text
-import view.AppWindow
-import view.linearLayoutFill
-import view.paddingHorizontal
-import view.paddingTop
-import javax.sound.sampled.Line
+import view.*
 
-class LoginWindow(menu: NavigateToMainMenu) : AppWindow("Login", menu), LoginView,
-    KoinScopeComponent, WindowScope by WindowScopeProvider() {
+class LoginWindow(
+    menu: NavigateToMainMenu
+) : AppWindow("Login", menu), LoginView, KoinScopeComponent, WindowScope by WindowScopeProvider() {
+
     override val scope: Scope by lazy { createScope(this) }
+
     private val presenter: LoginPresenter by inject()
+
     private val username: TextBox
     private val password: TextBox
     private val ok: Button
     private val status: Label
+
     init {
         setHints(listOf(CENTERED))
 
@@ -54,7 +54,7 @@ class LoginWindow(menu: NavigateToMainMenu) : AppWindow("Login", menu), LoginVie
             }
             addComponent(ok)
         }.setLayoutData(LinearLayout.createLayoutData(End))
-        val login = Panel(LinearLayout(VERTICAL)) .apply {
+        val login = Panel(LinearLayout(VERTICAL)).apply {
             paddingTop()
             addComponent(usernamePanel)
             paddingTop()
@@ -64,7 +64,7 @@ class LoginWindow(menu: NavigateToMainMenu) : AppWindow("Login", menu), LoginVie
             paddingTop()
             addComponent(statusPanel)
         }
-        val root = Panel(BorderLayout()).setPreferredSize(TerminalSize(40, 20))
+        val root = Panel(BorderLayout()).setPreferredSize(TerminalSize(DEFAULT_TERMINAL_WIDTH, DEFAULT_TERMINAL_HEIGHT))
             .apply {
                 paddingHorizontal()
                 addComponent(login)
