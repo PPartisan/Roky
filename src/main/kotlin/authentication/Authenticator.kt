@@ -14,11 +14,11 @@ class Authenticator {
 
     suspend fun isLoggedIn(): Boolean{
         delay(1.seconds.inWholeMilliseconds)
-        return isLoggedIn
+        return isLoggedIns
     }
 
     companion object {
-        private val validUsers = listOf("ROBERT", "Dunia", "Tom", "Max")
+        private val validUsers = listOf("ROBERT", "Dunia", "Tom", "Max", "Casper")
         private const val PASSWORD = "ILoveRoky"
     }
 
