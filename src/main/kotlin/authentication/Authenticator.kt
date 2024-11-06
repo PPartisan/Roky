@@ -14,7 +14,7 @@ class Authenticator {
 
     suspend fun isLoggedIn(): Boolean{
         delay(1.seconds.inWholeMilliseconds)
-        return isLoggedIns
+        return isLoggedIn
     }
 
     companion object {
