@@ -31,40 +31,43 @@ private val rokyThemeDefinition : ThemeDefinition = object : ThemeDefinition {
     // Define the normal style
     override fun getNormal(): ThemeStyle {
         return createCustomThemeStyle(
-            background = "#607D8B",  // Dark background
-            foreground = "#FFFFFF"   // White text
+            background = "#1E1E1E",  // Dark modern background
+            foreground = "#00FF9C"   // Bright cyber green
         )
     }
 
     // Define the pre-light style (for hover or focus state)
     override fun getPreLight(): ThemeStyle {
         return createCustomThemeStyle(
-            background = "#CFD8DC",  // Lighter colour
-            foreground = "#212121"   // Dark text
+            background = "#2D2D2D",  // Slightly lighter background
+            foreground = "#00FFB3",  // Brighter green for emphasis
+            
         )
     }
 
     // Define the selected style
     override fun getSelected(): ThemeStyle {
         return createCustomThemeStyle(
-            background = "#CFD8DC",  // Lighter colour
-            foreground = "#212121"   // Dark text
+            background = "#3D3D3D",  // Even lighter for selection
+            foreground = "#00FFCC",  // Cyan-green for selection
+           
         )
     }
 
     // Define the active style
     override fun getActive(): ThemeStyle {
         return createCustomThemeStyle(
-            background = "#CFD8DC",  // Lighter colour
-            foreground = "#212121"   // Dark text
+            background = "#1E1E1E",  // Lighter background for active state
+            foreground = "#00FF9C",  // Brighter cyan-green for active
+            
         )
     }
 
     // Define the insensitive (disabled) style
     override fun getInsensitive(): ThemeStyle {
         return createCustomThemeStyle(
-            background = "#CFD8DC",  // Lighter colour
-            foreground = "#757575"   // Lighter text
+            background = "#1E1E1E",  // Dark modern background
+            foreground = "#00FF9C"   // Bright cyber green     
         )
     }
 
@@ -75,7 +78,11 @@ private val rokyThemeDefinition : ThemeDefinition = object : ThemeDefinition {
     override fun getCharacter(name: String?, fallback: Char): Char = fallback
     override fun <T : Component?> getRenderer(type: Class<T>?): ComponentRenderer<T>? = null
 
-    fun createCustomThemeStyle(background: String, foreground: String): ThemeStyle {
+    fun createCustomThemeStyle(
+        background: String,
+        foreground: String,
+        sgrs: EnumSet<SGR> = EnumSet.of(SGR.BOLD)
+    ): ThemeStyle {
         return object: ThemeStyle {
             override fun getForeground(): TextColor {
                 return TextColor.Factory.fromString(foreground)
@@ -86,9 +93,8 @@ private val rokyThemeDefinition : ThemeDefinition = object : ThemeDefinition {
             }
 
             override fun getSGRs(): EnumSet<SGR> {
-                return EnumSet.noneOf(SGR::class.java)
+                return sgrs
             }
         }
     }
-
 }
