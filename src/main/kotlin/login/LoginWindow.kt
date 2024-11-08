@@ -9,6 +9,8 @@ import com.googlecode.lanterna.gui2.LinearLayout.Alignment.End
 import com.googlecode.lanterna.gui2.Window.Hint.CENTERED
 import kotlinx.coroutines.cancel
 import login.LoginEvent.Login
+import login.LoginViewState.Authenticating
+import login.LoginViewState.Idle
 import navigation.NavigateToMainMenu
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
@@ -78,7 +80,30 @@ class LoginWindow(
         windowScope.cancel()
     }
 
-    override fun show(state: LoginViewState) {
-        // empty
+    override fun show(state: LoginViewState) = when(state){
+        is Authenticating -> show(state)
+        is Idle -> show(state)
+    }
+
+    private fun show(state: Authenticating){
+        setUiInteractable(false)
+        setState(state)
+    }
+
+    private fun show(state: Idle){
+        setUiInteractable(true)
+        setState(state)
+    }
+
+    private fun setUiInteractable(isInteractable: Boolean){
+        username.isEnabled = isInteractable
+        password.isEnabled = isInteractable
+        ok.isEnabled = isInteractable
+    }
+
+    private fun setState(state: LoginViewState){
+        username.text = state.userName
+        password.text = state.password
+        status.text = state.status
     }
 }
