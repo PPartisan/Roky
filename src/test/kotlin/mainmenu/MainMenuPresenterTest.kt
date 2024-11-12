@@ -6,6 +6,7 @@ import authentication.Authenticator
 import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -14,6 +15,7 @@ import mainmenu.MainMenuEvent.*
 import mainmenu.MainMenuViewState.Companion.loggedIn
 import mainmenu.MainMenuViewState.Companion.loggedOut
 import navigation.NavigateToAppWindow
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -24,6 +26,8 @@ class MainMenuPresenterTest {
     private lateinit var presenter: MainMenuPresenter
     private lateinit var navigate : NavigateToAppWindow
     private lateinit var view : MainMenuView
+    private lateinit var scope: CoroutineScope
+
 
     @BeforeEach
     fun setUp() {
@@ -37,9 +41,14 @@ class MainMenuPresenterTest {
             every { main } returns dispatcher
         }
 
-        presenter = MainMenuPresenter(quit, navigate, authenticator, CoroutineScope(dispatcher), dispatchers)
+        scope = CoroutineScope(dispatcher)
+        presenter = MainMenuPresenter(quit, navigate, authenticator, scope, dispatchers)
     }
 
+    @AfterEach
+    fun tearDown() {
+        scope.cancel()
+    }
 
     @Test
     fun `when user clicks quit button, then quit application`() {
