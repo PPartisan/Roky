@@ -5,7 +5,7 @@ import org.koin.dsl.module
 val loginModules = module {
     scope<LoginWindow>{
         scoped {
-            LoginPresenter(get())
+            LoginPresenter(windowScope = get<LoginWindow>().windowScope, dispatchers = get())
         }
     }
 }
