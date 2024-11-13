@@ -8,10 +8,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import login.LoginEvent.Login
 import login.LoginViewState.Idle
 
 class LoginPresenter(
     private val windowScope: CoroutineScope,
+    private val login: LoginUseCase,
     dispatchers: RokyDispatchers
 ) : Presenter<LoginView>(dispatchers) {
     private val state: MutableStateFlow<LoginViewState> = MutableStateFlow(Idle())
@@ -25,7 +27,15 @@ class LoginPresenter(
         TODO("Not yet implemented")
     }
     fun onEvent(event: LoginEvent) {
-        println(event)
+        when (event){
+            is Login -> onLogin(event)
+        }
+    }
+
+    private fun onLogin(event: Login) {
+        windowScope.launch(dispatchers.io) {
+            state.value = login(event)
+        }
     }
 
     private fun show(state: LoginViewState) = withView {it.show(state)}
