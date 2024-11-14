@@ -16,18 +16,20 @@ import org.junit.jupiter.api.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginPresenterTest {
     private lateinit var scope: CoroutineScope
+    private lateinit var logIn: LoginUseCase
     private lateinit var view: LoginView
     private lateinit var presenter: LoginPresenter
 
     @BeforeEach
     fun setUp() {
+        logIn = mockk(relaxed = true)
 
         view = mockk(relaxed = true)
         val dispatchers : RokyDispatchers = mockk<RokyDispatchers>().apply {
             every { main } returns dispatcher
         }
         scope = CoroutineScope(dispatcher)
-        presenter = LoginPresenter(scope, dispatchers)
+        presenter = LoginPresenter(scope,logIn, dispatchers)
     }
 
     @Test
