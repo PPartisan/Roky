@@ -1,17 +1,19 @@
 package login
 
 import arch.RokyDispatchers
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import coAnswersDelayed
+import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import login.LoginEvent.Login
+import login.LoginPresenter.Companion.AUTHENTICATING
 import login.LoginViewState.Idle
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginPresenterTest {
@@ -23,10 +25,12 @@ class LoginPresenterTest {
     @BeforeEach
     fun setUp() {
         logIn = mockk(relaxed = true)
+        coEvery { logIn(any()) } coAnswersDelayed { Idle() }
 
         view = mockk(relaxed = true)
         val dispatchers : RokyDispatchers = mockk<RokyDispatchers>().apply {
             every { main } returns dispatcher
+            every { io } returns dispatcher
         }
         scope = CoroutineScope(dispatcher)
         presenter = LoginPresenter(scope,logIn, dispatchers)
@@ -37,6 +41,22 @@ class LoginPresenterTest {
         presenter.attach(view)
         advanceUntilIdle()
         verify{ view.show(Idle()) }
+    }
+
+    @Test
+    fun `when login, then immediately show authenticating status`() = runTest(dispatcher) {
+        coEvery { logIn(any()) } coAnswersDelayed { Idle() }
+
+        presenter.attach(view)
+        presenter.onEvent(Login("User", "Password"))
+        advanceUntilIdle()
+
+        verifyOrder {
+            view.show(Idle())
+            view.show(withArg {
+                assertTrue { it.status == AUTHENTICATING }
+            })
+        }
     }
 
     companion object {

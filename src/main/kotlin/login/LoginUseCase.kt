@@ -1,14 +1,18 @@
 package login
 
+import authentication.Authenticator
 import login.LoginEvent.Login
 import login.LoginViewState.Idle
 
-class LoginUseCase {
-    operator fun invoke(event: Login): LoginViewState = with(event){
+class LoginUseCase (
+    private val authenticator: Authenticator
+)
+{
+    suspend operator fun invoke(event: Login): LoginViewState = with(event){
         val status = when {
             username.isBlank() -> ERROR_USERNAME
             password.isBlank() -> ERROR_PASSWORD
-            else -> LOGIN_SUCCESS
+            else -> if(authenticator.login(username, password)) LOGIN_SUCCESS else LOGIN_FAILURE
         }
         return Idle(userName = event.username, password = "", status = status)
     }
@@ -17,5 +21,6 @@ class LoginUseCase {
         const val ERROR_USERNAME = "Username cannot be blank."
         const val ERROR_PASSWORD = "Password cannot be blank."
         const val LOGIN_SUCCESS = "Username and password is OK."
+        const val LOGIN_FAILURE = "Could not authenticate."
     }
 }

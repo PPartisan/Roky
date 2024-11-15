@@ -3,11 +3,11 @@ package mainmenu
 import StopApp
 import arch.RokyDispatchers
 import authentication.Authenticator
+import coAnswersDelayed
 import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -110,12 +110,6 @@ class MainMenuPresenterTest {
 
     companion object {
         private val dispatcher = StandardTestDispatcher()
-        private infix fun <T,B> MockKStubScope<T, B>.coAnswersDelayed(
-            answer: suspend MockKAnswerScope<T, B>.(Call) -> T
-        ): MockKAdditionalAnswerScope<T, B> = coAnswers {
-            delay(1)
-            answer(it)
-        }
     }
 
 }
