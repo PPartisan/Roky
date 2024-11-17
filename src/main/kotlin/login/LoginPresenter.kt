@@ -2,19 +2,21 @@ package login
 
 import arch.Presenter
 import arch.RokyDispatchers
-import arch.WindowScope
-import arch.WindowScopeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import login.LoginEvent.Login
+import login.LoginViewState.Authenticating
 import login.LoginViewState.Idle
 
 class LoginPresenter(
     private val windowScope: CoroutineScope,
+    private val login: LoginUseCase,
     dispatchers: RokyDispatchers
 ) : Presenter<LoginView>(dispatchers) {
+
     private val state: MutableStateFlow<LoginViewState> = MutableStateFlow(Idle())
+
     override fun onAttach(view: LoginView) {
         windowScope.launch(dispatchers.main) {
             state.collect(::show)
@@ -24,9 +26,24 @@ class LoginPresenter(
     override fun onDetach(view: LoginView) {
         TODO("Not yet implemented")
     }
+
     fun onEvent(event: LoginEvent) {
-        println(event)
+        when (event){
+            is Login -> onLogin(event)
+        }
+    }
+
+    private fun onLogin(event: Login) = with(event) {
+        windowScope.launch(dispatchers.io) {
+            state.value = Authenticating(username, password, AUTHENTICATING)
+            state.value = login(this@with)
+        }
     }
 
     private fun show(state: LoginViewState) = withView {it.show(state)}
+
+    companion object {
+        const val AUTHENTICATING = "Authenticating…"
+    }
+
 }
