@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import login.LoginEvent.Login
 import login.LoginPresenter.Companion.AUTHENTICATING
+import login.LoginViewState.Authenticating
 import login.LoginViewState.Idle
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -56,6 +57,22 @@ class LoginPresenterTest {
             view.show(withArg {
                 assertTrue { it.status == AUTHENTICATING }
             })
+        }
+    }
+
+    @Test
+    fun `when login, then show outcome of login`() = runTest(dispatcher) {
+        val loginFailed = Idle("User", "", "Login Failed")
+        coEvery { logIn(any()) } coAnswersDelayed { loginFailed }
+
+        presenter.attach(view)
+        presenter.onEvent(Login("User", "Password"))
+        advanceUntilIdle()
+
+        verifyOrder {
+            view.show(Idle())
+            view.show(withArg { it is Authenticating })
+            view.show(loginFailed)
         }
     }
 

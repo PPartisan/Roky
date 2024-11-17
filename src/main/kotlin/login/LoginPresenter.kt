@@ -2,12 +2,8 @@ package login
 
 import arch.Presenter
 import arch.RokyDispatchers
-import arch.WindowScope
-import arch.WindowScopeProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import login.LoginEvent.Login
 import login.LoginViewState.Authenticating
