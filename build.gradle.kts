@@ -1,7 +1,13 @@
+import dev.iurysouza.modulegraph.LinkText
+import dev.iurysouza.modulegraph.ModuleType
+import dev.iurysouza.modulegraph.Orientation
+import dev.iurysouza.modulegraph.Theme
+
 plugins {
     kotlin("jvm") version "1.9.23"
     id("org.jetbrains.kotlinx.kover").version("0.8.3")
     id("io.gitlab.arturbosch.detekt").version("1.23.3")
+    id("dev.iurysouza.modulegraph").version("0.10.1")
 }
 
 group = "com.github.ppartisan.rps"
@@ -40,4 +46,14 @@ tasks.jar {
 
 kotlin {
     jvmToolchain(17)
+}
+
+moduleGraphConfig {
+    /* Setup primary graph */
+
+    /* Primary graph - required config */
+    heading.set("# Primary Graph")
+    readmePath.set("./README.md")
+    focusedModulesRegex.set(""".*build.*""")
+    excludedConfigurationsRegex.set(""".*test.*""")
 }
