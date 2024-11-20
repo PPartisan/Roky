@@ -12,8 +12,17 @@ import view.AppWindow
 class HelpWindow(
     menu:NavigateToMainMenu
 ): AppWindow("Help",menu),HelpView,KoinScopeComponent,WindowScope by WindowScopeProvider() {
-    override fun show(state: HelpViewState) {
-        TODO("Not yet implemented")
+    override fun show(state: HelpViewState) = when(state) {
+        is LoadingHelpViewState -> onLoading(state)
+        is LoadedHelpViewState -> onLoaded(state)
+    }
+
+    private fun onLoading(state: LoadingHelpViewState) {
+        // empty
+    }
+
+    private fun onLoaded(state: LoadedHelpViewState) {
+        // empty
     }
 
     override val scope: Scope by lazy { createScope(this) }
