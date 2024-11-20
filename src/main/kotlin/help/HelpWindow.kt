@@ -18,11 +18,11 @@ class HelpWindow(
     }
 
     private fun onLoading(state: LoadingHelpViewState) {
-        // empty
+        println("onLoading:: $state")
     }
 
     private fun onLoaded(state: LoadedHelpViewState) {
-        // empty
+        println("onLoaded:: $state")
     }
 
     override val scope: Scope by lazy { createScope(this) }
