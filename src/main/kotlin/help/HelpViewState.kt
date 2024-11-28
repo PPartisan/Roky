@@ -19,6 +19,15 @@ sealed interface FormattedTextRow {
     data class Header(
         override val text: String
     ) : FormattedTextRow
+    data class PlainText(
+        override val text: String
+    ) : FormattedTextRow
+    data class LineBreak(
+        override val text: String = ""
+    ): FormattedTextRow
+
+
+
 }
 
 sealed interface HelpViewState {
