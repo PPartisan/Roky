@@ -10,9 +10,6 @@ sealed interface FormattedTextRow {
     data class Italic(
         override val text: String
     ) : FormattedTextRow
-    data class Underline(
-        override val text: String
-    ) : FormattedTextRow
     data class Hyperlink(
         override val text: String
     ) : FormattedTextRow
