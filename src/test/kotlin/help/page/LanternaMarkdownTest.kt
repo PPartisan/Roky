@@ -91,7 +91,7 @@ class LanternaMarkdownTest {
 
     companion object{
         private fun String.toFormattedRows() : List<FormattedTextRow> =
-            LanternaMarkdown().render(Parser.builder().build().parse(this))
+            LanternaMarkdown.render(Parser.builder().build().parse(this))
     }
 
 }
