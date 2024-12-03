@@ -11,7 +11,8 @@ sealed interface FormattedTextRow {
         override val text: String
     ) : FormattedTextRow
     data class Hyperlink(
-        override val text: String
+        override val text: String,
+        val url: String
     ) : FormattedTextRow
     data class Header(
         override val text: String
@@ -22,9 +23,6 @@ sealed interface FormattedTextRow {
     data class LineBreak(
         override val text: String = ""
     ): FormattedTextRow
-
-
-
 }
 
 sealed interface HelpViewState {

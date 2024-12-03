@@ -28,12 +28,12 @@ class LanternaMarkdownTest {
     fun `when header formatted string, then parse header text`() {
         "# headertext".toFormattedRows() shouldContainInOrder listOf(Header("headertext"))
     }
-//PASS
+
     @Test
     fun `when incorrectly formatted header string, then parse as plain text`() {
         "#headertext".toFormattedRows() shouldContainInOrder listOf(PlainText("#headertext"))
     }
-//peepee
+
     @Test
     fun `when string with no special formatting, then parse as plain text`() {
         "Jirachi".toFormattedRows() shouldContainInOrder listOf(PlainText("Jirachi"))
@@ -52,6 +52,41 @@ class LanternaMarkdownTest {
     @Test
     fun `when string is only a hard line break, then render as plain text`() {
         "\\".toFormattedRows() shouldContainInOrder listOf(PlainText("\\"))
+    }
+
+    @Test
+    fun `when string is unsupported markdown, then render as plain text without formatting`() {
+        """
+        ```code```
+        """.trimIndent().toFormattedRows() shouldContainInOrder listOf(PlainText("code"))
+    }
+
+    @Test
+    fun `when string is hyperlink formatted, then render as hyperlink`() {
+        "[click me](example.com)".toFormattedRows() shouldContainInOrder listOf(
+            Hyperlink("click me", "example.com")
+        )
+    }
+
+    @Test
+    fun `given multiline string with different format types, when parsing, then render each line correctly`() {
+        """
+        # header
+        \
+        **bold text**
+        *italic*
+        regular text
+        \
+        [click me again](example.co.uk)
+        """.trimIndent().toFormattedRows() shouldContainInOrder listOf(
+            Header(text="header"),
+            LineBreak(),
+            Bold(text="bold text"),
+            Italic(text="italic"),
+            PlainText(text = "regular text"),
+            LineBreak(),
+            Hyperlink(text = "click me again", url = "example.co.uk")
+        )
     }
 
     companion object{

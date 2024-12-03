@@ -3,6 +3,7 @@ package help.page
 import com.vladsch.flexmark.ast.Emphasis
 import com.vladsch.flexmark.ast.HardLineBreak
 import com.vladsch.flexmark.ast.Heading
+import com.vladsch.flexmark.ast.Link
 import com.vladsch.flexmark.ast.StrongEmphasis
 import com.vladsch.flexmark.ast.Text
 import com.vladsch.flexmark.util.ast.Node
@@ -22,14 +23,13 @@ class LanternaMarkdown : RenderMarkdown {
             node.children.forEach{child ->
                 render(child,accumulator)
             }
-
         }
     }
 
     companion object {
         private val LEAF_CLASSES = setOf(
             StrongEmphasis::class, Emphasis::class, Text::class, HardLineBreak::class, Heading::class,
-            HardLineBreak::class
+            HardLineBreak::class, Link::class,
 
         )
         private fun toFormattedRow(node: Node): FormattedTextRow = when(node){
@@ -37,6 +37,7 @@ class LanternaMarkdown : RenderMarkdown {
             is Emphasis -> FormattedTextRow.Italic(node.text.toString())
             is HardLineBreak -> FormattedTextRow.LineBreak()
             is Heading -> FormattedTextRow.Header(node.text.toString())
+            is Link -> FormattedTextRow.Hyperlink(node.text.toString(), node.url?.toString().orEmpty())
             is Text -> FormattedTextRow.PlainText(node.chars.toString())
 
             else -> throw IllegalArgumentException("Node is not a leaf node.")
