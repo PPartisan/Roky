@@ -12,6 +12,10 @@ repositories {
 }
 
 dependencies {
+    val ktorVersion="3.0.0"
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+
     implementation("com.googlecode.lanterna:lanterna:3.1.1")
     implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
 
