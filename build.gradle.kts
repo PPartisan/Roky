@@ -13,6 +13,8 @@ repositories {
 
 dependencies {
     implementation("com.googlecode.lanterna:lanterna:3.1.1")
+    implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
+
 
     implementation(project.dependencies.platform("io.insert-koin:koin-bom:3.5.6"))
     implementation("io.insert-koin:koin-core")
