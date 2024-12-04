@@ -2,6 +2,7 @@ package navigation
 
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.gui2.Window
+import help.HelpWindow
 import login.LoginWindow
 import mainmenu.MainMenuWindow
 
@@ -22,7 +23,7 @@ class NavigationController (
     }
 
     override fun toHelp() {
-        println("Help")
+        setActiveWindow(HelpWindow(this))
     }
 
     override fun toAbout() {
