@@ -1,11 +1,6 @@
 package help.page
 
-import com.vladsch.flexmark.ast.Emphasis
-import com.vladsch.flexmark.ast.HardLineBreak
-import com.vladsch.flexmark.ast.Heading
-import com.vladsch.flexmark.ast.Link
-import com.vladsch.flexmark.ast.StrongEmphasis
-import com.vladsch.flexmark.ast.Text
+import com.vladsch.flexmark.ast.*
 import com.vladsch.flexmark.util.ast.Node
 import help.FormattedTextRow
 
@@ -16,6 +11,11 @@ object LanternaMarkdown : RenderMarkdown {
         return rows
 
     }
+    private fun String.truncate(maxCharsPerLine: Int = 30) =
+        if(length > maxCharsPerLine)
+            replace(Regex("(.{1,${maxCharsPerLine}})(\\s|$)"), "$1\n")
+        else this
+
     private fun render (node:Node, accumulator: MutableList<FormattedTextRow>){
         if (isLeafNode(node)){
             accumulator += toFormattedRow(node)
@@ -32,12 +32,12 @@ object LanternaMarkdown : RenderMarkdown {
 
     )
     private fun toFormattedRow(node: Node): FormattedTextRow = when(node){
-        is StrongEmphasis -> FormattedTextRow.Bold(node.text.toString())
-        is Emphasis -> FormattedTextRow.Italic(node.text.toString())
+        is StrongEmphasis -> FormattedTextRow.Bold(node.text.toString().truncate())
+        is Emphasis -> FormattedTextRow.Italic(node.text.toString().truncate())
         is HardLineBreak -> FormattedTextRow.LineBreak()
-        is Heading -> FormattedTextRow.Header(node.text.toString())
-        is Link -> FormattedTextRow.Hyperlink(node.text.toString(), node.url?.toString().orEmpty())
-        is Text -> FormattedTextRow.PlainText(node.chars.toString())
+        is Heading -> FormattedTextRow.Header(node.text.toString().truncate())
+        is Link -> FormattedTextRow.Hyperlink(node.text.toString().truncate(), node.url?.toString().orEmpty())
+        is Text -> FormattedTextRow.PlainText(node.chars.toString().truncate())
 
         else -> throw IllegalArgumentException("Node is not a leaf node.")
     }
