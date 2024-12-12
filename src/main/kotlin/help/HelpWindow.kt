@@ -37,13 +37,17 @@ class HelpWindow(
     override fun show(state: HelpViewState) {
         content.removeAllComponents()
         when(state) {
-            is LoadingHelpViewState -> onLoading(state)
+            is LoadingHelpViewState -> onLoading()
             is LoadedHelpViewState -> onLoaded(state)
         }
     }
 
-    private fun onLoading(state: LoadingHelpViewState) {
-        println("onLoading:: $state")
+    private fun onLoading() {
+        listOf(LineBreak(),PlainText("Loading...."),LineBreak()).map { it.toComponent()}
+            .map { content.addComponent(it) }.forEach{
+                it.setLayoutData(LinearLayout.createLayoutData(Fill))
+            }
+
     }
 
     private fun onLoaded(state: LoadedHelpViewState) {
