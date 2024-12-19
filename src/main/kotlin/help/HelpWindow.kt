@@ -43,11 +43,12 @@ class HelpWindow(
     }
 
     private fun onLoading() {
-        listOf(LineBreak(),PlainText("Loading...."),LineBreak()).map { it.toComponent()}
-            .map { content.addComponent(it) }.forEach{
+        listOf(LineBreak(), PlainText("Loading…"), LineBreak())
+            .map { it.toComponent() }
+            .map { content.addComponent(it) }
+            .forEach {
                 it.setLayoutData(LinearLayout.createLayoutData(Fill))
             }
-
     }
 
     private fun onLoaded(state: LoadedHelpViewState) {
