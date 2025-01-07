@@ -16,6 +16,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.binds
 import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent.get
+import profile.profileModules
 import view.rokyTheme
 
 fun main() {
@@ -27,7 +28,7 @@ fun main() {
 }
 
 val mainModules = module {
-    includes(mainMenuModules, authenticationModule, rokyDispatchersModule, loginModules, helpModule)
+    includes(mainMenuModules, authenticationModule, rokyDispatchersModule, loginModules, helpModule, profileModules)
     single {
         DefaultTerminalFactory().createScreen()
     } bind Screen::class
