@@ -3,6 +3,8 @@ package profile
 import arch.Presenter
 import arch.RokyDispatchers
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import profile.ProfileEvent.RequestUsername
 
 class ProfilePresenter(
     private val windowScope: CoroutineScope,
@@ -13,11 +15,17 @@ class ProfilePresenter(
     }
 
     override fun onDetach(view: ProfileView) {
-        TODO("Not yet implemented")
+        windowScope.cancel()
     }
 
     fun onEvent(event: ProfileEvent) {
-        TODO("Not yet implemented")
+        if (event is RequestUsername) {
+            onRequestUsername(event)
+        }
+    }
+
+    private fun onRequestUsername(event: RequestUsername) {
+        println(event)
     }
 
 }
