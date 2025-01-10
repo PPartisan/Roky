@@ -8,23 +8,19 @@ class RequestUserNameUseCase(
     private val request:RequestUserName
 ) {
     suspend operator fun invoke(username: String): ProfileViewState {
-        if (username.isBlank()) {
+        if (username.isBlank())
             return Failed(ERROR_USERNAME_BLANK)
-        }
-        val isSuccess = request(username)
-        return if (isSuccess) {
-            Success(username.successMessage())
-        } else {
-            Failed(username.failureMessage())
+        return with(username) {
+            if (request(this)) toSuccess() else toFailed()
         }
     }
 
     companion object {
         const val ERROR_USERNAME_BLANK = "Username cannot be blank."
-        private fun String.successMessage() =
-            "Changed username to $this"
-        private fun String.failureMessage() =
-            "Could not change username to $this"
+        private fun String.toSuccess() : ProfileViewState =
+            Success("Changed username to $this")
+        private fun String.toFailed() : ProfileViewState =
+            Failed("Could not change username to $this")
     }
 
     class RequestUserName {
