@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "1.9.23"
     id("org.jetbrains.kotlinx.kover").version("0.8.3")
     id("io.gitlab.arturbosch.detekt").version("1.23.3")
+    kotlin("plugin.serialization") version "2.0.20"
 }
 
 group = "com.github.ppartisan.rps"
@@ -22,6 +23,12 @@ dependencies {
 
     implementation(project.dependencies.platform("io.insert-koin:koin-bom:3.5.6"))
     implementation("io.insert-koin:koin-core")
+
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.2"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+    implementation("io.ktor:ktor-client-java:3.0.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
