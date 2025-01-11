@@ -187,7 +187,7 @@ resource "docker_container" "supabase-realtime" {
   name  = "supabase-realtime"
   depends_on = [
     docker_container.supabase-postgres,
-    null_resource.db_setup_03
+    null_resource.db_setup_00
   ]
   ports {
     internal = 4000
@@ -229,7 +229,7 @@ resource "docker_container" "supabase-storage" {
   depends_on = [
     docker_container.supabase-postgres,
     docker_container.supabase-rest,
-    null_resource.db_setup_03
+    null_resource.db_setup_00
   ]
   ports {
     internal = 5000
@@ -265,7 +265,7 @@ resource "docker_container" "supabase-auth" {
   name  = "supabase-auth"
   depends_on = [
     docker_container.supabase-postgres,
-    null_resource.db_setup_03
+    null_resource.db_setup_00
   ]
   restart = "unless-stopped"
   ports {
