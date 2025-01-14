@@ -4,9 +4,13 @@ import org.koin.dsl.module
 
 
 val profileModules = module {
-    scope<ProfileWindow>{
+    scope<ProfileWindow> {
         scoped {
-            ProfilePresenter(windowScope = get<ProfileWindow>().windowScope, dispatchers = get())
+            ProfilePresenter(
+                windowScope = get<ProfileWindow>().windowScope,
+                requestUsername = get(),
+                dispatchers = get()
+            )
         }
         scoped { RequestUserNameUseCase(get()) }
     }

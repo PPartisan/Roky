@@ -5,6 +5,7 @@ import com.googlecode.lanterna.gui2.Window
 import help.HelpWindow
 import login.LoginWindow
 import mainmenu.MainMenuWindow
+import profile.ProfileWindow
 
 class NavigationController (
     private val gui: MultiWindowTextGUI
@@ -19,7 +20,7 @@ class NavigationController (
     }
 
     override fun toProfile() {
-        println("Profile")
+       setActiveWindow(ProfileWindow(this))
     }
 
     override fun toHelp() {
