@@ -13,6 +13,7 @@ import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
+import profile.ProfileViewState.Pending
 import view.*
 
 class ProfileWindow(
@@ -67,12 +68,17 @@ class ProfileWindow(
     override fun show(state: ProfileViewState) {
         username.text = ""
         status.text = state.status
-
+        setUiInteractable(state !is Pending)
     }
 
     override fun close() {
         super.close()
         scope.close()
         windowScope.cancel()
+    }
+
+    private fun setUiInteractable(isInteractable: Boolean){
+        username.isEnabled = isInteractable
+        submit.isEnabled = isInteractable
     }
 }
