@@ -4,6 +4,7 @@ import arch.Presenter
 import arch.RokyDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import profile.ProfileEvent.RequestUsername
@@ -14,12 +15,17 @@ class ProfilePresenter(
     private val requestUsername: RequestUserNameUseCase,
     dispatchers: RokyDispatchers
 ) : Presenter<ProfileView>(dispatchers) {
+
+    private val state: MutableStateFlow<ProfileViewState> = MutableStateFlow(Idle)
+
     override fun onAttach(view: ProfileView) {
-       println("ATTACH PRESENT00R")
+       windowScope.launch(dispatchers.main) {
+           state.collect(::show)
+       }
     }
 
     override fun onDetach(view: ProfileView) {
-        windowScope.cancel()
+        //Deliberately empty
     }
 
     fun onEvent(event: ProfileEvent) {
@@ -29,12 +35,13 @@ class ProfilePresenter(
     }
 
     private fun onRequestUsername(event: RequestUsername) {
-        withView { it.show(Pending) }
+        state.value = Pending
         windowScope.launch(dispatchers.io) {
-            val result = requestUsername(event.username)
-            withContext(dispatchers.main){
-                withView { it.show(result) }
-            }
+            state.value = requestUsername(event.username)
         }
+    }
+
+    private fun show(viewState: ProfileViewState) {
+        withView { view -> view.show(viewState) }
     }
 }
