@@ -20,7 +20,7 @@ import profile.profileModules
 import view.rokyTheme
 
 fun main() {
-    startKoin{
+    startKoin {
         modules(mainModules)
     }
     val start = get<StartApp>(StartApp::class.java)

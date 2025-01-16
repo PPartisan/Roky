@@ -3,12 +3,11 @@ package profile
 import arch.Presenter
 import arch.RokyDispatchers
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import profile.ProfileEvent.RequestUsername
-import profile.ProfileViewState.*
+import profile.ProfileViewState.Idle
+import profile.ProfileViewState.Pending
 
 class ProfilePresenter(
     private val windowScope: CoroutineScope,
@@ -19,9 +18,9 @@ class ProfilePresenter(
     private val state: MutableStateFlow<ProfileViewState> = MutableStateFlow(Idle)
 
     override fun onAttach(view: ProfileView) {
-       windowScope.launch(dispatchers.main) {
-           state.collect(::show)
-       }
+        windowScope.launch(dispatchers.main) {
+            state.collect(::show)
+        }
     }
 
     override fun onDetach(view: ProfileView) {

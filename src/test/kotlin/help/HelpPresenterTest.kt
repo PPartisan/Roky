@@ -16,13 +16,13 @@ import org.junit.jupiter.api.Test
 class HelpPresenterTest {
     private lateinit var scope: CoroutineScope
     private lateinit var view: HelpView
-    private lateinit var page: suspend() -> HelpViewState
+    private lateinit var page: suspend () -> HelpViewState
     private lateinit var presenter: HelpPresenter
 
     @BeforeEach
     fun setUp() {
         view = mockk(relaxed = true)
-        val dispatchers : RokyDispatchers = mockk<RokyDispatchers>().apply {
+        val dispatchers: RokyDispatchers = mockk<RokyDispatchers>().apply {
             every { main } returns dispatcher
             every { io } returns dispatcher
         }
@@ -38,9 +38,11 @@ class HelpPresenterTest {
         presenter.attach(view)
         advanceUntilIdle()
 
-        verify { view.show(withArg {
-            it is LoadingHelpViewState
-        }) }
+        verify {
+            view.show(withArg {
+                it is LoadingHelpViewState
+            })
+        }
     }
 
     @Test

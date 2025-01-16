@@ -14,7 +14,7 @@ import java.util.*
 const val DEFAULT_TERMINAL_WIDTH = 40
 const val DEFAULT_TERMINAL_HEIGHT = 20
 
-val rokyTheme : Theme = object : Theme {
+val rokyTheme: Theme = object : Theme {
     override fun getDefaultDefinition(): ThemeDefinition {
         return rokyThemeDefinition
     }
@@ -27,7 +27,7 @@ val rokyTheme : Theme = object : Theme {
     override fun getWindowDecorationRenderer(): WindowDecorationRenderer? = null
 }
 
-private val rokyThemeDefinition : ThemeDefinition = object : ThemeDefinition {
+private val rokyThemeDefinition: ThemeDefinition = object : ThemeDefinition {
     // Define the normal style
     override fun getNormal(): ThemeStyle {
         return createCustomThemeStyle(
@@ -41,7 +41,7 @@ private val rokyThemeDefinition : ThemeDefinition = object : ThemeDefinition {
         return createCustomThemeStyle(
             background = "#2D2D2D",  // Slightly lighter background
             foreground = "#00FFB3",  // Brighter green for emphasis
-            
+
         )
     }
 
@@ -50,7 +50,7 @@ private val rokyThemeDefinition : ThemeDefinition = object : ThemeDefinition {
         return createCustomThemeStyle(
             background = "#3D3D3D",  // Even lighter for selection
             foreground = "#00FFCC",  // Cyan-green for selection
-           
+
         )
     }
 
@@ -59,7 +59,7 @@ private val rokyThemeDefinition : ThemeDefinition = object : ThemeDefinition {
         return createCustomThemeStyle(
             background = "#1E1E1E",  // Lighter background for active state
             foreground = "#00FF9C",  // Brighter cyan-green for active
-            
+
         )
     }
 
@@ -67,7 +67,7 @@ private val rokyThemeDefinition : ThemeDefinition = object : ThemeDefinition {
     override fun getInsensitive(): ThemeStyle {
         return createCustomThemeStyle(
             background = "#1E1E1E",  // Dark modern background
-            foreground = "#00FF9C"   // Bright cyber green     
+            foreground = "#00FF9C"   // Bright cyber green
         )
     }
 
@@ -83,7 +83,7 @@ private val rokyThemeDefinition : ThemeDefinition = object : ThemeDefinition {
         foreground: String,
         sgrs: EnumSet<SGR> = EnumSet.of(SGR.BOLD)
     ): ThemeStyle {
-        return object: ThemeStyle {
+        return object : ThemeStyle {
             override fun getForeground(): TextColor {
                 return TextColor.Factory.fromString(foreground)
             }

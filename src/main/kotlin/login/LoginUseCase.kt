@@ -4,15 +4,14 @@ import authentication.Authenticator
 import login.LoginEvent.Login
 import login.LoginViewState.Idle
 
-class LoginUseCase (
+class LoginUseCase(
     private val authenticator: Authenticator
-)
-{
-    suspend operator fun invoke(event: Login): LoginViewState = with(event){
+) {
+    suspend operator fun invoke(event: Login): LoginViewState = with(event) {
         val status = when {
             username.isBlank() -> ERROR_USERNAME
             password.isBlank() -> ERROR_PASSWORD
-            else -> if(authenticator.login(username, password)) LOGIN_SUCCESS else LOGIN_FAILURE
+            else -> if (authenticator.login(username, password)) LOGIN_SUCCESS else LOGIN_FAILURE
         }
         return Idle(userName = event.username, password = "", status = status)
     }

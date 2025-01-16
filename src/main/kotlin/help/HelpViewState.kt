@@ -7,22 +7,27 @@ sealed interface FormattedTextRow {
     data class Bold(
         override val text: String
     ) : FormattedTextRow
+
     data class Italic(
         override val text: String
     ) : FormattedTextRow
+
     data class Hyperlink(
         override val text: String,
         val url: String
     ) : FormattedTextRow
+
     data class Header(
         override val text: String
     ) : FormattedTextRow
+
     data class PlainText(
         override val text: String
     ) : FormattedTextRow
+
     data class LineBreak(
         override val text: String = ""
-    ): FormattedTextRow
+    ) : FormattedTextRow
 }
 
 sealed interface HelpViewState {

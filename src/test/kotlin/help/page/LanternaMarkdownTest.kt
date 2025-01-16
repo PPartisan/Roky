@@ -11,7 +11,7 @@ class LanternaMarkdownTest {
 
     @Test
     fun `when empty string, then parse nothing`() {
-       "".toFormattedRows() shouldBeEqual listOf()
+        "".toFormattedRows() shouldBeEqual listOf()
     }
 
     @Test
@@ -46,7 +46,7 @@ class LanternaMarkdownTest {
             \
             line2
         """.trimIndent().toFormattedRows() shouldContainInOrder
-                listOf(PlainText("line1"),LineBreak(),PlainText("line2"))
+            listOf(PlainText("line1"), LineBreak(), PlainText("line2"))
     }
 
     @Test
@@ -79,18 +79,18 @@ class LanternaMarkdownTest {
         \
         [click me again](example.co.uk)
         """.trimIndent().toFormattedRows() shouldContainInOrder listOf(
-            Header(text="header"),
+            Header(text = "header"),
             LineBreak(),
-            Bold(text="bold text"),
-            Italic(text="italic"),
+            Bold(text = "bold text"),
+            Italic(text = "italic"),
             PlainText(text = "regular text"),
             LineBreak(),
             Hyperlink(text = "click me again", url = "example.co.uk")
         )
     }
 
-    companion object{
-        private fun String.toFormattedRows() : List<FormattedTextRow> =
+    companion object {
+        private fun String.toFormattedRows(): List<FormattedTextRow> =
             LanternaMarkdown.render(Parser.builder().build().parse(this))
     }
 

@@ -6,22 +6,23 @@ import help.FormattedTextRow
 
 object LanternaMarkdown : RenderMarkdown {
     override fun render(root: Node): List<FormattedTextRow> {
-        val rows : MutableList<FormattedTextRow> = mutableListOf()
-        render(root,rows)
+        val rows: MutableList<FormattedTextRow> = mutableListOf()
+        render(root, rows)
         return rows
 
     }
+
     private fun String.truncate(maxCharsPerLine: Int = 30) =
-        if(length > maxCharsPerLine)
+        if (length > maxCharsPerLine)
             replace(Regex("(.{1,${maxCharsPerLine}})(\\s|$)"), "$1\n")
         else this
 
-    private fun render (node:Node, accumulator: MutableList<FormattedTextRow>){
-        if (isLeafNode(node)){
+    private fun render(node: Node, accumulator: MutableList<FormattedTextRow>) {
+        if (isLeafNode(node)) {
             accumulator += toFormattedRow(node)
         } else {
-            node.children.forEach{child ->
-                render(child,accumulator)
+            node.children.forEach { child ->
+                render(child, accumulator)
             }
         }
     }
@@ -30,8 +31,9 @@ object LanternaMarkdown : RenderMarkdown {
         StrongEmphasis::class, Emphasis::class, Text::class, HardLineBreak::class, Heading::class,
         HardLineBreak::class, Link::class,
 
-    )
-    private fun toFormattedRow(node: Node): FormattedTextRow = when(node){
+        )
+
+    private fun toFormattedRow(node: Node): FormattedTextRow = when (node) {
         is StrongEmphasis -> FormattedTextRow.Bold(node.text.toString().truncate())
         is Emphasis -> FormattedTextRow.Italic(node.text.toString().truncate())
         is HardLineBreak -> FormattedTextRow.LineBreak()
@@ -42,7 +44,7 @@ object LanternaMarkdown : RenderMarkdown {
         else -> throw IllegalArgumentException("Node is not a leaf node.")
     }
 
-    private fun isLeafNode(node: Node) : Boolean {
+    private fun isLeafNode(node: Node): Boolean {
         return node::class in LEAF_CLASSES
     }
 }
