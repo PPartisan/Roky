@@ -1,5 +1,5 @@
 package mainmenu
 
 interface MainMenuView {
-    fun show (state: MainMenuViewState)
+    fun show(state: MainMenuViewState)
 }

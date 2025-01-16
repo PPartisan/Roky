@@ -28,7 +28,7 @@ class LoginPresenter(
     }
 
     fun onEvent(event: LoginEvent) {
-        when (event){
+        when (event) {
             is Login -> onLogin(event)
         }
     }
@@ -40,7 +40,7 @@ class LoginPresenter(
         }
     }
 
-    private fun show(state: LoginViewState) = withView {it.show(state)}
+    private fun show(state: LoginViewState) = withView { it.show(state) }
 
     companion object {
         const val AUTHENTICATING = "Authenticating…"

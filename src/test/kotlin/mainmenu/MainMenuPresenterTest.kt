@@ -4,7 +4,10 @@ import StopApp
 import arch.RokyDispatchers
 import authentication.Authenticator
 import coAnswersDelayed
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -21,11 +24,11 @@ import org.junit.jupiter.api.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainMenuPresenterTest {
-    private lateinit var quit : StopApp
+    private lateinit var quit: StopApp
     private lateinit var authenticator: Authenticator
     private lateinit var presenter: MainMenuPresenter
-    private lateinit var navigate : NavigateToAppWindow
-    private lateinit var view : MainMenuView
+    private lateinit var navigate: NavigateToAppWindow
+    private lateinit var view: MainMenuView
     private lateinit var scope: CoroutineScope
 
 
@@ -36,7 +39,7 @@ class MainMenuPresenterTest {
         authenticator = mockk(relaxed = true)
         view = mockk(relaxed = true)
 
-        val dispatchers : RokyDispatchers = mockk<RokyDispatchers>().apply {
+        val dispatchers: RokyDispatchers = mockk<RokyDispatchers>().apply {
             every { io } returns dispatcher
             every { main } returns dispatcher
         }
@@ -99,7 +102,7 @@ class MainMenuPresenterTest {
 
     @Test
     fun `when user is logged in, then show logged in options`() = runTest(dispatcher) {
-        coEvery { authenticator.isLoggedIn() } coAnswersDelayed {true}
+        coEvery { authenticator.isLoggedIn() } coAnswersDelayed { true }
         presenter.attach(view)
         advanceUntilIdle()
         verify {

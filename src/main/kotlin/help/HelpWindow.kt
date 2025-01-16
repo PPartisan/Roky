@@ -21,8 +21,8 @@ import java.awt.Desktop.Action.BROWSE
 import java.net.URI
 
 class HelpWindow(
-    menu:NavigateToMainMenu
-): AppWindow("Help",menu),HelpView,KoinScopeComponent,WindowScope by WindowScopeProvider() {
+    menu: NavigateToMainMenu
+) : AppWindow("Help", menu), HelpView, KoinScopeComponent, WindowScope by WindowScopeProvider() {
     override val scope: Scope by lazy { createScope(this) }
     private val content: Panel
     private val presenter: HelpPresenter by inject()
@@ -36,7 +36,7 @@ class HelpWindow(
 
     override fun show(state: HelpViewState) {
         content.removeAllComponents()
-        when(state) {
+        when (state) {
             is LoadingHelpViewState -> onLoading()
             is LoadedHelpViewState -> onLoaded(state)
         }
@@ -57,14 +57,14 @@ class HelpWindow(
         }
     }
 
-    private fun openLink(url: String){
+    private fun openLink(url: String) {
         if (!Desktop.isDesktopSupported()) return
         val desktop: Desktop = Desktop.getDesktop()
         if (!desktop.isSupported(BROWSE)) return
         desktop.browse(URI(url))
     }
 
-    private fun FormattedTextRow.toComponent(): Component = when(this) {
+    private fun FormattedTextRow.toComponent(): Component = when (this) {
         is Bold -> Label(text).addStyle(BOLD)
         is Header -> Label(text).addStyle(BOLD).addStyle(UNDERLINE)
         is Hyperlink -> Button(text) { openLink(url) }

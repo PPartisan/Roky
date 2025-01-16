@@ -1,11 +1,11 @@
 {
-  "action": "opened",
-  "pull_request": {
-    "head": {
-      "ref": "feature/15_my-new-feature"
-    },
-    "base": {
-      "ref": "develop"
+    "action": "opened",
+    "pull_request": {
+        "head": {
+            "ref": "feature/15_my-new-feature"
+        },
+        "base": {
+            "ref": "develop"
+        }
     }
-  }
 }

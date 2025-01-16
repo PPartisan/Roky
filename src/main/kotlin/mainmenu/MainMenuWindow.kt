@@ -13,14 +13,14 @@ import org.koin.core.scope.Scope
 
 class MainMenuWindow(
     private val window: Window = BasicWindow("Roky")
-): Window by window, MainMenuView, KoinScopeComponent, WindowScope by WindowScopeProvider() {
+) : Window by window, MainMenuView, KoinScopeComponent, WindowScope by WindowScopeProvider() {
 
     override val scope: Scope by lazy { createScope(this) }
 
-    private val presenter : MainMenuPresenter by inject()
+    private val presenter: MainMenuPresenter by inject()
 
-    private val options : ActionListBox
-    private val message : Label
+    private val options: ActionListBox
+    private val message: Label
 
     init {
         setHints(listOf(CENTERED))
@@ -37,9 +37,10 @@ class MainMenuWindow(
 
         presenter.attach(this)
     }
+
     override fun show(state: MainMenuViewState) {
         options.clearItems()
-        when(state) {
+        when (state) {
             is Loaded -> onLoaded(state)
             is Loading -> onLoading()
         }
@@ -47,8 +48,8 @@ class MainMenuWindow(
 
     private fun onLoaded(state: Loaded) {
         message.setVisible(false)
-        state.rows.forEach{
-            options.addItem(it.title){
+        state.rows.forEach {
+            options.addItem(it.title) {
                 presenter.onEvent(it.event)
             }
         }

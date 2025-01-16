@@ -14,19 +14,19 @@ val rokyDispatchersModule = module {
 }
 
 sealed interface RokyDispatchers {
-    val io : CoroutineDispatcher
-    val default : CoroutineDispatcher
-    val unconfined : CoroutineDispatcher
-    val main : CoroutineDispatcher
+    val io: CoroutineDispatcher
+    val default: CoroutineDispatcher
+    val unconfined: CoroutineDispatcher
+    val main: CoroutineDispatcher
 }
 
 private data object RokyDispatchersDelegate : RokyDispatchers {
 
-    private val gui : MultiWindowTextGUI by lazy {
+    private val gui: MultiWindowTextGUI by lazy {
         get(MultiWindowTextGUI::class.java)
     }
 
-    private val defaultGuiDispatcher : CoroutineDispatcher by lazy {
+    private val defaultGuiDispatcher: CoroutineDispatcher by lazy {
         object : CoroutineDispatcher() {
             override fun dispatch(context: CoroutineContext, block: Runnable) {
                 gui.guiThread.invokeLater(block)

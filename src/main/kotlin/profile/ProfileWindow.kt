@@ -77,7 +77,7 @@ class ProfileWindow(
         windowScope.cancel()
     }
 
-    private fun setUiInteractable(isInteractable: Boolean){
+    private fun setUiInteractable(isInteractable: Boolean) {
         username.isEnabled = isInteractable
         submit.isEnabled = isInteractable
     }

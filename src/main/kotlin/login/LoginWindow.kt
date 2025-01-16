@@ -38,20 +38,20 @@ class LoginWindow(
         password = TextBox().setMask('*').linearLayoutFill()
         status = Label("").linearLayoutFill()
 
-        val usernamePanel = Panel(LinearLayout()).apply{
+        val usernamePanel = Panel(LinearLayout()).apply {
             addComponent(username)
         }.withBorder(Borders.singleLine("Username")).linearLayoutFill()
 
-        val passwordPanel = Panel(LinearLayout()).apply{
+        val passwordPanel = Panel(LinearLayout()).apply {
             addComponent(password)
         }.withBorder(Borders.singleLine("Password")).linearLayoutFill()
 
-        val statusPanel = Panel(LinearLayout()).apply{
+        val statusPanel = Panel(LinearLayout()).apply {
             addComponent(status)
         }.linearLayoutFill()
 
-        val buttonPanel = Panel().apply{
-            ok = Button("OK"){
+        val buttonPanel = Panel().apply {
+            ok = Button("OK") {
                 presenter.onEvent(Login(username.text, password.text))
             }
             addComponent(ok)
@@ -74,34 +74,35 @@ class LoginWindow(
         component = root
         presenter.attach(this)
     }
+
     override fun close() {
         super.close()
         scope.close()
         windowScope.cancel()
     }
 
-    override fun show(state: LoginViewState) = when(state){
+    override fun show(state: LoginViewState) = when (state) {
         is Authenticating -> show(state)
         is Idle -> show(state)
     }
 
-    private fun show(state: Authenticating){
+    private fun show(state: Authenticating) {
         setUiInteractable(false)
         setState(state)
     }
 
-    private fun show(state: Idle){
+    private fun show(state: Idle) {
         setUiInteractable(true)
         setState(state)
     }
 
-    private fun setUiInteractable(isInteractable: Boolean){
+    private fun setUiInteractable(isInteractable: Boolean) {
         username.isEnabled = isInteractable
         password.isEnabled = isInteractable
         ok.isEnabled = isInteractable
     }
 
-    private fun setState(state: LoginViewState){
+    private fun setState(state: LoginViewState) {
         username.text = state.userName
         password.text = state.password
         status.text = state.status

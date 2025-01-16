@@ -4,17 +4,17 @@ abstract class Presenter<V>(
     protected val dispatchers: RokyDispatchers
 ) {
 
-    private var view:V?=null
+    private var view: V? = null
     abstract fun onAttach(view: V)
     abstract fun onDetach(view: V)
 
-    fun attach(view:V){
+    fun attach(view: V) {
         require(view != null) { "View should not be null." }
         this.view = view
         onAttach(view)
     }
 
-    fun detach(){
+    fun detach() {
         view?.also(::onDetach)
         view = null
     }

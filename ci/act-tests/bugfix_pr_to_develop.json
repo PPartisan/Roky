@@ -1,11 +1,11 @@
 {
-  "action": "opened",
-  "pull_request": {
-    "head": {
-      "ref": "bugfix/11_a-bugfix"
-    },
-    "base": {
-      "ref": "develop"
+    "action": "opened",
+    "pull_request": {
+        "head": {
+            "ref": "bugfix/11_a-bugfix"
+        },
+        "base": {
+            "ref": "develop"
+        }
     }
-  }
 }

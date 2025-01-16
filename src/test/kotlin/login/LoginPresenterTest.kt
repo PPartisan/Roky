@@ -29,19 +29,19 @@ class LoginPresenterTest {
         coEvery { logIn(any()) } coAnswersDelayed { Idle() }
 
         view = mockk(relaxed = true)
-        val dispatchers : RokyDispatchers = mockk<RokyDispatchers>().apply {
+        val dispatchers: RokyDispatchers = mockk<RokyDispatchers>().apply {
             every { main } returns dispatcher
             every { io } returns dispatcher
         }
         scope = CoroutineScope(dispatcher)
-        presenter = LoginPresenter(scope,logIn, dispatchers)
+        presenter = LoginPresenter(scope, logIn, dispatchers)
     }
 
     @Test
     fun `when attached, then view state is idle`() = runTest(dispatcher) {
         presenter.attach(view)
         advanceUntilIdle()
-        verify{ view.show(Idle()) }
+        verify { view.show(Idle()) }
     }
 
     @Test

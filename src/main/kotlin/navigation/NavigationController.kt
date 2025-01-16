@@ -7,7 +7,7 @@ import login.LoginWindow
 import mainmenu.MainMenuWindow
 import profile.ProfileWindow
 
-class NavigationController (
+class NavigationController(
     private val gui: MultiWindowTextGUI
 ) : NavigateToAppWindow, NavigateToMainMenu {
 
@@ -20,7 +20,7 @@ class NavigationController (
     }
 
     override fun toProfile() {
-       setActiveWindow(ProfileWindow(this))
+        setActiveWindow(ProfileWindow(this))
     }
 
     override fun toHelp() {
@@ -35,9 +35,9 @@ class NavigationController (
         setActiveWindow(MainMenuWindow())
     }
 
-    private fun setActiveWindow(window:Window) {
+    private fun setActiveWindow(window: Window) {
         val activeWindow = gui.activeWindow
-        if (activeWindow!=null) {
+        if (activeWindow != null) {
             gui.removeWindow(activeWindow)
             activeWindow.close()
         }

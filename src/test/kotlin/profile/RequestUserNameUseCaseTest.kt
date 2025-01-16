@@ -6,8 +6,8 @@ import io.kotest.matchers.string.shouldStartWith
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import profile.ProfileViewState.Failed
 import profile.ProfileViewState.Success
