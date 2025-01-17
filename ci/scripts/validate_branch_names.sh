@@ -24,9 +24,9 @@ if [[ "$branch_name" == chore/* ]]; then
 fi
 
 # Define branch patterns
-main_branch_pattern="^(hotfix/[0-9]+_.+)$"
-develop_branch_pattern="^(feature/[0-9]+_.+|bugfix/[0-9]+_.+)$"
-release_branch_pattern="^(hotfix/[0-9]+_.+)$"
+main_branch_pattern="^(hotfix/[0-9]+[_|-].+)$"
+develop_branch_pattern="^(feature/[0-9]+[_|-].+|bugfix/[0-9]+[_|-].+)$"
+release_branch_pattern="^(hotfix/[0-9]+[_|-].+)$"
 
 # Check for 'main' branch
 if [[ "$base_branch" == "main" ]] && [[ ! "$branch_name" =~ $main_branch_pattern ]]; then
