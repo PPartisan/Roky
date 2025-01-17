@@ -2,16 +2,17 @@ package mainmenu
 
 import org.koin.dsl.module
 
-val mainMenuModules = module {
-    scope<MainMenuWindow> {
-        scoped {
-            MainMenuPresenter(
-                quit = get(),
-                navigate = get(),
-                authenticator = get(),
-                windowScope = get<MainMenuWindow>().windowScope,
-                dispatchers = get()
-            )
+val mainMenuModules =
+    module {
+        scope<MainMenuWindow> {
+            scoped {
+                MainMenuPresenter(
+                    quit = get(),
+                    navigate = get(),
+                    authenticator = get(),
+                    windowScope = get<MainMenuWindow>().windowScope,
+                    dispatchers = get(),
+                )
+            }
         }
     }
-}

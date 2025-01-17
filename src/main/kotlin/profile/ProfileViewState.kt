@@ -12,10 +12,10 @@ interface ProfileViewState {
     }
 
     data class Success(
-        override val status: String
+        override val status: String,
     ) : ProfileViewState
 
     data class Failed(
-        override val status: String
+        override val status: String,
     ) : ProfileViewState
 }

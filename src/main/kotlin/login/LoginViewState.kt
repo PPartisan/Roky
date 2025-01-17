@@ -8,12 +8,12 @@ sealed interface LoginViewState {
     data class Idle(
         override val userName: String = "",
         override val password: String = "",
-        override val status: String = ""
+        override val status: String = "",
     ) : LoginViewState
 
     data class Authenticating(
         override val userName: String = "",
         override val password: String = "",
-        override val status: String = ""
+        override val status: String = "",
     ) : LoginViewState
 }

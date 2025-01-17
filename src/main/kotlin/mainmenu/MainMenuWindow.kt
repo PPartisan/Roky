@@ -12,9 +12,8 @@ import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 
 class MainMenuWindow(
-    private val window: Window = BasicWindow("Roky")
+    private val window: Window = BasicWindow("Roky"),
 ) : Window by window, MainMenuView, KoinScopeComponent, WindowScope by WindowScopeProvider() {
-
     override val scope: Scope by lazy { createScope(this) }
 
     private val presenter: MainMenuPresenter by inject()
@@ -65,5 +64,4 @@ class MainMenuWindow(
         window.close()
         scope.close()
     }
-
 }

@@ -12,9 +12,8 @@ import profile.ProfileViewState.Pending
 class ProfilePresenter(
     private val windowScope: CoroutineScope,
     private val requestUsername: RequestUserNameUseCase,
-    dispatchers: RokyDispatchers
+    dispatchers: RokyDispatchers,
 ) : Presenter<ProfileView>(dispatchers) {
-
     private val state: MutableStateFlow<ProfileViewState> = MutableStateFlow(Idle)
 
     override fun onAttach(view: ProfileView) {
@@ -24,7 +23,7 @@ class ProfilePresenter(
     }
 
     override fun onDetach(view: ProfileView) {
-        //Deliberately empty
+        // Deliberately empty
     }
 
     fun onEvent(event: ProfileEvent) {

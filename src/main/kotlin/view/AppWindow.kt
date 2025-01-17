@@ -8,9 +8,8 @@ import navigation.NavigateToMainMenu
 
 open class AppWindow(
     private val window: BasicWindow,
-    private val menu: NavigateToMainMenu
+    private val menu: NavigateToMainMenu,
 ) : Window by window {
-
     constructor(title: String, menu: NavigateToMainMenu) : this(BasicWindow(title), menu)
 
     override fun handleInput(key: KeyStroke?): Boolean {

@@ -3,14 +3,15 @@ package help
 import help.page.FetchHelpPage
 import org.koin.dsl.module
 
-val helpModule = module {
-    scope<HelpWindow> {
-        scoped {
-            HelpPresenter(
-                dispatchers = get(),
-                windowScope = get<HelpWindow>().windowScope,
-                page = { FetchHelpPage() }
-            )
+val helpModule =
+    module {
+        scope<HelpWindow> {
+            scoped {
+                HelpPresenter(
+                    dispatchers = get(),
+                    windowScope = get<HelpWindow>().windowScope,
+                    page = { FetchHelpPage() },
+                )
+            }
         }
     }
-}

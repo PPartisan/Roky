@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 class HelpPresenter(
     private val windowScope: CoroutineScope,
     dispatchers: RokyDispatchers,
-    private val page: suspend () -> HelpViewState
+    private val page: suspend () -> HelpViewState,
 ) : Presenter<HelpView>(dispatchers) {
     override fun onAttach(view: HelpView) {
         view.show(LoadingHelpViewState())
@@ -26,5 +26,4 @@ class HelpPresenter(
     override fun onDetach(view: HelpView) {
         TODO("Not yet implemented")
     }
-
 }

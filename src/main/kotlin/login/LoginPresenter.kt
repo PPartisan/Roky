@@ -12,9 +12,8 @@ import login.LoginViewState.Idle
 class LoginPresenter(
     private val windowScope: CoroutineScope,
     private val login: LoginUseCase,
-    dispatchers: RokyDispatchers
+    dispatchers: RokyDispatchers,
 ) : Presenter<LoginView>(dispatchers) {
-
     private val state: MutableStateFlow<LoginViewState> = MutableStateFlow(Idle())
 
     override fun onAttach(view: LoginView) {
@@ -33,17 +32,17 @@ class LoginPresenter(
         }
     }
 
-    private fun onLogin(event: Login) = with(event) {
-        windowScope.launch(dispatchers.io) {
-            state.value = Authenticating(username, password, AUTHENTICATING)
-            state.value = login(this@with)
+    private fun onLogin(event: Login) =
+        with(event) {
+            windowScope.launch(dispatchers.io) {
+                state.value = Authenticating(username, password, AUTHENTICATING)
+                state.value = login(this@with)
+            }
         }
-    }
 
     private fun show(state: LoginViewState) = withView { it.show(state) }
 
     companion object {
         const val AUTHENTICATING = "Authenticating…"
     }
-
 }

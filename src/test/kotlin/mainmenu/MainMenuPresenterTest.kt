@@ -31,7 +31,6 @@ class MainMenuPresenterTest {
     private lateinit var view: MainMenuView
     private lateinit var scope: CoroutineScope
 
-
     @BeforeEach
     fun setUp() {
         navigate = mockk(relaxed = true)
@@ -39,10 +38,11 @@ class MainMenuPresenterTest {
         authenticator = mockk(relaxed = true)
         view = mockk(relaxed = true)
 
-        val dispatchers: RokyDispatchers = mockk<RokyDispatchers>().apply {
-            every { io } returns dispatcher
-            every { main } returns dispatcher
-        }
+        val dispatchers: RokyDispatchers =
+            mockk<RokyDispatchers>().apply {
+                every { io } returns dispatcher
+                every { main } returns dispatcher
+            }
 
         scope = CoroutineScope(dispatcher)
         presenter = MainMenuPresenter(quit, navigate, authenticator, scope, dispatchers)
@@ -90,29 +90,30 @@ class MainMenuPresenterTest {
     }
 
     @Test
-    fun `when user is logged out, then show logged out options`() = runTest(dispatcher) {
-        coEvery { authenticator.isLoggedIn() } coAnswersDelayed { false }
-        presenter.attach(view)
-        advanceUntilIdle()
-        verify {
-            view.show(Loading)
-            view.show(loggedOut)
+    fun `when user is logged out, then show logged out options`() =
+        runTest(dispatcher) {
+            coEvery { authenticator.isLoggedIn() } coAnswersDelayed { false }
+            presenter.attach(view)
+            advanceUntilIdle()
+            verify {
+                view.show(Loading)
+                view.show(loggedOut)
+            }
         }
-    }
 
     @Test
-    fun `when user is logged in, then show logged in options`() = runTest(dispatcher) {
-        coEvery { authenticator.isLoggedIn() } coAnswersDelayed { true }
-        presenter.attach(view)
-        advanceUntilIdle()
-        verify {
-            view.show(Loading)
-            view.show(loggedIn)
+    fun `when user is logged in, then show logged in options`() =
+        runTest(dispatcher) {
+            coEvery { authenticator.isLoggedIn() } coAnswersDelayed { true }
+            presenter.attach(view)
+            advanceUntilIdle()
+            verify {
+                view.show(Loading)
+                view.show(loggedIn)
+            }
         }
-    }
 
     companion object {
         private val dispatcher = StandardTestDispatcher()
     }
-
 }

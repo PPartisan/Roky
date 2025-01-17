@@ -9,9 +9,10 @@ import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent.get
 import kotlin.coroutines.CoroutineContext
 
-val rokyDispatchersModule = module {
-    factory { RokyDispatchersDelegate } bind RokyDispatchers::class
-}
+val rokyDispatchersModule =
+    module {
+        factory { RokyDispatchersDelegate } bind RokyDispatchers::class
+    }
 
 sealed interface RokyDispatchers {
     val io: CoroutineDispatcher
@@ -21,14 +22,16 @@ sealed interface RokyDispatchers {
 }
 
 private data object RokyDispatchersDelegate : RokyDispatchers {
-
     private val gui: MultiWindowTextGUI by lazy {
         get(MultiWindowTextGUI::class.java)
     }
 
     private val defaultGuiDispatcher: CoroutineDispatcher by lazy {
         object : CoroutineDispatcher() {
-            override fun dispatch(context: CoroutineContext, block: Runnable) {
+            override fun dispatch(
+                context: CoroutineContext,
+                block: Runnable,
+            ) {
                 gui.guiThread.invokeLater(block)
             }
         }
@@ -42,5 +45,4 @@ private data object RokyDispatchersDelegate : RokyDispatchers {
         get() = Dispatchers.Unconfined
     override val main: CoroutineDispatcher
         get() = defaultGuiDispatcher
-
 }

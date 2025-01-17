@@ -28,34 +28,40 @@ class RequestUserNameUseCaseTest {
     }
 
     @Test
-    fun `when username is empty, then request username failed`() = runTest {
-        assertTrue(useCase("") is Failed)
-    }
+    fun `when username is empty, then request username failed`() =
+        runTest {
+            assertTrue(useCase("") is Failed)
+        }
 
     @Test
-    fun `when username is empty, then show username cannot be blank message`() = runTest {
-        useCase("").status shouldBeEqual ERROR_USERNAME_BLANK
-    }
+    fun `when username is empty, then show username cannot be blank message`() =
+        runTest {
+            useCase("").status shouldBeEqual ERROR_USERNAME_BLANK
+        }
 
     @Test
-    fun `when username is invalid, then request username failed`() = runTest {
-        assertTrue(useCase(INVALID_USER) is Failed)
-    }
+    fun `when username is invalid, then request username failed`() =
+        runTest {
+            assertTrue(useCase(INVALID_USER) is Failed)
+        }
 
     @Test
-    fun `when username is invalid, then show username invalid message`() = runTest {
-        useCase(INVALID_USER).status shouldStartWith "Could not change username"
-    }
+    fun `when username is invalid, then show username invalid message`() =
+        runTest {
+            useCase(INVALID_USER).status shouldStartWith "Could not change username"
+        }
 
     @Test
-    fun `when username is valid, then request username success`() = runTest {
-        assertTrue(useCase(VALID_USER) is Success)
-    }
+    fun `when username is valid, then request username success`() =
+        runTest {
+            assertTrue(useCase(VALID_USER) is Success)
+        }
 
     @Test
-    fun `when username is valid, then show username changed message`() = runTest {
-        useCase(VALID_USER).status shouldStartWith "Changed username to"
-    }
+    fun `when username is valid, then show username changed message`() =
+        runTest {
+            useCase(VALID_USER).status shouldStartWith "Changed username to"
+        }
 
     companion object {
         private const val VALID_USER = "valid_user"

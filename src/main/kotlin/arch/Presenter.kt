@@ -1,11 +1,12 @@
 package arch
 
 abstract class Presenter<V>(
-    protected val dispatchers: RokyDispatchers
+    protected val dispatchers: RokyDispatchers,
 ) {
-
     private var view: V? = null
+
     abstract fun onAttach(view: V)
+
     abstract fun onDetach(view: V)
 
     fun attach(view: V) {
@@ -19,7 +20,5 @@ abstract class Presenter<V>(
         view = null
     }
 
-    protected fun withView(block: (V) -> Unit) =
-        view?.also(block)
-
+    protected fun withView(block: (V) -> Unit) = view?.also(block)
 }

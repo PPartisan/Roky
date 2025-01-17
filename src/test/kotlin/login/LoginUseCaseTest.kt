@@ -30,23 +30,26 @@ class LoginUseCaseTest {
     }
 
     @Test
-    fun `when username is blank, then status is username cannot be blank`() = runTest {
-        val event = Login(username = "", password = "")
-        logIn(event) should haveStatus(ERROR_USERNAME)
-    }
+    fun `when username is blank, then status is username cannot be blank`() =
+        runTest {
+            val event = Login(username = "", password = "")
+            logIn(event) should haveStatus(ERROR_USERNAME)
+        }
 
     @Test
-    fun `given username is present, when password is blank, then status is password cannot be blank`() = runTest {
-        val event = Login(username = "rob", password = "")
-        logIn(event) should haveStatus(ERROR_PASSWORD)
-    }
+    fun `given username is present, when password is blank, then status is password cannot be blank`() =
+        runTest {
+            val event = Login(username = "rob", password = "")
+            logIn(event) should haveStatus(ERROR_PASSWORD)
+        }
 
     @Test
-    fun `given username and password is present, when credentials are valid, then status is login success`() = runTest {
-        coEvery { authenticator.login(any(), any()) } coAnswersDelayed { true }
-        val event = Login(username = "rob", password = "rob")
-        logIn(event) should haveStatus(LOGIN_SUCCESS)
-    }
+    fun `given username and password is present, when credentials are valid, then status is login success`() =
+        runTest {
+            coEvery { authenticator.login(any(), any()) } coAnswersDelayed { true }
+            val event = Login(username = "rob", password = "rob")
+            logIn(event) should haveStatus(LOGIN_SUCCESS)
+        }
 
     @Test
     fun `given username and password is present, when credentials are invalid, then status is login failure`() =
@@ -55,13 +58,13 @@ class LoginUseCaseTest {
             val event = Login(username = "rob", password = "rob")
             logIn(event) should haveStatus(LOGIN_FAILURE)
         }
-
 }
 
-fun haveStatus(status: String) = Matcher<LoginViewState> {
-    MatcherResult(
-        it.status == status,
-        { "View state had status ${it.status}, but expected $status" },
-        { "View state should not have status $status" }
-    )
-}
+fun haveStatus(status: String) =
+    Matcher<LoginViewState> {
+        MatcherResult(
+            it.status == status,
+            { "View state had status ${it.status}, but expected $status" },
+            { "View state should not have status $status" },
+        )
+    }
