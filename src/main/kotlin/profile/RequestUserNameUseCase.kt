@@ -22,7 +22,7 @@ class RequestUserNameUseCase(
 
         private fun String.toSuccess(): ProfileViewState = Success("Changed username to $this")
 
-        private fun String.toFailed(): ProfileViewState = Failed("Could not change username to $this")
+        private fun String.toFailed(): ProfileViewState = Failed("Could not change username to\n$this")
     }
 
     class RequestUserName {
