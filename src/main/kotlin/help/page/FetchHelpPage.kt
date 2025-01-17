@@ -3,10 +3,10 @@ package help.page
 import com.vladsch.flexmark.parser.Parser
 import help.HelpViewState
 import help.LoadedHelpViewState
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.request.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
 
 object FetchHelpPage {
     private const val URL = "https://gist.githubusercontent.com/PPartisan/95aa816faaec2a234d7069a48806d7cb/raw"

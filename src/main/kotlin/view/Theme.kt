@@ -9,7 +9,7 @@ import com.googlecode.lanterna.gui2.Component
 import com.googlecode.lanterna.gui2.ComponentRenderer
 import com.googlecode.lanterna.gui2.WindowDecorationRenderer
 import com.googlecode.lanterna.gui2.WindowPostRenderer
-import java.util.*
+import java.util.EnumSet
 
 const val DEFAULT_TERMINAL_WIDTH = 40
 const val DEFAULT_TERMINAL_HEIGHT = 20

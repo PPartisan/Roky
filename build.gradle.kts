@@ -50,6 +50,10 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.named("build") {
+    dependsOn("ktlintCheck")
+}
+
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
