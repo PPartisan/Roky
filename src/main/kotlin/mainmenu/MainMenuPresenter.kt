@@ -17,10 +17,10 @@ class MainMenuPresenter(
     private val navigate: NavigateToAppWindow,
     private val authenticator: Authenticator,
     private val windowScope: CoroutineScope,
-    dispatchers: RokyDispatchers
+    dispatchers: RokyDispatchers,
 ) : Presenter<MainMenuView>(dispatchers) {
-
     private val state: MutableStateFlow<MainMenuViewState> = MutableStateFlow(Loading)
+
     override fun onAttach(view: MainMenuView) {
         state.value = Loading
         windowScope.launch(dispatchers.io) {
@@ -44,7 +44,6 @@ class MainMenuPresenter(
             SelectProfile -> navigate.toProfile()
             SelectQuit -> quit()
         }
-
     }
 
     private fun show(state: MainMenuViewState) {

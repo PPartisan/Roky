@@ -1,11 +1,26 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.*
+
 plugins {
     kotlin("jvm") version "1.9.23"
     id("org.jetbrains.kotlinx.kover").version("0.8.3")
     id("io.gitlab.arturbosch.detekt").version("1.23.3")
+    id("org.jlleitschuh.gradle.ktlint").version("12.1.2")
 }
 
-group = "com.github.ppartisan.rps"
+group = "com.github.ppartisan.roky"
 version = "1.0-SNAPSHOT"
+
+ktlint {
+    android = false
+    reporters {
+        reporter(CHECKSTYLE)
+        reporter(JSON)
+        reporter(HTML)
+    }
+    filter {
+        exclude("**/style-violations.kt")
+    }
+}
 
 repositories {
     mavenCentral()
@@ -18,7 +33,6 @@ dependencies {
 
     implementation("com.googlecode.lanterna:lanterna:3.1.1")
     implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
-
 
     implementation(project.dependencies.platform("io.insert-koin:koin-bom:3.5.6"))
     implementation("io.insert-koin:koin-core")
@@ -34,6 +48,10 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.named("build") {
+    dependsOn("ktlintCheck")
 }
 
 tasks.jar {

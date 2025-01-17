@@ -29,52 +29,58 @@ class LoginPresenterTest {
         coEvery { logIn(any()) } coAnswersDelayed { Idle() }
 
         view = mockk(relaxed = true)
-        val dispatchers: RokyDispatchers = mockk<RokyDispatchers>().apply {
-            every { main } returns dispatcher
-            every { io } returns dispatcher
-        }
+        val dispatchers: RokyDispatchers =
+            mockk<RokyDispatchers>().apply {
+                every { main } returns dispatcher
+                every { io } returns dispatcher
+            }
         scope = CoroutineScope(dispatcher)
         presenter = LoginPresenter(scope, logIn, dispatchers)
     }
 
     @Test
-    fun `when attached, then view state is idle`() = runTest(dispatcher) {
-        presenter.attach(view)
-        advanceUntilIdle()
-        verify { view.show(Idle()) }
-    }
+    fun `when attached, then view state is idle`() =
+        runTest(dispatcher) {
+            presenter.attach(view)
+            advanceUntilIdle()
+            verify { view.show(Idle()) }
+        }
 
     @Test
-    fun `when login, then immediately show authenticating status`() = runTest(dispatcher) {
-        coEvery { logIn(any()) } coAnswersDelayed { Idle() }
+    fun `when login, then immediately show authenticating status`() =
+        runTest(dispatcher) {
+            coEvery { logIn(any()) } coAnswersDelayed { Idle() }
 
-        presenter.attach(view)
-        presenter.onEvent(Login("User", "Password"))
-        advanceUntilIdle()
+            presenter.attach(view)
+            presenter.onEvent(Login("User", "Password"))
+            advanceUntilIdle()
 
-        verifyOrder {
-            view.show(Idle())
-            view.show(withArg {
-                assertTrue { it.status == AUTHENTICATING }
-            })
+            verifyOrder {
+                view.show(Idle())
+                view.show(
+                    withArg {
+                        assertTrue { it.status == AUTHENTICATING }
+                    },
+                )
+            }
         }
-    }
 
     @Test
-    fun `when login, then show outcome of login`() = runTest(dispatcher) {
-        val loginFailed = Idle("User", "", "Login Failed")
-        coEvery { logIn(any()) } coAnswersDelayed { loginFailed }
+    fun `when login, then show outcome of login`() =
+        runTest(dispatcher) {
+            val loginFailed = Idle("User", "", "Login Failed")
+            coEvery { logIn(any()) } coAnswersDelayed { loginFailed }
 
-        presenter.attach(view)
-        presenter.onEvent(Login("User", "Password"))
-        advanceUntilIdle()
+            presenter.attach(view)
+            presenter.onEvent(Login("User", "Password"))
+            advanceUntilIdle()
 
-        verifyOrder {
-            view.show(Idle())
-            view.show(withArg { it is Authenticating })
-            view.show(loginFailed)
+            verifyOrder {
+                view.show(Idle())
+                view.show(withArg { it is Authenticating })
+                view.show(loginFailed)
+            }
         }
-    }
 
     companion object {
         private val dispatcher = StandardTestDispatcher()

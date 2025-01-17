@@ -5,5 +5,4 @@ import help.FormattedTextRow
 
 interface RenderMarkdown {
     fun render(root: Node): List<FormattedTextRow>
-
 }

@@ -4,7 +4,6 @@ import mainmenu.Loaded.Row
 import mainmenu.MainMenuEvent.*
 
 interface MainMenuViewState {
-
     companion object {
         private val login = Row("Login", SelectLogin)
         private val joinChatRoom = Row("Join Chat Room", SelectJoinChatroom)
@@ -15,7 +14,6 @@ interface MainMenuViewState {
         val loggedOut = listOf(login, help, about, quit).let(::Loaded)
         val loggedIn = listOf(login, joinChatRoom, profile, help, about, quit).let(::Loaded)
     }
-
 }
 
 data class Loaded(val rows: List<Row>) : MainMenuViewState {
@@ -23,4 +21,3 @@ data class Loaded(val rows: List<Row>) : MainMenuViewState {
 }
 
 data object Loading : MainMenuViewState
-

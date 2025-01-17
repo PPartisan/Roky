@@ -27,13 +27,14 @@ fun main() {
     start()
 }
 
-val mainModules = module {
-    includes(mainMenuModules, authenticationModule, rokyDispatchersModule, loginModules, helpModule, profileModules)
-    single {
-        DefaultTerminalFactory().createScreen()
-    } bind Screen::class
-    single { MultiWindowTextGUI(get()).also { it.theme = rokyTheme } }
-    factoryOf(::NavigationController) binds arrayOf(NavigateToAppWindow::class, NavigateToMainMenu::class)
-    singleOf(::StartApp)
-    singleOf(::StopApp)
-}
+val mainModules =
+    module {
+        includes(mainMenuModules, authenticationModule, rokyDispatchersModule, loginModules, helpModule, profileModules)
+        single {
+            DefaultTerminalFactory().createScreen()
+        } bind Screen::class
+        single { MultiWindowTextGUI(get()).also { it.theme = rokyTheme } }
+        factoryOf(::NavigationController) binds arrayOf(NavigateToAppWindow::class, NavigateToMainMenu::class)
+        singleOf(::StartApp)
+        singleOf(::StopApp)
+    }

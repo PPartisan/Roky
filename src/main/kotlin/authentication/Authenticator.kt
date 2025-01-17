@@ -4,10 +4,12 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 class Authenticator {
-
     private var isLoggedIn: Boolean = true
 
-    suspend fun login(username: String, password: String): Boolean {
+    suspend fun login(
+        username: String,
+        password: String,
+    ): Boolean {
         delay(3.seconds.inWholeMilliseconds)
         return (username in validUsers && password == PASSWORD).also { isLoggedIn = it }
     }
@@ -21,5 +23,4 @@ class Authenticator {
         private val validUsers = listOf("Robert", "Dunia", "Tom", "Max", "Casper", "Ed", "Kai", "Laura", "Niamh")
         private const val PASSWORD = "ILoveRoky"
     }
-
 }

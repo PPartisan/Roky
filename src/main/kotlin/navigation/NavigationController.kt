@@ -8,9 +8,8 @@ import mainmenu.MainMenuWindow
 import profile.ProfileWindow
 
 class NavigationController(
-    private val gui: MultiWindowTextGUI
+    private val gui: MultiWindowTextGUI,
 ) : NavigateToAppWindow, NavigateToMainMenu {
-
     override fun toLogin() {
         setActiveWindow(LoginWindow(this))
     }
@@ -43,5 +42,4 @@ class NavigationController(
         }
         gui.addWindowAndWait(window)
     }
-
 }

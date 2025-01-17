@@ -21,7 +21,7 @@ import java.awt.Desktop.Action.BROWSE
 import java.net.URI
 
 class HelpWindow(
-    menu: NavigateToMainMenu
+    menu: NavigateToMainMenu,
 ) : AppWindow("Help", menu), HelpView, KoinScopeComponent, WindowScope by WindowScopeProvider() {
     override val scope: Scope by lazy { createScope(this) }
     private val content: Panel
@@ -64,14 +64,15 @@ class HelpWindow(
         desktop.browse(URI(url))
     }
 
-    private fun FormattedTextRow.toComponent(): Component = when (this) {
-        is Bold -> Label(text).addStyle(BOLD)
-        is Header -> Label(text).addStyle(BOLD).addStyle(UNDERLINE)
-        is Hyperlink -> Button(text) { openLink(url) }
-        is Italic -> Label(text).addStyle(ITALIC)
-        is LineBreak -> EmptySpace(TerminalSize(0, 1))
-        is PlainText -> Label(text)
-    }
+    private fun FormattedTextRow.toComponent(): Component =
+        when (this) {
+            is Bold -> Label(text).addStyle(BOLD)
+            is Header -> Label(text).addStyle(BOLD).addStyle(UNDERLINE)
+            is Hyperlink -> Button(text) { openLink(url) }
+            is Italic -> Label(text).addStyle(ITALIC)
+            is LineBreak -> EmptySpace(TerminalSize(0, 1))
+            is PlainText -> Label(text)
+        }
 
     override fun close() {
         scope.close()

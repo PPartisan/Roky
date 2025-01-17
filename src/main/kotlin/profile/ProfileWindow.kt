@@ -17,7 +17,7 @@ import profile.ProfileViewState.Pending
 import view.*
 
 class ProfileWindow(
-    menu: NavigateToMainMenu
+    menu: NavigateToMainMenu,
 ) : AppWindow("Profile", menu), ProfileView, KoinScopeComponent, WindowScope by WindowScopeProvider() {
     override val scope: Scope by lazy { createScope(this) }
     private val presenter: ProfilePresenter by inject()
@@ -32,35 +32,40 @@ class ProfileWindow(
         username = TextBox().linearLayoutFill()
         status = Label("").linearLayoutFill()
 
-        val usernamePanel = Panel(LinearLayout()).apply {
-            addComponent(username)
-        }.withBorder(Borders.singleLine("Username")).linearLayoutFill()
+        val usernamePanel =
+            Panel(LinearLayout()).apply {
+                addComponent(username)
+            }.withBorder(Borders.singleLine("Username")).linearLayoutFill()
 
-        val statusPanel = Panel(LinearLayout()).apply {
-            addComponent(status)
-        }.linearLayoutFill()
+        val statusPanel =
+            Panel(LinearLayout()).apply {
+                addComponent(status)
+            }.linearLayoutFill()
 
-        val buttonPanel = Panel().apply {
-            submit = Button("Submit") {
-                presenter.onEvent(ProfileEvent.RequestUsername(username.text))
+        val buttonPanel =
+            Panel().apply {
+                submit =
+                    Button("Submit") {
+                        presenter.onEvent(ProfileEvent.RequestUsername(username.text))
+                    }
+                addComponent(submit)
+            }.setLayoutData(LinearLayout.createLayoutData(End))
+        val profile =
+            Panel(LinearLayout(VERTICAL)).apply {
+                paddingTop()
+                addComponent(usernamePanel)
+                paddingTop()
+                addComponent(buttonPanel)
+                paddingTop()
+                addComponent(statusPanel)
             }
-            addComponent(submit)
-        }.setLayoutData(LinearLayout.createLayoutData(End))
-        val profile = Panel(LinearLayout(VERTICAL)).apply {
-            paddingTop()
-            addComponent(usernamePanel)
-            paddingTop()
-            addComponent(buttonPanel)
-            paddingTop()
-            addComponent(statusPanel)
-
-        }
-        val root = Panel(BorderLayout())
-            .setPreferredSize(TerminalSize(DEFAULT_TERMINAL_WIDTH, DEFAULT_TERMINAL_HEIGHT))
-            .apply {
-                paddingHorizontal()
-                addComponent(profile)
-            }
+        val root =
+            Panel(BorderLayout())
+                .setPreferredSize(TerminalSize(DEFAULT_TERMINAL_WIDTH, DEFAULT_TERMINAL_HEIGHT))
+                .apply {
+                    paddingHorizontal()
+                    addComponent(profile)
+                }
         component = root
         presenter.attach(this)
     }

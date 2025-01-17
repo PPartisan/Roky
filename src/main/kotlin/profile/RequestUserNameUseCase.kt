@@ -6,11 +6,12 @@ import profile.ProfileViewState.Success
 import kotlin.time.Duration.Companion.seconds
 
 class RequestUserNameUseCase(
-    private val request: RequestUserName
+    private val request: RequestUserName,
 ) {
     suspend operator fun invoke(username: String): ProfileViewState {
-        if (username.isBlank())
+        if (username.isBlank()) {
             return Failed(ERROR_USERNAME_BLANK)
+        }
         return with(username) {
             if (request(this)) toSuccess() else toFailed()
         }
@@ -18,11 +19,10 @@ class RequestUserNameUseCase(
 
     companion object {
         const val ERROR_USERNAME_BLANK = "Username cannot be blank."
-        private fun String.toSuccess(): ProfileViewState =
-            Success("Changed username to $this")
 
-        private fun String.toFailed(): ProfileViewState =
-            Failed("Could not change username to $this")
+        private fun String.toSuccess(): ProfileViewState = Success("Changed username to $this")
+
+        private fun String.toFailed(): ProfileViewState = Failed("Could not change username to $this")
     }
 
     class RequestUserName {

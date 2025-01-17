@@ -8,7 +8,6 @@ import io.kotest.matchers.equals.shouldBeEqual
 import org.junit.jupiter.api.Test
 
 class LanternaMarkdownTest {
-
     @Test
     fun `when empty string, then parse nothing`() {
         "".toFormattedRows() shouldBeEqual listOf()
@@ -42,9 +41,9 @@ class LanternaMarkdownTest {
     @Test
     fun `when string is line break, add exists between two plain texts literals, then render plain text and hard line break`() {
         """
-            line1
-            \
-            line2
+        line1
+        \
+        line2
         """.trimIndent().toFormattedRows() shouldContainInOrder
             listOf(PlainText("line1"), LineBreak(), PlainText("line2"))
     }
@@ -63,9 +62,10 @@ class LanternaMarkdownTest {
 
     @Test
     fun `when string is hyperlink formatted, then render as hyperlink`() {
-        "[click me](example.com)".toFormattedRows() shouldContainInOrder listOf(
-            Hyperlink("click me", "example.com")
-        )
+        "[click me](example.com)".toFormattedRows() shouldContainInOrder
+            listOf(
+                Hyperlink("click me", "example.com"),
+            )
     }
 
     @Test
@@ -78,20 +78,20 @@ class LanternaMarkdownTest {
         regular text
         \
         [click me again](example.co.uk)
-        """.trimIndent().toFormattedRows() shouldContainInOrder listOf(
-            Header(text = "header"),
-            LineBreak(),
-            Bold(text = "bold text"),
-            Italic(text = "italic"),
-            PlainText(text = "regular text"),
-            LineBreak(),
-            Hyperlink(text = "click me again", url = "example.co.uk")
-        )
+        """.trimIndent().toFormattedRows() shouldContainInOrder
+            listOf(
+                Header(text = "header"),
+                LineBreak(),
+                Bold(text = "bold text"),
+                Italic(text = "italic"),
+                PlainText(text = "regular text"),
+                LineBreak(),
+                Hyperlink(text = "click me again", url = "example.co.uk"),
+            )
     }
 
     companion object {
         private fun String.toFormattedRows(): List<FormattedTextRow> =
             LanternaMarkdown.render(Parser.builder().build().parse(this))
     }
-
 }
