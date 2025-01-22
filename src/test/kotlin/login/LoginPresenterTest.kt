@@ -77,7 +77,11 @@ class LoginPresenterTest {
 
             verifyOrder {
                 view.show(Idle())
-                view.show(withArg { it is Authenticating })
+                view.show(
+                    withArg {
+                        assertTrue(it is Authenticating)
+                    },
+                )
                 view.show(loginFailed)
             }
         }
