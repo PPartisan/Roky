@@ -1,5 +1,6 @@
 import arch.rokyDispatchersModule
 import authentication.authenticationModule
+import chatroom.chatroomModules
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.screen.Screen
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory
@@ -29,7 +30,15 @@ fun main() {
 
 val mainModules =
     module {
-        includes(mainMenuModules, authenticationModule, rokyDispatchersModule, loginModules, helpModule, profileModules)
+        includes(
+            mainMenuModules,
+            authenticationModule,
+            rokyDispatchersModule,
+            loginModules,
+            helpModule,
+            profileModules,
+            chatroomModules,
+        )
         single {
             DefaultTerminalFactory().createScreen()
         } bind Screen::class
