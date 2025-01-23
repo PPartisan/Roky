@@ -1,0 +1,3 @@
+package chatroom.viewmessages
+
+interface ViewMessagesEvents
