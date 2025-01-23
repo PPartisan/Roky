@@ -1,5 +1,6 @@
 package navigation
 
+import chatroom.ChatroomWindow
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.gui2.Window
 import help.HelpWindow
@@ -15,7 +16,7 @@ class NavigationController(
     }
 
     override fun toChatRoom() {
-        println("Chatroom")
+        setActiveWindow(ChatroomWindow(this))
     }
 
     override fun toProfile() {
