@@ -2,6 +2,8 @@ package chatroom
 
 import arch.WindowScope
 import arch.WindowScopeProvider
+import chatroom.sendmessages.SendMessagePanel
+import chatroom.users.UsersPanel
 import chatroom.viewmessages.ViewMessagesPanel
 import com.googlecode.lanterna.TerminalSize
 import com.googlecode.lanterna.gui2.Direction.HORIZONTAL
@@ -25,6 +27,8 @@ class ChatroomWindow(
 ) : AppWindow("Chatroom", menu), KoinScopeComponent, WindowScope by WindowScopeProvider() {
     override val scope: Scope by lazy { createScope(this) }
     private val viewMessages: ViewMessagesPanel by inject()
+    private val sendMessages: SendMessagePanel by inject()
+    private val usersList: UsersPanel by inject()
 
     init {
         setHints(listOf(CENTERED))
@@ -38,13 +42,19 @@ class ChatroomWindow(
         val rightPanel =
             Panel(LinearLayout(VERTICAL)).apply {
                 setPreferredSize(TerminalSize(rightWidth, totalRows))
-                addComponent(viewMessages.bordered().setPreferredSize(TerminalSize(0, chatHeight)).linearLayoutFill())
-                // add send message panel here
+                addComponent(
+                    viewMessages.bordered()
+                        .setPreferredSize(TerminalSize(0, chatHeight)).linearLayoutFill(),
+                )
+                addComponent(
+                    sendMessages.bordered()
+                        .setPreferredSize(TerminalSize(0, sendMessagesHeight)).linearLayoutFill(),
+                )
             }
         val chatroom =
             Panel(LinearLayout(HORIZONTAL)).apply {
                 setPreferredSize(TerminalSize(totalColumns, totalRows))
-                // add users panel here
+                addComponent(usersList.bordered().setPreferredSize(TerminalSize(leftWidth, 0)).linearLayoutFill())
                 addComponent(rightPanel)
             }
         component = chatroom
