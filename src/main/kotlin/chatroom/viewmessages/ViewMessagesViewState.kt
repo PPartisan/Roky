@@ -1,6 +1,6 @@
 package chatroom.viewmessages
 
-interface ViewMessagesViewState {
+sealed interface ViewMessagesViewState {
     data object Loading : ViewMessagesViewState {
         const val STATUS = "Loading..."
     }
