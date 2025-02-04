@@ -2,29 +2,24 @@ package chatroom.viewmessages
 
 import arch.Presenter
 import arch.RokyDispatchers
+import chatroom.viewmessages.ViewMessagesViewState.Messages
 import chatroom.viewmessages.ViewMessagesViewState.NoMessages
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.withContext
 
 class ViewMessagesPresenter(
     private val windowScope: CoroutineScope,
+    private val messages: ViewMessagesUseCase,
     dispatchers: RokyDispatchers,
 ) : Presenter<ViewMessagesView>(dispatchers) {
     override fun onAttach(view: ViewMessagesView) {
         view.show(NoMessages)
-        windowScope.launch(dispatchers.default) {
-            while (true) {
-                delay(3.seconds)
-                windowScope.launch(dispatchers.main) {
-                    withView {
-                        it.show(
-                            ViewMessagesViewState.Messages(
-                                "${sampleUsers.random()}: ${sampleMessages.random()}",
-                            ),
-                        )
-                    }
+        windowScope.launch(dispatchers.io) {
+            messages().map { Messages(it) }.collect { message ->
+                withContext(dispatchers.main) {
+                    withView { it.show(message) }
                 }
             }
         }
@@ -32,25 +27,5 @@ class ViewMessagesPresenter(
 
     override fun onDetach(view: ViewMessagesView) {
         TODO("Not yet implemented")
-    }
-
-    companion object {
-        private val sampleMessages =
-            listOf(
-                "This is a coup!",
-                "What time's Roky Coding tonight?",
-                "Look at the calendar...",
-                "Charizard",
-                "Remind me to get my washing at 4 PM",
-            )
-        private val sampleUsers =
-            listOf(
-                "Martine",
-                "Ed",
-                "Kai",
-                "Terry",
-                "Robert",
-                "Tom",
-            )
     }
 }
