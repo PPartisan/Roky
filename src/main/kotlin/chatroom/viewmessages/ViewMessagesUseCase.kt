@@ -5,12 +5,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.time.Duration.Companion.seconds
 
-class ViewMessagesUseCase {
+class ViewMessagesUseCase(
+    private val messages: List<String> = sampleMessages,
+    private val users: List<String> = sampleUsers,
+) {
     operator fun invoke(): Flow<String> =
         flow {
             while (true) {
                 delay(3.seconds)
-                emit("${sampleUsers.random()}: ${sampleMessages.random()}")
+                emit("${users.random()}: ${messages.random()}")
             }
         }
 
