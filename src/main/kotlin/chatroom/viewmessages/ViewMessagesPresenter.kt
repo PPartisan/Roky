@@ -26,6 +26,6 @@ class ViewMessagesPresenter(
     }
 
     override fun onDetach(view: ViewMessagesView) {
-        TODO("Not yet implemented")
+        // deliberately empty to please the auto-formatter
     }
 }
