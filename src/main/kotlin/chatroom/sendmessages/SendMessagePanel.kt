@@ -16,7 +16,9 @@ class SendMessagePanel(
     private val message: CharacterWrapTextBox =
         CharacterWrapTextBox(
             TerminalSize(20, 3),
-        ) { presenter.onEvent(SendMessage(getText())) } // Circular dependency?
+        ) { presenter.onEvent(SendMessage(text)) }
+    private val text:String
+        get() = message.text
 
     init {
         addComponent(message)
@@ -33,5 +35,4 @@ class SendMessagePanel(
         }
     }
 
-    private fun getText() = message.text
 }

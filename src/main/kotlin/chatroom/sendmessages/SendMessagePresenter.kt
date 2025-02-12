@@ -23,7 +23,6 @@ class SendMessagePresenter(
 
     fun onEvent(event: SendMessageEvent) {
         if (event is SendMessage) {
-            // Mock end point? Multithreading.
             windowScope.launch(dispatchers.io) {
                 MockMessages.publish(event.message)
                 withContext(dispatchers.main) {
