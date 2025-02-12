@@ -29,6 +29,10 @@ class ViewMessagesUseCase(
                 "BRAIN...praise me",
                 "Biggleswade is naff",
                 "Biggleswade is amazing /s",
+                "I love Biggleswade!!!",
+                "AHHHHHHHHHHHHHHHHHH",
+                "Wordle: 4/6",
+                "Wordle: 1/6",
             )
         private val sampleUsers =
             listOf(

@@ -1,6 +1,7 @@
 package chatroom.sendmessages
 
 import chatroom.BorderedPanel
+import chatroom.sendmessages.SendMessageEvent.SendMessage
 import chatroom.sendmessages.SendMessageViewState.Sent
 import com.googlecode.lanterna.TerminalSize
 import com.googlecode.lanterna.gui2.Border
@@ -9,14 +10,17 @@ import com.googlecode.lanterna.gui2.Borders
 import com.googlecode.lanterna.gui2.Panel
 import view.CharacterWrapTextBox
 
-class SendMessagePanel : Panel(BorderLayout()), BorderedPanel, SendMessagesView {
+class SendMessagePanel(
+    private val presenter: SendMessagePresenter,
+) : Panel(BorderLayout()), BorderedPanel, SendMessagesView {
     private val message: CharacterWrapTextBox =
         CharacterWrapTextBox(
             TerminalSize(20, 3),
-        )
+        ) { presenter.onEvent(SendMessage(getText())) } // Circular dependency?
 
     init {
         addComponent(message)
+        presenter.attach(this)
     }
 
     override fun bordered(): Border {
@@ -28,4 +32,6 @@ class SendMessagePanel : Panel(BorderLayout()), BorderedPanel, SendMessagesView 
             message.text = ""
         }
     }
+
+    private fun getText() = message.text
 }
