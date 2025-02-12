@@ -17,7 +17,7 @@ class SendMessagePanel(
         CharacterWrapTextBox(
             TerminalSize(20, 3),
         ) { presenter.onEvent(SendMessage(text)) }
-    private val text:String
+    private val text: String
         get() = message.text
 
     init {
@@ -34,5 +34,4 @@ class SendMessagePanel(
             message.text = ""
         }
     }
-
 }
