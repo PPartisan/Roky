@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
@@ -48,5 +49,21 @@ class ViewMessagesUseCaseTest {
                 expected = 3,
                 actual = emissions.size,
             )
+        }
+
+    @Test
+    fun `given messages exist, when messages interleave, then print all messages`() =
+        runTest {
+            every {
+                messages.observe()
+            } returns flowOf("Hi there you alright?!")
+            viewMessages = ViewMessagesUseCase(listOf("Rob is a goodie twoshoes!!"), listOf("Brian"), messages)
+            val emissions = mutableListOf<String>()
+            backgroundScope.launch {
+                viewMessages().collect(emissions::add)
+            }
+            advanceTimeBy(10.seconds)
+            assertEquals(4, emissions.size)
+            assertContains(emissions, "Me: Hi there you alright?!")
         }
 }
