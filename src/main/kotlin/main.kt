@@ -1,6 +1,7 @@
 import arch.rokyDispatchersModule
 import authentication.authenticationModule
 import chatroom.chatroomModules
+import chatserver.chatServerModule
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.screen.Screen
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory
@@ -38,6 +39,7 @@ val mainModules =
             helpModule,
             profileModules,
             chatroomModules,
+            chatServerModule,
         )
         single {
             DefaultTerminalFactory().createScreen()

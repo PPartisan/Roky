@@ -6,7 +6,13 @@ import org.koin.dsl.module
 val sendMessagesModule =
     module {
         scope<ChatroomWindow> {
-            scoped { SendMessagePresenter(dispatchers = get(), windowScope = get<ChatroomWindow>().windowScope) }
+            scoped {
+                SendMessagePresenter(
+                    dispatchers = get(),
+                    send = get(),
+                    windowScope = get<ChatroomWindow>().windowScope,
+                )
+            }
             scoped { SendMessagePanel(get()) }
         }
     }

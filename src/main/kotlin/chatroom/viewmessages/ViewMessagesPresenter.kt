@@ -2,7 +2,6 @@ package chatroom.viewmessages
 
 import arch.Presenter
 import arch.RokyDispatchers
-import chatroom.MockMessages
 import chatroom.viewmessages.ViewMessagesViewState.Messages
 import chatroom.viewmessages.ViewMessagesViewState.NoMessages
 import kotlinx.coroutines.CoroutineScope
@@ -17,11 +16,6 @@ class ViewMessagesPresenter(
 ) : Presenter<ViewMessagesView>(dispatchers) {
     override fun onAttach(view: ViewMessagesView) {
         view.show(NoMessages)
-        windowScope.launch(dispatchers.main) {
-            MockMessages.events.collect {
-                withView { v -> v.show(Messages("Me: $it")) }
-            }
-        }
         windowScope.launch(dispatchers.io) {
             messages().map { Messages(it) }.collect { message ->
                 withContext(dispatchers.main) {
