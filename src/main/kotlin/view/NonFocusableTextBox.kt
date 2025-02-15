@@ -31,4 +31,12 @@ class NonFocusableTextBox(size: TerminalSize, initialContent: String = "") : Tex
         addLine(line)
         setCaretPosition(lineCount, 0)
     }
+
+    fun addLineAndMaybeScrollDown(line: String?) {
+        if (caretPosition.row == lineCount - 1) {
+            addLineAndScrollDown(line)
+        } else {
+            addLine(line)
+        }
+    }
 }

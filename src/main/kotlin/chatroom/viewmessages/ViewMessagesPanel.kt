@@ -62,7 +62,7 @@ class ViewMessagesPanel(
         empty.isVisible = false
         messages.isVisible = true
         textGUI.guiThread.invokeLater {
-            messages.addLineAndScrollDown(state.message)
+            messages.addLineAndMaybeScrollDown(state.message)
         }
     }
 }
