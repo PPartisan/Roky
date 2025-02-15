@@ -1,5 +1,5 @@
 package chatroom.sendmessages
 
 interface SendMessageViewState {
-    data object Sent : SendMessageViewState
+    data object Clear : SendMessageViewState
 }
