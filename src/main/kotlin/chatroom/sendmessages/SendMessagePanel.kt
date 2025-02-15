@@ -2,7 +2,7 @@ package chatroom.sendmessages
 
 import chatroom.BorderedPanel
 import chatroom.sendmessages.SendMessageEvent.SendMessage
-import chatroom.sendmessages.SendMessageViewState.Sent
+import chatroom.sendmessages.SendMessageViewState.Clear
 import com.googlecode.lanterna.TerminalSize
 import com.googlecode.lanterna.gui2.Border
 import com.googlecode.lanterna.gui2.BorderLayout
@@ -30,7 +30,7 @@ class SendMessagePanel(
     }
 
     override fun show(state: SendMessageViewState) {
-        if (state is Sent) {
+        if (state is Clear) {
             message.text = ""
         }
     }

@@ -3,7 +3,7 @@ package chatroom.sendmessages
 import arch.Presenter
 import arch.RokyDispatchers
 import chatroom.sendmessages.SendMessageEvent.SendMessage
-import chatroom.sendmessages.SendMessageViewState.Sent
+import chatroom.sendmessages.SendMessageViewState.Clear
 import chatserver.MessagesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ class SendMessagePresenter(
     dispatchers: RokyDispatchers,
 ) : Presenter<SendMessagesView>(dispatchers) {
     override fun onAttach(view: SendMessagesView) {
-        view.show(Sent)
+        view.show(Clear)
     }
 
     override fun onDetach(view: SendMessagesView) {
@@ -27,7 +27,7 @@ class SendMessagePresenter(
             windowScope.launch(dispatchers.io) {
                 send.send(event.message)
                 withContext(dispatchers.main) {
-                    withView { it.show(Sent) }
+                    withView { it.show(Clear) }
                 }
             }
         }
