@@ -7,7 +7,7 @@ val viewMessagesModule =
     module {
         scope<ChatroomWindow> {
             scoped { ViewMessagesPanel(get()) }
-            scoped { ViewMessagesUseCase() }
+            scoped { ViewMessagesUseCase(read = get()) }
             scoped {
                 ViewMessagesPresenter(
                     windowScope = get<ChatroomWindow>().windowScope,
