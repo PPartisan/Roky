@@ -32,6 +32,11 @@ class NonFocusableTextBox(size: TerminalSize, initialContent: String = "") : Tex
         setCaretPosition(lineCount, 0)
     }
 
+    /**
+     * Appends a new line to the end of this text box and scrolls unless the user is initiating a manual scroll up.
+     *
+     * @param line the line to append to this text box.
+     */
     fun addLineAndMaybeScrollDown(line: String?) {
         if (caretPosition.row == lineCount - 1) {
             addLineAndScrollDown(line)
