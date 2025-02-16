@@ -30,6 +30,9 @@ dependencies {
     val ktorVersion = "3.0.0"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-logging:$ktorVersion")
+
+    implementation("org.slf4j:slf4j-simple:2.0.16")
 
     implementation("com.googlecode.lanterna:lanterna:3.1.1")
     implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
