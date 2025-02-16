@@ -6,6 +6,13 @@ import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.screen.Screen
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory
 import help.helpModule
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import login.loginModules
 import mainmenu.mainMenuModules
 import navigation.NavigateToAppWindow
@@ -41,11 +48,17 @@ val mainModules =
             chatroomModules,
             chatServerModule,
         )
-        single {
-            DefaultTerminalFactory().createScreen()
-        } bind Screen::class
+        single { DefaultTerminalFactory().createScreen() } bind Screen::class
         single { MultiWindowTextGUI(get()).also { it.theme = rokyTheme } }
+        factory<HttpClient> { HttpClient(CIO) { default() } }
         factoryOf(::NavigationController) binds arrayOf(NavigateToAppWindow::class, NavigateToMainMenu::class)
         singleOf(::StartApp)
         singleOf(::StopApp)
     }
+
+fun HttpClientConfig<*>.default() {
+    install(Logging) {
+        logger = Logger.DEFAULT
+        level = LogLevel.ALL
+    }
+}

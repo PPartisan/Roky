@@ -5,16 +5,19 @@ import help.HelpViewState
 import help.LoadedHelpViewState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 
-object FetchHelpPage {
-    private const val URL = "https://gist.githubusercontent.com/PPartisan/95aa816faaec2a234d7069a48806d7cb/raw"
-
-    suspend operator fun invoke(): HelpViewState {
-        val markdown = HttpClient(CIO).use { it.get(URL).body<String>() }
-        return Parser.builder().build().parse(markdown)
+class FetchHelpPage(
+    private val client: HttpClient,
+) {
+    suspend operator fun invoke(): HelpViewState =
+        client
+            .use { it.get(URL).body<String>() }
+            .let { Parser.builder().build().parse(it) }
             .let(LanternaMarkdown::render)
             .let(::LoadedHelpViewState)
+
+    companion object {
+        private const val URL = "https://gist.githubusercontent.com/PPartisan/95aa816faaec2a234d7069a48806d7cb/raw"
     }
 }

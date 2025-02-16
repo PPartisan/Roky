@@ -10,7 +10,7 @@ val helpModule =
                 HelpPresenter(
                     dispatchers = get(),
                     windowScope = get<HelpWindow>().windowScope,
-                    page = { FetchHelpPage() },
+                    page = FetchHelpPage(get())::invoke,
                 )
             }
         }
