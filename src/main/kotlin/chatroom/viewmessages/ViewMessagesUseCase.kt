@@ -49,7 +49,7 @@ class ViewMessagesUseCase(
                 "Don't just type out what I'm saying Mike",
                 ":breathing_noises:",
             )
-        private val sampleUsers =
+        val sampleUsers =
             listOf(
                 "Martine",
                 "Ed",
