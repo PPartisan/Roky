@@ -7,12 +7,16 @@ import kotlinx.coroutines.flow.flow
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
-class UsersListUseCase {
+class UsersListUseCase(
+    private val users: List<String> = ViewMessagesUseCase.sampleUsers,
+    private val rndInt: () -> Int = { Random.nextInt(4, users.size - 1) },
+    private val rndUser: (List<String>) -> String = { it.random() },
+) {
     operator fun invoke(): Flow<List<String>> =
         flow {
             while (true) {
-                val size = Random.nextInt(4, ViewMessagesUseCase.sampleUsers.size - 1)
-                val list = (2..size).map { ViewMessagesUseCase.sampleUsers.random() }.distinct().sorted()
+                val size = rndInt()
+                val list = (2..size).map { rndUser(users) }.distinct().sorted()
                 emit(list)
                 delay(10.seconds)
             }
