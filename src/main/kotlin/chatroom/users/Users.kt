@@ -6,7 +6,8 @@ import org.koin.dsl.module
 val usersModule =
     module {
         scope<ChatroomWindow> {
-            scoped { UsersPanel(useCase = get(), scope = get<ChatroomWindow>().windowScope, dispatcher = get()) }
+            scoped { UsersPanel(presenter = get()) }
             scoped { UsersListUseCase() }
+            scoped { UsersListPresenter(users = get(), scope = get<ChatroomWindow>().windowScope, dispatchers = get()) }
         }
     }
