@@ -40,3 +40,6 @@ bin/
 
 ### Terraform ###
 **/dotenv.tf
+
+### Secret Keys ###
+secrets.properties
