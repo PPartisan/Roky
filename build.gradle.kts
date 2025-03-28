@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover").version("0.8.3")
     id("io.gitlab.arturbosch.detekt").version("1.23.3")
     id("org.jlleitschuh.gradle.ktlint").version("12.1.2")
+    id("secrets-plugin")
 }
 
 group = "com.github.ppartisan.roky"
