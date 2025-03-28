@@ -9,12 +9,6 @@ abstract class SecretsPlugin : Plugin<Project> {
         fun String.asRootFile() =
             project.rootProject.file(this)
 
-        val useLocalMocks = PROPERTIES_FILE.asRootFile().asProps().getBool(KEY_USE_LOCAL_MOCKS)
-        if(useLocalMocks) {
-            println(USE_LOCAL_MOCKS_MSG)
-            return
-        }
-
         val secrets = SECRETS_FILE.asRootFile()
         val dir = project.layout.buildDirectory.dir(OUTPUT_DIR)
 
@@ -24,9 +18,16 @@ abstract class SecretsPlugin : Plugin<Project> {
                 if (!secrets.exists())
                     error(MISSING_SECRET_PROPS_ERROR_MSG)
 
+                val props = secrets.asProps()
+                if(props.useLocalMocks())
+                    println(USE_LOCAL_MOCKS_MSG)
+
                 dir.get().asFile.resolve("$OUTPUT_FILE.kt").apply {
                     parentFile.mkdirs()
-                    writeText(secrets.asProps().asSecretsText())
+                    val text = with(props) {
+                        if(useLocalMocks()) asUseLocalMocksText() else asSecretsText()
+                    }
+                    writeText(text)
                 }
             }
         }
@@ -43,10 +44,8 @@ abstract class SecretsPlugin : Plugin<Project> {
     }
 
     companion object {
-        private const val PROPERTIES_FILE = "gradle.properties"
-        private const val KEY_USE_LOCAL_MOCKS = "USE_LOCAL_MOCKS"
-
         private const val SECRETS_FILE = "secrets.properties"
+        private const val KEY_USE_LOCAL_MOCKS = "USE_LOCAL_MOCKS"
         private const val OUTPUT_DIR = "generated/secrets"
         private const val OUTPUT_FILE = "Secrets"
         private const val TASK_NAME = "generateSecrets"
@@ -55,10 +54,10 @@ abstract class SecretsPlugin : Plugin<Project> {
            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
            ℹ️ INFO
            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            This project's '${PROPERTIES_FILE}' either does not contain the key '$KEY_USE_LOCAL_MOCKS' or its value is
+            This project's '${SECRETS_FILE}' either does not contain the key '$KEY_USE_LOCAL_MOCKS' or its value is
             set to true.
 
-            To use a local instance of Supabase-CLI, set this property to true and follow the instructions on the Roky
+            To use a local instance of Supabase-CLI, set this property to false and follow the instructions on the Roky
             Wiki page under 'Project Setup' → 'Setup Supabase CLI':
               > https://github.com/PPartisan/Roky/wiki/Project-Setup#3-setup-supabase-cli
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -83,14 +82,29 @@ abstract class SecretsPlugin : Plugin<Project> {
 
         private fun Properties.getBool(key: String, default: Boolean = true) =
             getProperty(key)?.toBoolean()?:default
+        private fun Properties.useLocalMocks() =
+            getBool(KEY_USE_LOCAL_MOCKS)
 
         private fun Properties.asSecretsText() : String = buildString {
-            appendLine("object $OUTPUT_FILE {")
-            this@asSecretsText.forEach { (key, value) ->
-                appendLine("""    const val $key = "$value"""")
-            }
-            appendLine("}")
+            header()
+            this@asSecretsText.forEach { it.writeTo(this) }
+            footer()
         }
 
+        private fun Properties.asUseLocalMocksText() : String = buildString {
+            header()
+            (KEY_USE_LOCAL_MOCKS to getBool(KEY_USE_LOCAL_MOCKS)).writeTo(this)
+            footer()
+        }
+
+        private fun Map.Entry<*, *>.writeTo(builder: StringBuilder) =
+            (key to value).writeTo(builder)
+        private fun Pair<*, *>.writeTo(builder: StringBuilder) =
+            builder.appendLine("""    const val $first = "$second"""")
+
+        private fun StringBuilder.header() =
+            appendLine("object $OUTPUT_FILE {")
+        private fun StringBuilder.footer() =
+            appendLine("}")
     }
 }
