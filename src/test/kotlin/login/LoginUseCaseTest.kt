@@ -1,13 +1,12 @@
 package login
 
-import authentication.Authenticator
+import authentication.Auth
 import coAnswersDelayed
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.should
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import login.LoginEvent.Login
 import login.LoginUseCase.Companion.ERROR_PASSWORD
@@ -17,15 +16,14 @@ import login.LoginUseCase.Companion.LOGIN_SUCCESS
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class LoginUseCaseTest {
     private lateinit var logIn: LoginUseCase
-    private lateinit var authenticator: Authenticator
+    private lateinit var authenticator: Auth
 
     @BeforeEach
     fun setUp() {
         authenticator = mockk(relaxed = true)
-        coEvery { authenticator.login(any(), any()) } coAnswersDelayed { false }
+        coEvery { authenticator.isLoggedIn() } coAnswersDelayed { false }
         logIn = LoginUseCase(authenticator)
     }
 
@@ -46,7 +44,7 @@ class LoginUseCaseTest {
     @Test
     fun `given username and password is present, when credentials are valid, then status is login success`() =
         runTest {
-            coEvery { authenticator.login(any(), any()) } coAnswersDelayed { true }
+            coEvery { authenticator.isLoggedIn() } coAnswersDelayed { true }
             val event = Login(username = "rob", password = "rob")
             logIn(event) should haveStatus(LOGIN_SUCCESS)
         }
@@ -54,7 +52,7 @@ class LoginUseCaseTest {
     @Test
     fun `given username and password is present, when credentials are invalid, then status is login failure`() =
         runTest {
-            coEvery { authenticator.login(any(), any()) } coAnswersDelayed { false }
+            coEvery { authenticator.isLoggedIn() } coAnswersDelayed { false }
             val event = Login(username = "rob", password = "rob")
             logIn(event) should haveStatus(LOGIN_FAILURE)
         }
