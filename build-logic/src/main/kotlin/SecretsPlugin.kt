@@ -15,18 +15,19 @@ abstract class SecretsPlugin : Plugin<Project> {
         val generateSecrets = project.tasks.register(TASK_NAME) {
             outputs.dir(dir)
             doLast {
-                if (!secrets.exists())
-                    error(MISSING_SECRET_PROPS_ERROR_MSG)
 
-                val props = secrets.asProps()
-                if(props.useLocalMocks())
+                val useLocal = GRADLE_PROPS_FILE.asRootFile().asProps().filter { it.key == KEY_USE_LOCAL_MOCKS }
+                if(useLocal.isTrue())
                     println(USE_LOCAL_MOCKS_MSG)
+                else if(useLocal.isFalse() && !secrets.exists())
+                    error(MISSING_SECRET_PROPS_ERROR_MSG)
 
                 dir.get().asFile.resolve("$OUTPUT_FILE.kt").apply {
                     parentFile.mkdirs()
-                    val text = with(props) {
-                        if(useLocalMocks()) asUseLocalMocksText() else asSecretsText()
-                    }
+                    val text = listOf(useLocal, secrets.asProps())
+                        .flatMap { it.entries }
+                        .fold(setOf<Pair<String, String>>()) { acc, it -> acc + setOf(it.toStringPair()) }
+                        .asConstants()
                     writeText(text)
                 }
             }
@@ -44,6 +45,7 @@ abstract class SecretsPlugin : Plugin<Project> {
     }
 
     companion object {
+        private const val GRADLE_PROPS_FILE = "gradle.properties"
         private const val SECRETS_FILE = "secrets.properties"
         private const val KEY_USE_LOCAL_MOCKS = "USE_LOCAL_MOCKS"
         private const val OUTPUT_DIR = "generated/secrets"
@@ -73,34 +75,37 @@ abstract class SecretsPlugin : Plugin<Project> {
             To build Roky, create a file named '$SECRETS_FILE' in the root directory of this project and add the values
             specified in the Roky Wiki page under 'Project Setup' → 'Setup Supabase CLI':
               > https://github.com/PPartisan/Roky/wiki/Project-Setup#3-setup-supabase-cli
+
+            Alternatively, to use source code mocks, set 'USE_LOCAL_MOCKS=true' under 'gradle.properties'.
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         """.trimIndent()
 
         private fun File.asProps() : Properties = Properties().apply {
-            inputStream().use { load(it) }
+            if(exists())
+                inputStream().use { load(it) }
         }
 
-        private fun Properties.getBool(key: String, default: Boolean = true) =
-            getProperty(key)?.toBoolean()?:default
-        private fun Properties.useLocalMocks() =
-            getBool(KEY_USE_LOCAL_MOCKS)
+        private fun Map<*,*>.isTrue() =
+            this[KEY_USE_LOCAL_MOCKS]?.toString()?.toBooleanStrictOrNull()?:false
+        private fun Map<*,*>.isFalse() =
+            !isTrue()
 
-        private fun Properties.asSecretsText() : String = buildString {
+        private fun Set<Pair<String,String>>.asConstants() : String = buildString {
             header()
-            this@asSecretsText.forEach { it.writeTo(this) }
+            this@asConstants.forEach { appendLine(it.toConstant()) }
             footer()
         }
 
-        private fun Properties.asUseLocalMocksText() : String = buildString {
-            header()
-            (KEY_USE_LOCAL_MOCKS to getBool(KEY_USE_LOCAL_MOCKS)).writeTo(this)
-            footer()
-        }
+        private fun Map.Entry<*,*>.toStringPair() =
+            "$key" to "$value"
 
-        private fun Map.Entry<*, *>.writeTo(builder: StringBuilder) =
-            (key to value).writeTo(builder)
-        private fun Pair<*, *>.writeTo(builder: StringBuilder) =
-            builder.appendLine("""    const val $first = "$second"""")
+        private fun Pair<String,String>.toConstant() : String =
+            (if(second.isBoolean()) second else "\"$second\"").let {
+                """    const val $first = $it"""
+            }
+
+        private fun String.isBoolean() : Boolean =
+            toBooleanStrictOrNull() != null
 
         private fun StringBuilder.header() =
             appendLine("object $OUTPUT_FILE {")
