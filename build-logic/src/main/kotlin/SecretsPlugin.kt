@@ -87,20 +87,27 @@ abstract class SecretsPlugin : Plugin<Project> {
 
         private fun Properties.asSecretsText() : String = buildString {
             header()
-            this@asSecretsText.forEach { it.writeTo(this) }
+            writeTo(KEY_USE_LOCAL_MOCKS, getBool(KEY_USE_LOCAL_MOCKS))
+            this@asSecretsText.filterNot { it.key == KEY_USE_LOCAL_MOCKS }.forEach {
+                when(val value = it.value) {
+                    is Boolean -> writeTo(it.key, value)
+                    is String -> writeTo(it.key, value)
+                }
+            }
             footer()
         }
 
         private fun Properties.asUseLocalMocksText() : String = buildString {
             header()
-            (KEY_USE_LOCAL_MOCKS to getBool(KEY_USE_LOCAL_MOCKS)).writeTo(this)
+            writeTo(KEY_USE_LOCAL_MOCKS, getBool(KEY_USE_LOCAL_MOCKS))
             footer()
         }
+        private fun StringBuilder.writeTo(key: Any , value: String) =
+           appendLine("""    const val $key = "$value"""")
+        private fun StringBuilder.writeTo(key: Any , value: Boolean) =
+            appendLine("""    const val $key = $value""")
 
-        private fun Map.Entry<*, *>.writeTo(builder: StringBuilder) =
-            (key to value).writeTo(builder)
-        private fun Pair<*, *>.writeTo(builder: StringBuilder) =
-            builder.appendLine("""    const val $first = "$second"""")
+
 
         private fun StringBuilder.header() =
             appendLine("object $OUTPUT_FILE {")

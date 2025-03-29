@@ -3,7 +3,7 @@ package mainmenu
 import StopApp
 import arch.Presenter
 import arch.RokyDispatchers
-import authentication.Authenticator
+import authentication.Auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ import navigation.NavigateToAppWindow
 class MainMenuPresenter(
     private val quit: StopApp,
     private val navigate: NavigateToAppWindow,
-    private val authenticator: Authenticator,
+    private val authenticator: Auth,
     private val windowScope: CoroutineScope,
     dispatchers: RokyDispatchers,
 ) : Presenter<MainMenuView>(dispatchers) {

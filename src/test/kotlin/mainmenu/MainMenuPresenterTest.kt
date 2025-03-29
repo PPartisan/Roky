@@ -2,7 +2,7 @@ package mainmenu
 
 import StopApp
 import arch.RokyDispatchers
-import authentication.Authenticator
+import authentication.Auth
 import coAnswersDelayed
 import io.mockk.coEvery
 import io.mockk.every
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainMenuPresenterTest {
     private lateinit var quit: StopApp
-    private lateinit var authenticator: Authenticator
+    private lateinit var authenticator: Auth
     private lateinit var presenter: MainMenuPresenter
     private lateinit var navigate: NavigateToAppWindow
     private lateinit var view: MainMenuView
