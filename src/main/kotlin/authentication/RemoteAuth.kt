@@ -5,16 +5,16 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class RemoteAuth(
     private val client: SupabaseClient,
     private val scope: CoroutineScope,
-) : Auth {
+) : Auth, ReadAuth {
     private val _state: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.InitState)
     val state: StateFlow<AuthState> = _state.asStateFlow()
 
@@ -22,7 +22,6 @@ class RemoteAuth(
         scope.launch {
             client.auth.sessionStatus.collect {
                 _state.value = it.toRokyState()
-                println("Current State: ${state.value}")
             }
         }
     }
@@ -46,10 +45,7 @@ class RemoteAuth(
         println("Remote Auth logout")
     }
 
-    override suspend fun isLoggedIn(): Boolean {
-        println("Remote Auth is logged in")
-        return state.value is AuthState.SignIn
-    }
+    override suspend fun isLoggedIn(): Boolean = state.value is AuthState.SignIn
 
     companion object {
         fun SessionStatus.toRokyState(): AuthState =
@@ -62,14 +58,8 @@ class RemoteAuth(
                 }
             }
     }
-}
 
-sealed interface AuthState {
-    data class SignIn(val user: String) : AuthState
+    override fun state(): Flow<AuthState> = state
 
-    data object InvalidCredentials : AuthState
-
-    data object Authenticating : AuthState
-
-    data object InitState : AuthState
+    override fun getState(): AuthState = state.value
 }
