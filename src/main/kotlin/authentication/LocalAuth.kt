@@ -17,12 +17,11 @@ object LocalAuth : Auth, ReadAuth {
     ) {
         delay(3.seconds)
         val state =
-            if (email in validUsers && password == PASSWORD)
-                {
-                    AuthState.SignIn(
-                        email,
-                    )
-                } else {
+            if (email in validUsers && password == PASSWORD) {
+                AuthState.SignIn(
+                    email,
+                )
+            } else {
                 AuthState.InvalidCredentials
             }
         this._state.value = state
