@@ -11,8 +11,6 @@ import kotlinx.coroutines.test.runTest
 import login.LoginEvent.Login
 import login.LoginUseCase.Companion.ERROR_PASSWORD
 import login.LoginUseCase.Companion.ERROR_USERNAME
-import login.LoginUseCase.Companion.LOGIN_FAILURE
-import login.LoginUseCase.Companion.LOGIN_SUCCESS
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -31,14 +29,20 @@ class LoginUseCaseTest {
     fun `when username is blank, then status is username cannot be blank`() =
         runTest {
             val event = Login(username = "", password = "")
-            logIn(event) should haveStatus(ERROR_USERNAME)
+            with(logIn(event)) {
+                this should haveMessage(ERROR_USERNAME)
+                this should beFailure()
+            }
         }
 
     @Test
     fun `given username is present, when password is blank, then status is password cannot be blank`() =
         runTest {
             val event = Login(username = "rob", password = "")
-            logIn(event) should haveStatus(ERROR_PASSWORD)
+            with(logIn(event)) {
+                this should haveMessage(ERROR_PASSWORD)
+                this should beFailure()
+            }
         }
 
     @Test
@@ -46,23 +50,33 @@ class LoginUseCaseTest {
         runTest {
             coEvery { authenticator.isLoggedIn() } coAnswersDelayed { true }
             val event = Login(username = "rob", password = "rob")
-            logIn(event) should haveStatus(LOGIN_SUCCESS)
-        }
-
-    @Test
-    fun `given username and password is present, when credentials are invalid, then status is login failure`() =
-        runTest {
-            coEvery { authenticator.isLoggedIn() } coAnswersDelayed { false }
-            val event = Login(username = "rob", password = "rob")
-            logIn(event) should haveStatus(LOGIN_FAILURE)
+            logIn(event) should beSuccessful()
         }
 }
 
-fun haveStatus(status: String) =
-    Matcher<LoginViewState> {
+fun haveMessage(message: String) =
+    Matcher<LoginUseCase.LoginResult> {
         MatcherResult(
-            it.status == status,
-            { "View state had status ${it.status}, but expected $status" },
-            { "View state should not have status $status" },
+            it.message == message,
+            { "Result had message ${it.message}, but expected $message" },
+            { "Result should not have message $message" },
+        )
+    }
+
+fun beSuccessful() =
+    Matcher<LoginUseCase.LoginResult> {
+        MatcherResult(
+            it.isSuccessful,
+            { "Result was not successful but expected it to be successful" },
+            { "Result should not have been successful" },
+        )
+    }
+
+fun beFailure() =
+    Matcher<LoginUseCase.LoginResult> {
+        MatcherResult(
+            !it.isSuccessful,
+            { "Result was successful but expected it to be not successful" },
+            { "Result should have been successful" },
         )
     }

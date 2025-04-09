@@ -7,6 +7,7 @@ import org.koin.dsl.module
 
 val authenticationModule =
     module {
-        factory { Auth.Factory(get(), CoroutineScope(SupervisorJob() + get<RokyDispatchers>().io)) }
-        factory<Auth> { get<Auth.Factory>().create() }
+        single { Auth.Factory(get(), CoroutineScope(SupervisorJob() + get<RokyDispatchers>().io)) }
+        single<Auth> { get<Auth.Factory>().create() }
+        single<ReadAuth> { get<Auth.Factory>().reader() }
     }
