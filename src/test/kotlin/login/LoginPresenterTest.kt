@@ -13,11 +13,14 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import login.LoginEvent.Login
 import login.LoginPresenter.Companion.AUTHENTICATING
+import login.LoginPresenter.Companion.LOGIN_FAILURE
+import login.LoginPresenter.Companion.LOGIN_SUCCESS
 import login.LoginUseCase.LoginResult
 import login.LoginViewState.Authenticating
 import login.LoginViewState.Idle
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -58,7 +61,6 @@ class LoginPresenterTest {
     @Test
     fun `when login, then immediately show init status`() =
         runTest(dispatcher) {
-//            coEvery { logIn(any()) } coAnswersDelayed { Idle() }
             every {
                 auth.state()
             } returns flowOf(AuthState.InitState)
@@ -95,6 +97,64 @@ class LoginPresenterTest {
                 view.show(
                     withArg {
                         assertTrue(it is Idle)
+                    },
+                )
+            }
+        }
+
+    @Test
+    fun `when auth status is authenticating, then show user authenticating`() =
+        runTest(dispatcher) {
+            every {
+                auth.state()
+            } returns flowOf(AuthState.Authenticating)
+            presenter.attach(view)
+            advanceUntilIdle()
+            verifyOrder {
+                view.show(
+                    withArg {
+                        assertTrue(it is Idle)
+                        assertEquals(it.status, AUTHENTICATING)
+                    },
+                )
+            }
+        }
+
+    @Test
+    fun `when auth status is invalid credentials, then show login failure`() =
+        runTest(dispatcher) {
+            every {
+                auth.state()
+            } returns flowOf(AuthState.InvalidCredentials)
+
+            presenter.attach(view)
+
+            advanceUntilIdle()
+            verifyOrder {
+                view.show(
+                    withArg {
+                        assertTrue(it is Idle)
+                        assertEquals(it.status, LOGIN_FAILURE)
+                    },
+                )
+            }
+        }
+
+    @Test
+    fun `when auth status is signed in, then show login success`() =
+        runTest(dispatcher) {
+            every {
+                auth.state()
+            } returns flowOf(AuthState.SignIn(""))
+
+            presenter.attach(view)
+
+            advanceUntilIdle()
+            verifyOrder {
+                view.show(
+                    withArg {
+                        assertTrue(it is Idle)
+                        assertEquals(it.status, LOGIN_SUCCESS)
                     },
                 )
             }
