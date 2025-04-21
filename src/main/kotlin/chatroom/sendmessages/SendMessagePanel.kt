@@ -1,6 +1,7 @@
 package chatroom.sendmessages
 
 import chatroom.BorderedPanel
+import chatroom.sendMessagesWidth
 import chatroom.sendmessages.SendMessageEvent.SendMessage
 import chatroom.sendmessages.SendMessageViewState.Clear
 import com.googlecode.lanterna.TerminalSize
@@ -15,7 +16,7 @@ class SendMessagePanel(
 ) : Panel(BorderLayout()), BorderedPanel, SendMessagesView {
     private val message: CharacterWrapTextBox =
         CharacterWrapTextBox(
-            TerminalSize(20, 3),
+            TerminalSize(sendMessagesWidth(), 3),
         ) { presenter.onEvent(SendMessage(text)) }
     private val text: String
         get() = message.text

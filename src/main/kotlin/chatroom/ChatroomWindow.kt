@@ -18,8 +18,6 @@ import org.koin.core.component.createScope
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 import view.AppWindow
-import view.DEFAULT_TERMINAL_HEIGHT
-import view.DEFAULT_TERMINAL_WIDTH
 import view.linearLayoutFill
 
 class ChatroomWindow(
@@ -32,29 +30,23 @@ class ChatroomWindow(
 
     init {
         setHints(listOf(CENTERED))
-        val totalColumns = DEFAULT_TERMINAL_WIDTH * 3
-        val totalRows = DEFAULT_TERMINAL_HEIGHT
-        val leftWidth = LEFT_PANEL_WIDTH
-        val rightWidth = totalColumns - leftWidth
-        val sendMessagesHeight = 5
-        val chatHeight = totalRows - sendMessagesHeight
 
         val rightPanel =
             Panel(LinearLayout(VERTICAL)).apply {
-                setPreferredSize(TerminalSize(rightWidth, totalRows))
+                setPreferredSize(TerminalSize(RIGHT_WIDTH, TOTAL_ROWS))
                 addComponent(
                     viewMessages.bordered()
-                        .setPreferredSize(TerminalSize(0, chatHeight)).linearLayoutFill(),
+                        .setPreferredSize(TerminalSize(0, CHAT_HEIGHT)).linearLayoutFill(),
                 )
                 addComponent(
                     sendMessages.bordered()
-                        .setPreferredSize(TerminalSize(0, sendMessagesHeight)).linearLayoutFill(),
+                        .setPreferredSize(TerminalSize(0, SEND_MESSAGES_HEIGHT)).linearLayoutFill(),
                 )
             }
         val chatroom =
             Panel(LinearLayout(HORIZONTAL)).apply {
-                setPreferredSize(TerminalSize(totalColumns, totalRows))
-                addComponent(usersList.bordered().setPreferredSize(TerminalSize(leftWidth, 0)).linearLayoutFill())
+                setPreferredSize(TerminalSize(TOTAL_COLUMNS, TOTAL_ROWS))
+                addComponent(usersList.bordered().setPreferredSize(TerminalSize(LEFT_WIDTH, 0)).linearLayoutFill())
                 addComponent(rightPanel)
             }
         component = chatroom
@@ -64,9 +56,5 @@ class ChatroomWindow(
         super.close()
         scope.close()
         windowScope.cancel()
-    }
-
-    companion object {
-        private const val LEFT_PANEL_WIDTH = 20
     }
 }
