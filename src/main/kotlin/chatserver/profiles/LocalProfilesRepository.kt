@@ -19,43 +19,41 @@ class LocalProfilesRepository(
     private val dispatchers: RokyDispatchers,
     private val scope: CoroutineScope,
 ) : ReadChatRepository<ProfileResult>, WriteChatRepository<String>, SubscribeChatRepository {
-    private val _state: MutableStateFlow<ProfileResult> = MutableStateFlow(ok(emptyMap()))
+    private val state: MutableStateFlow<ProfileResult> = MutableStateFlow(ok(emptyMap()))
 
     override fun latest(): ProfileResult {
-        return _state.value
+        return state.value
     }
 
     override fun observe(): Flow<ProfileResult> {
-        return _state.asStateFlow()
+        return state.asStateFlow()
     }
 
     override fun subscribe() {
         scope.launch(dispatchers.default) {
             while (true) {
                 val users = ViewMessagesUseCase.sampleUsers.shuffled()
-                _state.value = users.associateWith { it }.let(ProfileResult::ok)
+                state.value = users.associateWith { it }.let(ProfileResult::ok)
+                delay(5.seconds)
             }
         }
     }
 
     override fun unsubscribe() {
+        // deliberately empty
     }
 
-    override fun write(userName: String) {
+    override fun write(item: String) {
         scope.launch {
             try {
-                if (userName.isBlank()) {
-                    throw IllegalArgumentException("Username cannot be empty.")
-                }
+                require(item.isNotBlank()) { "Username cannot be empty." }
                 delay(2.seconds)
-                if (!userName.isValidUsername()) {
-                    throw IllegalStateException("Could not assign current username.")
-                }
+                check(item.isValidUsername()) { "Could not assign current username." }
                 val profiles = latest().item.toMutableMap()
-                profiles.put(userName, userName)
-                _state.value = ok(profiles)
+                profiles[item] = item
+                state.value = ok(profiles)
             } catch (e: Exception) {
-                _state.value = ProfileResult.fail(e)
+                state.value = ProfileResult.fail(e)
             }
         }
     }
