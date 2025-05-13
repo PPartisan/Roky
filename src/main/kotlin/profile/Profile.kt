@@ -13,6 +13,5 @@ val profileModules =
                     dispatchers = get(),
                 )
             }
-            scoped { RequestUsernameUseCase(get()) }
         }
     }
