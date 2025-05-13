@@ -9,10 +9,9 @@ val profileModules =
                 ProfilePresenter(
                     windowScope = get<ProfileWindow>().windowScope,
                     requestUsername = get(),
+                    usernames = get(),
                     dispatchers = get(),
                 )
             }
-            scoped { RequestUserNameUseCase(get()) }
         }
-        factory { RequestUserNameUseCase.RequestUserName() }
     }
