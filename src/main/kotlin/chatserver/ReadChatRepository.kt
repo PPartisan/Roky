@@ -7,7 +7,7 @@ interface ReadChatRepository<T : ReadChatRepository.ReadResult<*>> {
 
     fun observe(): Flow<T>
 
-    interface ReadResult<T> {
+    sealed interface ReadResult<T> {
         val isOk: Boolean
         val item: T
         val error: Exception?

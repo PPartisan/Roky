@@ -1,5 +1,5 @@
 package chatserver
 
-interface WriteChatRepository<T> {
+fun interface WriteChatRepository<T> {
     fun write(item: T)
 }
