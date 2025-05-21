@@ -2,6 +2,7 @@ package profile
 
 import arch.Presenter
 import arch.RokyDispatchers
+import chatserver.ChatRepositories
 import chatserver.ProfileResult
 import chatserver.ReadChatRepository
 import chatserver.WriteChatRepository
@@ -20,6 +21,9 @@ class ProfilePresenter(
     private val usernames: ReadChatRepository<ProfileResult>,
     dispatchers: RokyDispatchers,
 ) : Presenter<ProfileView>(dispatchers) {
+    constructor(windowScope: CoroutineScope, repositories: ChatRepositories, dispatchers: RokyDispatchers) :
+        this(windowScope, repositories.writeProfiles(), repositories.readProfiles(), dispatchers)
+
     private val state: MutableStateFlow<ProfileViewState> = MutableStateFlow(Idle)
 
     override fun onAttach(view: ProfileView) {
