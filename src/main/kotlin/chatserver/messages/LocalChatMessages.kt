@@ -1,6 +1,7 @@
 package chatserver.messages
 
 import arch.RokyDispatchers
+import chatroom.users.UsersViewState
 import chatserver.ChatMessageResult
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
@@ -16,6 +17,7 @@ class LocalChatMessages(
     private val scope: CoroutineScope = CoroutineScope(dispatchers.default + Job()),
     private val messages: List<String> = sampleMessages,
     private val users: List<String> = sampleUsers,
+    private val source: () -> Flow<String> = {emitEveryThreeSeconds(users, messages)}
 ) : ReadChatRepository<ChatMessageResult>, SubscribeChatRepository {
     private var samples: Job? = null
     private val _events = MutableStateFlow("")
@@ -28,12 +30,7 @@ class LocalChatMessages(
     override fun subscribe() {
         samples =
             scope.launch {
-                flow {
-                    while (true) {
-                        delay(3.seconds)
-                        emit("${users.random()}: ${messages.random()}")
-                    }
-                }.cancellable().collect {
+                source().cancellable().collect {
                     _events.value = it
                 }
             }
@@ -84,5 +81,13 @@ class LocalChatMessages(
                 "Stefano",
                 "Mike",
             )
+
+        private fun emitEveryThreeSeconds(users:List<String>, messages:List<String>) =
+            flow {
+                while (true) {
+                    delay(3.seconds)
+                    emit("${users.random()}: ${messages.random()}")
+                }
+            }
     }
 }

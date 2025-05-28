@@ -3,7 +3,7 @@ package chatroom.sendmessages
 import arch.RokyDispatchers
 import chatroom.sendmessages.SendMessageEvent.SendMessage
 import chatroom.sendmessages.SendMessageViewState.Clear
-import chatserver.MessagesRepository
+import io.kotest.matchers.collections.shouldContainExactly
 import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,14 +16,16 @@ import org.junit.jupiter.api.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class SendMessagePresenterTest {
     private lateinit var scope: CoroutineScope
-    private lateinit var send: MessagesRepository.Write
+    private lateinit var messages: MutableList<String>
     private lateinit var view: SendMessagesView
     private lateinit var presenter: SendMessagePresenter
 
     @BeforeEach
     fun setUp() {
-        send = mockk()
-        coEvery { send.send(any()) } just runs
+        messages = mutableListOf()
+        val send:(String)->Unit = {
+            messages.add(it)
+        }
         view = mockk(relaxed = true)
         val dispatchers: RokyDispatchers =
             mockk<RokyDispatchers>().apply {
@@ -46,7 +48,7 @@ class SendMessagePresenterTest {
             presenter.attach(view)
             presenter.onEvent(SendMessage("Hello"))
             advanceUntilIdle()
-            coVerify { send.send("Hello") }
+            messages.shouldContainExactly("Hello")
         }
 
     @Test

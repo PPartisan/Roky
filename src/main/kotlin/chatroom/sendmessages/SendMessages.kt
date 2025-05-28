@@ -9,7 +9,6 @@ val sendMessagesModule =
             scoped {
                 SendMessagePresenter(
                     dispatchers = get(),
-                    send = get(),
                     windowScope = get<ChatroomWindow>().windowScope,
                 )
             }

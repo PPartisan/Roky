@@ -14,4 +14,6 @@ class ChatRepositories(
     fun subscribeProfiles(): SubscribeChatRepository = profiles
 
     fun readMessages(): ReadChatRepository<ChatMessageResult> = messages
+
+    fun subscribeMessages(): SubscribeChatRepository = messages
 }
