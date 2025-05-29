@@ -6,11 +6,9 @@ import chatroom.viewmessages.ViewMessagesViewState.NoMessages
 import chatserver.ChatMessageResult
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
-import coAnswersDelayed
 import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -69,29 +67,35 @@ class ViewMessagesPresenterTest {
     @Test
     fun `given message exist, and message is not ok, when attached, then show nothing`() =
         runTest(dispatcher) {
-            every { read.observe() } returns flowOf(ChatMessageResult.fail(RuntimeException ("Biggleswade is bad")))
+            every { read.observe() } returns flowOf(ChatMessageResult.fail(RuntimeException("Biggleswade is bad")))
             presenter.attach(view)
             advanceUntilIdle()
             verifyOrder {
                 view.show(NoMessages)
             }
-            verify(exactly = 0) { view.show(withArg {
-                assertFalse{ it !is Messages }
-            }) }
+            verify(exactly = 0) {
+                view.show(
+                    withArg {
+                        assertFalse { it !is Messages }
+                    },
+                )
+            }
         }
 
     @Test
-    fun `when attached, then subscribe to chat messages`() = runTest(dispatcher){
-        presenter.attach(view)
-        verify { channel.subscribe() }
-    }
+    fun `when attached, then subscribe to chat messages`() =
+        runTest(dispatcher) {
+            presenter.attach(view)
+            verify { channel.subscribe() }
+        }
 
     @Test
-    fun `when detached, then unsubscribe to chat messages`() = runTest(dispatcher){
-        presenter.attach(view)
-        presenter.detach()
-        verify { channel.unsubscribe() }
-    }
+    fun `when detached, then unsubscribe to chat messages`() =
+        runTest(dispatcher) {
+            presenter.attach(view)
+            presenter.detach()
+            verify { channel.unsubscribe() }
+        }
 
     @Test
     fun `given two messages exist, when attached, then show two messages`() =

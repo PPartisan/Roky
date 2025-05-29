@@ -3,7 +3,6 @@ package chatserver
 import chatserver.messages.chatServerMessagesModule
 import chatserver.profiles.chatServerProfilesModule
 import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.binds
 import org.koin.dsl.module
 
 val chatServerModule =

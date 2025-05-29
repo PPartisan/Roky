@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 
 class SendMessagePresenter(
     private val windowScope: CoroutineScope,
-    private val send:(String)->Unit = ::println,
+    private val send: (String) -> Unit = ::println,
     dispatchers: RokyDispatchers,
 ) : Presenter<SendMessagesView>(dispatchers) {
     override fun onAttach(view: SendMessagesView) {

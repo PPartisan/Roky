@@ -23,7 +23,7 @@ class SendMessagePresenterTest {
     @BeforeEach
     fun setUp() {
         messages = mutableListOf()
-        val send:(String)->Unit = {
+        val send: (String) -> Unit = {
             messages.add(it)
         }
         view = mockk(relaxed = true)
