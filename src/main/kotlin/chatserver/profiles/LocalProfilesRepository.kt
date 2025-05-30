@@ -1,12 +1,12 @@
 package chatserver.profiles
 
 import arch.RokyDispatchers
-import chatroom.viewmessages.ViewMessagesUseCase
 import chatserver.ProfileResult
 import chatserver.ProfileResult.Companion.ok
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
 import chatserver.WriteChatRepository
+import chatserver.messages.LocalChatMessages
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +32,7 @@ class LocalProfilesRepository(
     override fun subscribe() {
         scope.launch(dispatchers.default) {
             while (true) {
-                val users = ViewMessagesUseCase.sampleUsers.shuffled()
+                val users = LocalChatMessages.sampleUsers.shuffled()
                 state.value = users.associateWith { it }.let(ProfileResult::ok)
                 delay(5.seconds)
             }
