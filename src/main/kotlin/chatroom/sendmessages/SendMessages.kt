@@ -1,6 +1,7 @@
 package chatroom.sendmessages
 
 import chatroom.ChatroomWindow
+import chatserver.ChatRepositories
 import org.koin.dsl.module
 
 val sendMessagesModule =
@@ -9,6 +10,7 @@ val sendMessagesModule =
             scoped {
                 SendMessagePresenter(
                     dispatchers = get(),
+                    message = get<ChatRepositories>().writeMessages(),
                     windowScope = get<ChatroomWindow>().windowScope,
                 )
             }
