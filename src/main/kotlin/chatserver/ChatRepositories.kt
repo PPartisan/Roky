@@ -16,4 +16,6 @@ class ChatRepositories(
     fun readMessages(): ReadChatRepository<ChatMessageResult> = messages
 
     fun subscribeMessages(): SubscribeChatRepository = messages
+
+    fun writeMessages(): WriteChatRepository<String> = messages
 }

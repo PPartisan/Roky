@@ -82,6 +82,25 @@ class LocalChatMessagesTest {
             messages.unsubscribe()
         }
 
+    @Test
+    fun `when writing message, then receive same message`() =
+        runTest(dispatcher) {
+            messages = LocalChatMessages(dispatchers, scope) { flowOf() }
+
+            val emissions = mutableListOf<String>()
+            backgroundScope.launch {
+                messages.observe().map { it.item }.collect(emissions::add)
+            }
+            messages.subscribe()
+            advanceTimeBy(10.seconds)
+            messages.write("Barry is the best.")
+
+            advanceTimeBy(10.seconds)
+
+            emissions.shouldContainInOrder("", "Me: Barry is the best.")
+            messages.unsubscribe()
+        }
+
     companion object {
         private val dispatcher = StandardTestDispatcher()
         private val dispatchers: RokyDispatchers

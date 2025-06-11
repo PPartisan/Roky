@@ -4,6 +4,7 @@ import arch.RokyDispatchers
 import chatserver.ChatMessageResult
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
+import chatserver.WriteChatRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -15,7 +16,7 @@ class LocalChatMessages(
     private val dispatchers: RokyDispatchers,
     private val scope: CoroutineScope = CoroutineScope(dispatchers.default + Job()),
     private val source: () -> Flow<String> = { emitEveryThreeSeconds(sampleUsers, sampleMessages) },
-) : ReadChatRepository<ChatMessageResult>, SubscribeChatRepository {
+) : ReadChatRepository<ChatMessageResult>, SubscribeChatRepository, WriteChatRepository<String> {
     private var samples: Job? = null
     private val _events = MutableStateFlow("")
     private val events = _events.asStateFlow()
@@ -88,5 +89,9 @@ class LocalChatMessages(
                 emit("${users.random()}: ${messages.random()}")
             }
         }
+    }
+
+    override fun write(item: String) {
+        _events.value = "Me: $item"
     }
 }
