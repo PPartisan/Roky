@@ -62,7 +62,14 @@ class ViewMessagesPanel(
         empty.isVisible = false
         messages.isVisible = true
         textGUI.guiThread.invokeLater {
-            messages.addLineAndMaybeScrollDown(state.message)
+            state.message
+                .lines()
+                .map{ line -> messages.addLineAndMaybeScrollDown(line)}
         }
+    }
+
+    override fun getWidth(): Int { //returns the columns of the TextBox
+        println(messages.size?.columns ?: 15)
+        return messages.size?.columns ?: 15
     }
 }

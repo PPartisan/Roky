@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.googlecode.lanterna.TerminalTextUtils.getWordWrappedText //when it wraps it doesn't add "-" when it cuts a word off so it looks weird
+import utils.smartWrap
 
 class ViewMessagesPresenter(
     private val windowScope: CoroutineScope,
@@ -28,7 +30,11 @@ class ViewMessagesPresenter(
                 .map(::Messages)
                 .collect { message ->
                     withContext(dispatchers.main) {
-                        withView { it.show(message) }
+                        withView { view ->
+                            val width=view.getWidth()
+                            val wrapped = message.message.smartWrap(width)
+                            view.show(Messages(wrapped))
+                        }
                     }
                 }
         }

@@ -78,6 +78,27 @@ class UsersListPresenterTest {
             }
         }
 
+    @Test
+    fun `when users list is not empty, then show list of users truncated`() =
+        runTest(dispatcher) {
+            val userList = listOf("Robert", "Tom", "Allie", "Kai", "AVeryLongUsernaaaaaaaaame")
+            val panelWidth = 10
+            coEvery { listUsers() } coAnswersDelayed { flowOf(userList) }
+            every { view.getWidth() } returns panelWidth
+            presenter.attach(view)
+            advanceUntilIdle()
+            val expectedTruncatedList = listOf("Robert", "Tom", "Allie", "Kai", "AVeryLon…")
+            verifyOrder {
+                view.show(Empty)
+                view.show(
+                    withArg {
+                        assertTrue { it is Users }
+                        assertTrue { (it as Users).users == expectedTruncatedList }
+                    },
+                )
+            }
+        }
+
     companion object {
         private val dispatcher = StandardTestDispatcher()
     }

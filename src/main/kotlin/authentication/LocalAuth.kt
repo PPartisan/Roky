@@ -17,7 +17,7 @@ object LocalAuth : Auth, ReadAuth {
     ) {
         delay(3.seconds)
         val state =
-            if (email in validUsers && password == PASSWORD) {
+            if (email in validUsers && (password == PASSWORD || password == PASSWORD2)) {
                 AuthState.SignIn(
                     email,
                 )
@@ -34,9 +34,9 @@ object LocalAuth : Auth, ReadAuth {
     override suspend fun isLoggedIn(): Boolean = _state.value is AuthState.SignIn
 
     private val validUsers =
-        listOf("Robert", "Dunia", "Tom", "Max", "Casper", "Ed", "Kai", "Laura", "Niamh", "Sofia")
+        listOf("Robert", "Dunia", "Tom", "Max", "Casper", "Ed", "Kai", "Laura", "Niamh", "Sofia", "q")
     private const val PASSWORD = "ILoveRoky"
-
+    private const val PASSWORD2 = "q"
     override fun state(): Flow<AuthState> = state
 
     override fun getState(): AuthState = state.value

@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import utils.cutOff
 
 class UsersListPresenter(
     private val users: UsersListUseCase,
@@ -23,9 +24,18 @@ class UsersListPresenter(
             }
         }
     }
-
+//withView wants a function (V -> stuff) where V is the X we have passed inside the < > on line 16: so when I write "view -> do stuff" I'm saying "in the following code I'm calling X ""view"", now do what I say after"
+//or when before we said "it.stuff()" it meant that ""it"" is the X
     private fun show(viewState: UsersViewState) {
-        withView { it.show(viewState) }
+        withView { view ->
+            val width = view.getWidth()
+            if (viewState is Users) {
+                val truncated = viewState.users.map { it.cutOff(width) }
+                view.show(Users(truncated))
+            } else {
+                view.show(viewState)
+            }
+        }
     }
 
     override fun onDetach(view: UsersListView) {

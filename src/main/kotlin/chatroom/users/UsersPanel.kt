@@ -45,4 +45,8 @@ class UsersPanel(
         users.isVisible = false
         users.text = ""
     }
+
+    override fun getWidth(): Int {
+        return users.size.columns
+    }
 }
