@@ -1,6 +1,7 @@
 package chatroom.users
 
 import chatroom.ChatroomWindow
+import chatroom.LEFT_WIDTH
 import org.koin.dsl.module
 
 val usersModule =
@@ -8,6 +9,14 @@ val usersModule =
         scope<ChatroomWindow> {
             scoped { UsersPanel(presenter = get()) }
             scoped { UsersListUseCase() }
-            scoped { UsersListPresenter(users = get(), scope = get<ChatroomWindow>().windowScope, dispatchers = get()) }
+            scoped {
+                UsersListPresenter(
+                    users = get(),
+                    truncate = get(),
+                    scope = get<ChatroomWindow>().windowScope,
+                    dispatchers = get(),
+                )
+            }
         }
+        factory { UsersListTruncation(LEFT_WIDTH - 3) }
     }
