@@ -33,7 +33,7 @@ class UsersListPresenterTest {
                 every { io } returns dispatcher
             }
         scope = CoroutineScope(dispatcher)
-        presenter = UsersListPresenter(listUsers, scope, dispatchers)
+        presenter = UsersListPresenter(listUsers, UsersListTruncation(10), scope, dispatchers)
     }
 
     @Test
@@ -73,6 +73,24 @@ class UsersListPresenterTest {
                     withArg {
                         assertTrue { it is Users }
                         assertTrue { (it as Users).users == userList }
+                    },
+                )
+            }
+        }
+
+    @Test
+    fun `when users list contains very long usernames, then truncate long usernames only`() =
+        runTest(dispatcher) {
+            val userList = listOf("Allie", "Kai", "A very very long username")
+            coEvery { listUsers() } coAnswersDelayed { flowOf(userList) }
+            presenter.attach(view)
+            advanceUntilIdle()
+            verifyOrder {
+                view.show(Empty)
+                view.show(
+                    withArg {
+                        assertTrue { it is Users }
+                        assertTrue { (it as Users).users == listOf("Allie", "Kai", "A very ve…") }
                     },
                 )
             }
