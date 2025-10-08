@@ -35,7 +35,7 @@ object LocalAuth : Auth, ReadAuth {
 
     private val validUsers =
         listOf("Robert", "Dunia", "Tom", "Max", "Casper", "Ed", "Kai", "Laura", "Niamh", "Sofia")
-    private const val PASSWORD = "ILoveRoky"
+    private const val PASSWORD = "1"
 
     override fun state(): Flow<AuthState> = state
 
