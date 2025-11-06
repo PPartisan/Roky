@@ -15,30 +15,31 @@ fun String.smartWrap(maxCharsPerLine: Int): String {
     var paragraph=""
     println(words)
     words.forEach{
-//        println("word: <$it>")
         val charactersRemainingInLine = paragraph.charactersRemainingInLastLine(maxCharsPerLine)
-//        println("length: ${it.length}")
-//        println("isFirstLine: ${paragraph.isSingleLineParagraph()}")
-//        println("paragraph's length : ${paragraph.length}")
-//        println("characters Used in Last line: ${paragraph.charactersUsedInLastLine()}")
-//        println("characters remaining in line: $charactersRemainingInLine")
+        println(it)
         if (paragraph.wouldOverFlow(maxCharsPerLine, it)) {
-            val firstSliceOfWord = it.slice(0..<charactersRemainingInLine-1)
-//            println("first slice: <$firstSliceOfWord>")
-            val secondSliceOfWord = it.slice((charactersRemainingInLine-1).coerceAtLeast(0)..<it.length)
-//            println("second slice: <$secondSliceOfWord>")
-            paragraph+= "$firstSliceOfWord-\n"
-            paragraph+= secondSliceOfWord.chunked(maxCharsPerLine-1).joinToString("\n") { "$it-" }.trimEnd('-')
-//            println("first index of last line separator: " +paragraph.lastIndexOf(lineSeparator()))
+            if(it.canFitOnALine(maxCharsPerLine)) {
+                paragraph+= lineSeparator() + it
+            }else{
+                val firstSliceOfWord = it.slice(0..<charactersRemainingInLine-1)
+                println("first slice: <$firstSliceOfWord>")
+                println("first slice length: ${firstSliceOfWord.length}")
+                val secondSliceOfWord = it.slice((charactersRemainingInLine-1).coerceAtLeast(0)..<it.length)
+                println("second slice: <$secondSliceOfWord>")
+                paragraph+= "$firstSliceOfWord-${lineSeparator()}"
+                paragraph+= secondSliceOfWord.chunked(maxCharsPerLine-1).joinToString(lineSeparator()) { "$it-" }.trimEnd('-')
+            }
+        }else{
+            paragraph+= it
         }
-        paragraph+=" "
+        paragraph += if(paragraph.isLineFull(maxCharsPerLine))  lineSeparator() else " "
     }
     return paragraph.trimEnd()
-} // Things I changed: added the "it." before slice and "it." before length (line 24 and 26).
-  // Added coerceAtLeast(0) on line 26
-  // Added the debugging println() stuff
+}
 
 fun String.isSingleLineParagraph() = !contains(lineSeparator())
+
+fun String.canFitOnALine(maxCharsPerLine: Int) = length<=maxCharsPerLine
 
 fun String.wouldOverFlow(maxCharsPerLine: Int, word: String) = charactersUsedInLastLine() + word.length > maxCharsPerLine //we're using charactersUsedInLastLine on the word not on the paragraph
 
@@ -46,6 +47,17 @@ fun String.charactersUsedInLastLine(): Int = if(isSingleLineParagraph())
     length else lastIndex-(lastIndexOf(lineSeparator())+(lineSeparator().length-1))
 
 fun String.charactersRemainingInLastLine(maxCharsPerLine: Int) = maxCharsPerLine - charactersUsedInLastLine()
+
+fun String.isLineFull(maxCharsPerLine: Int) = charactersRemainingInLastLine(maxCharsPerLine)<=0
+
+
+
+
+
+
+
+
+
 
 // _________________________________________________________________________________________________________________________________________
 
