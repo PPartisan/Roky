@@ -34,12 +34,41 @@ class SmartWrapKtTest {
         val myString = "12345 789012"
         myString.smartWrap(6).shouldBeEqual("12345 ${lineSeparator()}789012")
     }
-//
-//    @Test
-//    fun `when string with spaces is longer than maxCharPerLine, and second word is longer than maxCharPerLine, then return string split in 3 lines`() {
-//        val myString = "12345 8901234567890"
-//        myString.smartWrap(6).shouldBeEqual("12345${lineSeparator()}89012-${lineSeparator()}34567-${lineSeparator()}890")
-//    }
+
+    @Test
+    fun `given last line in multiline paragraph is completely full, when appending string, then append string to new line without preceding space`() {
+        val myString = "123456 789012"
+        myString.smartWrap(6).shouldBeEqual("123456${lineSeparator()}789012")
+    }
+
+    @Test
+    fun `when string with spaces is longer than maxCharPerLine, and second word is longer than maxCharPerLine, then return string split in 3 lines`() {
+        val myString = "12345 8901234567890"
+        myString.smartWrap(6).shouldBeEqual("12345 ${lineSeparator()}89012-${lineSeparator()}34567-${lineSeparator()}890")
+    }
+
+    @Test
+    fun `given sting contains multiple contiguous spaces, when total paragraph length is less than maxCharPerLine, then return paragraph`() {
+        val myString = "12345    89012"
+        myString.smartWrap(20).shouldBeEqual("12345    89012")
+    }
+
+    @Test
+    fun `given sting contains multiple contiguous spaces, when total paragraph length is more than maxCharPerLine, then return paragraph wrapped`() {
+        val myString = "12345    89012"
+        myString.smartWrap(10).shouldBeEqual("12345    ${lineSeparator()}89012")
+    }
+
+    @Test
+    fun `given sting contains multiple contiguous spaces, when total paragraph length is more than maxCharPerLine, and number of spaces overflows line length, then return wrapped paragraph with new line consuming one space`() {
+        val myString = "12345       89012"
+        myString.smartWrap(10).shouldBeEqual("12345     ${lineSeparator()} 89012")
+    }
+
+
+
+
+
 
 //    //Added
 //    @Test

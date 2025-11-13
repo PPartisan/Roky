@@ -13,21 +13,13 @@ fun String.smartWrap(maxCharsPerLine: Int): String {
     }
     val words = split("\\s".toRegex())
     var paragraph=""
-    println(words)
     words.forEach{
-        val charactersRemainingInLine = paragraph.charactersRemainingInLastLine(maxCharsPerLine)
-        println(it)
         if (paragraph.wouldOverFlow(maxCharsPerLine, it)) {
+            if(paragraph.isNotEmpty()) paragraph+= lineSeparator()
             if(it.canFitOnALine(maxCharsPerLine)) {
-                paragraph+= lineSeparator() + it
+                 paragraph+= it
             }else{
-                val firstSliceOfWord = it.slice(0..<charactersRemainingInLine-1)
-                println("first slice: <$firstSliceOfWord>")
-                println("first slice length: ${firstSliceOfWord.length}")
-                val secondSliceOfWord = it.slice((charactersRemainingInLine-1).coerceAtLeast(0)..<it.length)
-                println("second slice: <$secondSliceOfWord>")
-                paragraph+= "$firstSliceOfWord-${lineSeparator()}"
-                paragraph+= secondSliceOfWord.chunked(maxCharsPerLine-1).joinToString(lineSeparator()) { "$it-" }.trimEnd('-')
+                paragraph+= it.chunked(maxCharsPerLine-1).joinToString(lineSeparator()) { "$it-" }.trimEnd('-')
             }
         }else{
             paragraph+= it
