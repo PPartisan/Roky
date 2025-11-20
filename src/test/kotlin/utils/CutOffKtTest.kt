@@ -4,7 +4,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.equals.shouldBeEqual
 import org.junit.jupiter.api.Test
 
-class StringUtilsKtTest {
+class CutOffKtTest {
     @Test
     fun `when string is less than max character limit, then return same string`() {
         val input = "testyy"
