@@ -14,6 +14,7 @@ val viewMessagesModule =
                     dispatchers = get(),
                     read = get<ChatRepositories>().readMessages(),
                     channel = get<ChatRepositories>().subscribeMessages(),
+                    smartWrap = get(),
                 )
             }
         }

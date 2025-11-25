@@ -32,6 +32,7 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent.get
 import profile.profileModules
+import utils.smartWrapModule
 import view.rokyTheme
 
 fun main() {
@@ -53,6 +54,7 @@ val mainModules =
             profileModules,
             chatroomModules,
             chatServerModule,
+            smartWrapModule,
         )
         single { DefaultTerminalFactory().createScreen() } bind Screen::class
         single { MultiWindowTextGUI(get()).also { it.theme = rokyTheme } }

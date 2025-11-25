@@ -1,10 +1,11 @@
 package utils
+
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.string.shouldBeEmpty
 import org.junit.jupiter.api.Test
 import java.lang.System.lineSeparator
 
-class SmartWrapKtTest {
+class SimpleSmartWrapTest {
     @Test
     fun `given empty String, when cutoff size is 0, then return empty string`() {
         "".smartWrap(0).shouldBeEmpty()
@@ -65,6 +66,6 @@ class SmartWrapKtTest {
     }
 
     companion object {
-        private fun String.smartWrap(maxCharsPerLine: Int): String = SmartWrap(maxCharsPerLine).invoke(this)
+        private fun String.smartWrap(maxCharsPerLine: Int): String = SimpleSmartWrap(maxCharsPerLine).invoke(this)
     }
 }

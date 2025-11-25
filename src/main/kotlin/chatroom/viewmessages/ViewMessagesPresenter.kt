@@ -12,11 +12,13 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import utils.SmartWrap
 
 class ViewMessagesPresenter(
     private val windowScope: CoroutineScope,
     private val read: ReadChatRepository<ChatMessageResult>,
     private val channel: SubscribeChatRepository,
+    private val smartWrap: SmartWrap,
     dispatchers: RokyDispatchers,
 ) : Presenter<ViewMessagesView>(dispatchers) {
     override fun onAttach(view: ViewMessagesView) {
@@ -25,6 +27,7 @@ class ViewMessagesPresenter(
             read.observe()
                 .filter { it.isOk }
                 .map { it.item }
+                .map { smartWrap(it) }
                 .map(::Messages)
                 .collect { message ->
                     withContext(dispatchers.main) {

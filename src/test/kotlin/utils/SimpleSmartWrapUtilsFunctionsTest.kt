@@ -1,16 +1,17 @@
 package utils
+
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.equals.shouldBeEqual
 import org.junit.jupiter.api.Test
-import utils.SmartWrap.Companion.canFitOnALine
-import utils.SmartWrap.Companion.charactersUsedInLastLine
-import utils.SmartWrap.Companion.isLineFull
-import utils.SmartWrap.Companion.isSingleLineParagraph
-import utils.SmartWrap.Companion.wouldOverFlow
+import utils.SimpleSmartWrap.Companion.canFitOnALine
+import utils.SimpleSmartWrap.Companion.charactersUsedInLastLine
+import utils.SimpleSmartWrap.Companion.isLineFull
+import utils.SimpleSmartWrap.Companion.isSingleLineParagraph
+import utils.SimpleSmartWrap.Companion.wouldOverFlow
 import java.lang.System.lineSeparator
 
-class StringUtilsFunctionsTest {
+class SimpleSmartWrapUtilsFunctionsTest {
     @Test
     fun `given empty paragraph, when isSingleLineParagraph, then return true`() {
         "".isSingleLineParagraph().shouldBeTrue()
