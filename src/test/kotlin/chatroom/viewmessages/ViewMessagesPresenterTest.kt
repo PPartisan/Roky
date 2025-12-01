@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import utils.SmartWrap
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -24,6 +25,7 @@ class ViewMessagesPresenterTest {
     private lateinit var channel: SubscribeChatRepository
     private lateinit var read: ReadChatRepository<ChatMessageResult>
     private lateinit var scope: CoroutineScope
+    private lateinit var smartWrap: SmartWrap
     private lateinit var view: ViewMessagesView
     private lateinit var presenter: ViewMessagesPresenter
 
@@ -32,6 +34,9 @@ class ViewMessagesPresenterTest {
         channel = mockk(relaxed = true)
         read = mockk()
         every { read.observe() } returns flowOf()
+        smartWrap = mockk<SmartWrap>(relaxed = true)
+        every { smartWrap.invoke(any()) } answers { it.invocation.args[0] as String }
+
         view = mockk(relaxed = true)
         view = mockk(relaxed = true)
         val dispatchers: RokyDispatchers =
@@ -40,7 +45,7 @@ class ViewMessagesPresenterTest {
                 every { io } returns dispatcher
             }
         scope = CoroutineScope(dispatcher)
-        presenter = ViewMessagesPresenter(scope, read, channel, dispatchers)
+        presenter = ViewMessagesPresenter(scope, read, channel, smartWrap, dispatchers)
     }
 
     @Test
