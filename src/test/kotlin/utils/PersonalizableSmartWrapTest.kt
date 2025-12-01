@@ -50,30 +50,50 @@ class PersonalizableSmartWrapTest {
     }
 
     @Test
-    fun `given sting contains multiple contiguous spaces, when total paragraph length is less than maxCharPerLine, then return paragraph`() {
+    fun `given string contains multiple contiguous spaces, when total paragraph length is less than maxCharPerLine, then return paragraph`() {
         val myString = "12345    89012"
         myString.smartWrap(20).shouldBeEqual("12345    89012")
     }
 
     @Test
-    fun `given sting contains multiple contiguous spaces, when total paragraph length is more than maxCharPerLine, then return paragraph wrapped`() {
+    fun `given string contains multiple contiguous spaces, when total paragraph length is more than maxCharPerLine, then return paragraph wrapped consuming one space`() {
         val myString = "12345    89012"
         myString.smartWrap(10).shouldBeEqual("12345   ${lineSeparator()}89012")
     }
 
     @Test
-    fun `given sting contains multiple contiguous spaces, when total paragraph length is more than maxCharPerLine, and number of spaces overflows line length, then return wrapped paragraph with new line consuming one space`() {
-        val myString = "12345       89012"
-        myString.smartWrap(10).shouldBeEqual("12345     ${lineSeparator()} 89012")
+    fun `given sting contains multiple contiguous spaces, when total paragraph length is more than maxCharPerLine, and number of spaces overflows line length, then return wrapped paragraph consuming one space`() {
+        val myString = "12345       34567"
+        myString.smartWrap(10).shouldBeEqual("12345     ${lineSeparator()} 34567")
     }
 
-//    @Test
-//    fun `ToDo - minFill acts as it should`() {
-//        true.shouldBeFalse()
-//    }
+    @Test
+    fun `given string contains line separator characters already, `() {
+        TODO()
+    }
 
+    @Test
+    fun `given minFill different than 0,5, then the chars in a line after wrapping are at least that percentage (including the hyphen)`() {
+        "ciao ciao ciao".smartWrap(8, 0.6).shouldBeEqual("ciao ci-${lineSeparator()}ao ciao")
+        "cia ciaooooooo".smartWrap(10).shouldBeEqual("cia ciaoo-${lineSeparator()}ooooo")
+        "cia ciaooooooo".smartWrap(10, 0.3).shouldBeEqual("cia${lineSeparator()}ciaooooooo")
+        "cia ciaooooooo".smartWrap(10, 0.8).shouldBeEqual("cia ciaoo-${lineSeparator()}ooooo")
+        "cia cia ooooooo".smartWrap(10, 0.8).shouldBeEqual("cia cia o-${lineSeparator()}oooooo")
+        "cia cia ooooooo".smartWrap(10, 0.9).shouldBeEqual("cia cia o-${lineSeparator()}oooooo")
+        "cia cia ooooooo".smartWrap(10, 1.0).shouldBeEqual("cia cia o-${lineSeparator()}oooooo")
+    }
+
+    @Test
+    fun `TODO - tabs and other white spaces question mark`() {
+        TODO()
+    }
+
+    @Test
+    fun `TODO  - what else needs testing question mark`() {
+        TODO()
+    }
 
     companion object {
-        private fun String.smartWrap(maxCharsPerLine: Int): String = PersonalizableSmartWrap(maxCharsPerLine).invoke(this)
+        private fun String.smartWrap(maxCharsPerLine: Int, minFill: Double = 0.5): String = PersonalizableSmartWrap(maxCharsPerLine, lineSeparator(), minFill).invoke(this)
     }
 }

@@ -12,8 +12,9 @@ import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.lineLastI
 import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.overflowed
 import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.leavesLineTooEmpty
 import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.theresWhiteSpaceInCurrentLine
-//import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.overflowed
 import java.lang.System.lineSeparator
+import kotlin.math.roundToInt
+import kotlin.math.roundToInt
 
 class PersonalizableSmartWrapUtilsFunctionsTest {
 
@@ -64,26 +65,26 @@ class PersonalizableSmartWrapUtilsFunctionsTest {
     fun `leavesLineTooEmpty works`(){
         val overflowingLine = "ciaoo "
         leavesLineTooEmpty(5, 0, 4 ).shouldBeFalse()
+
     }
 
     @Test
     fun `minFill calculation gives the minimum number of characters that a line must contain before wrapping, between 0 and maxCharsPerLine-1`(){
         val minFillFraction = 0.7
         val maxCharsPerLine = 11
-        (maxCharsPerLine * minFillFraction).toInt().coerceIn(0,maxCharsPerLine - 1).shouldBeEqual(7)
+        (maxCharsPerLine * minFillFraction).roundToInt().coerceIn(0,maxCharsPerLine - 1).shouldBeEqual(8)
         val minFillFraction2 = 0
         val maxCharsPerLine2 = 113
-        (maxCharsPerLine2 * minFillFraction2).toInt().coerceIn(0,maxCharsPerLine2 - 1).shouldBeEqual(0)
+        (maxCharsPerLine2.toDouble() * minFillFraction2).roundToInt().coerceIn(0,maxCharsPerLine2 - 1).shouldBeEqual(0)
         val minFillFraction3 = 1
         val maxCharsPerLine3 = 113
-        (maxCharsPerLine3 * minFillFraction3).toInt().coerceIn(0,maxCharsPerLine3 - 1).shouldBeEqual(112)
+        (maxCharsPerLine3.toDouble() * minFillFraction3).roundToInt().coerceIn(0,maxCharsPerLine3 - 1).shouldBeEqual(112)
         val minFillFraction4 = 1.5
         val maxCharsPerLine4 = 113
-        (maxCharsPerLine4 * minFillFraction4).toInt().coerceIn(0,maxCharsPerLine4 - 1).shouldBeEqual(112)
+        (maxCharsPerLine4.toDouble() * minFillFraction4).roundToInt().coerceIn(0,maxCharsPerLine4 - 1).shouldBeEqual(112)
         val minFillFraction5 = -1
         val maxCharsPerLine5 = 113
-        (maxCharsPerLine5 * minFillFraction5).toInt().coerceIn(0,maxCharsPerLine5 - 1).shouldBeEqual(0)
-
+        (maxCharsPerLine5.toDouble() * minFillFraction5).roundToInt().coerceIn(0,maxCharsPerLine5 - 1).shouldBeEqual(0)
     }
 
     @Test
@@ -96,6 +97,11 @@ class PersonalizableSmartWrapUtilsFunctionsTest {
         theresWhiteSpaceInCurrentLine(-1, 6).shouldBeFalse()
         theresWhiteSpaceInCurrentLine(-1, 0).shouldBeFalse()
 //        theresWhiteSpaceInCurrentLine(-1, -1).shouldBeFalse()
+
+    }
+
+    @Test
+    fun `leavesLineTooEmpty works as expected`(){
 
     }
 
