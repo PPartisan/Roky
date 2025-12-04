@@ -11,8 +11,8 @@ val usersModule =
             scoped { UsersListUseCase() }
             scoped {
                 UsersListPresenter(
-                    users = get(),
                     truncate = get(),
+                    repository = get(),
                     scope = get<ChatroomWindow>().windowScope,
                     dispatchers = get(),
                 )
