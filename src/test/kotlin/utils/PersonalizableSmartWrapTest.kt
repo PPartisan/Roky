@@ -22,9 +22,9 @@ class PersonalizableSmartWrapTest {
     fun `when string is longer than cutoff size, and the string contains no white space, then return split string with hyphenation`() {
         "loooongStriiing".smartWrap(10).shouldBeEqual("loooongSt-${lineSeparator()}riiing")
     }
-
+    // modified
     @Test
-    fun `when string with no spaces is longer than twice maxCharPerLine, then return string split in 3 lines with hyphens`() {
+    fun `when string with no spaces is longer than double and shorter than triple maxCharPerLine, then return string split in 3 lines with hyphens`() {
         val myString = "1234567890123"
         myString.smartWrap(6).shouldBeEqual("12345-${lineSeparator()}67890-${lineSeparator()}123")
     }
@@ -72,10 +72,11 @@ class PersonalizableSmartWrapTest {
         val myString = "12345       34567"
         myString.smartWrap(10).shouldBeEqual("12345     ${lineSeparator()} 34567")
     }
-
+    //new
     @Test
-    fun `given string contains line separator characters already, `() {
-        TODO()
+    fun `given string contains line separator character already, when lines do not exceed maxCharsPerLine, then split on lineSeparator`() {
+        val myString = "1234${lineSeparator()}5678"
+        myString.smartWrap(6).shouldBeEqual("1234${lineSeparator()}5678")
     }
 
     @Test
