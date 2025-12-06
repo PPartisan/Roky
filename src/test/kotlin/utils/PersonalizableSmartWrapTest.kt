@@ -28,11 +28,17 @@ class PersonalizableSmartWrapTest {
         val myString = "1234567890123"
         myString.smartWrap(6).shouldBeEqual("12345-${lineSeparator()}67890-${lineSeparator()}123")
     }
-
+    // modified
     @Test
-    fun `when string with spaces is longer than maxCharPerLine, then return string split in 2 lines on spaces`() {
+    fun `when string with spaces is longer than maxCharPerLine and line length is greater than minFill, then return string split in 2 lines on spaces`() {
         val myString = "12345 789012"
         myString.smartWrap(6).shouldBeEqual("12345${lineSeparator()}789012")
+    }
+    //new
+    @Test
+    fun `when string with spaces is longer than maxCharPerLine and line length is less than minFill, then hyphenate`() {
+        val myString = "1 23456"
+        myString.smartWrap(6).shouldBeEqual("1 234-${lineSeparator()}56")
     }
 
     @Test
@@ -40,9 +46,9 @@ class PersonalizableSmartWrapTest {
         val myString = "123456 789012"
         myString.smartWrap(6).shouldBeEqual("123456${lineSeparator()}789012")
     }
-
+    //modified
     @Test
-    fun `when string with spaces is longer than maxCharPerLine, and second word is longer than maxCharPerLine, then return string split in 3 lines`() {
+    fun `when string with spaces is longer than maxCharPerLine, line length is greater than minFill, and second word is longer than maxCharPerLine but less than double maxCharPerLine, then return string split in 3 lines`() {
         val myString = "12345 8901234567890"
         myString.smartWrap(
             6,
