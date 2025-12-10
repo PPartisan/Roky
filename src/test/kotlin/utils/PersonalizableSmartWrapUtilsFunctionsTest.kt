@@ -63,8 +63,8 @@ class PersonalizableSmartWrapUtilsFunctionsTest {
 
     @Test
     fun `leavesLineTooEmpty works`(){
-        val overflowingLine = "ciaoo "
         leavesLineTooEmpty(5, 0, 4 ).shouldBeFalse()
+        leavesLineTooEmpty(5, 0, 7 ).shouldBeTrue()
 
     }
 
@@ -103,21 +103,6 @@ class PersonalizableSmartWrapUtilsFunctionsTest {
     @Test
     fun `leavesLineTooEmpty works as expected`(){
 
-    }
-
-
-//    theresWhiteSpaceInCurrentLine
-//
-//    "".startNewLine(lineSeparator: String)
-//
-//    newLineLastIndex
-//
-//    "".lineStartIndex(lineSeparator: String)
-//
-//    leavesLineTooEmpty
-
-    companion object {
-        private fun String.smartWrap(maxCharsPerLine: Int): String = PersonalizableSmartWrap(maxCharsPerLine).invoke(this)
     }
 
 }

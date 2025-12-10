@@ -22,33 +22,31 @@ class PersonalizableSmartWrap(
         with(input){
             require(maxCharsPerLine >= 2) { "Character limit should be at least 2" }
             var paragraph = ""
-            var currentLineStartIndex = 0                   // index in paragraph where current line starts
-            var currentLineLen = 0                          // length of current line
-            var lastWhiteSpaceIndex = -1                    // index in paragraph of last space/tab in current line
+            var currentLineStartIndex = 0
+            var currentLineLen = 0
+            var lastWhiteSpaceIndex = -1
             val minFill = (maxCharsPerLine * minFillFraction).toDouble().roundToInt().coerceIn(0, maxCharsPerLine - 1) //I do toDouble() because when it's an Int it gives error
-
             for ( (chindex, ch) in input.withIndex()) {
-                if (ch == lineSeparator.first() && input.substring(chindex, chindex + lineSeparator.length)==lineSeparator) {
-                    paragraph += lineSeparator
-                    currentLineStartIndex = paragraph.lineStartIndex(lineSeparator)
-                    currentLineLen = paragraph.length - currentLineStartIndex           //Recompute current line length: from that new line start to the end.
+                paragraph += ch
+                if ((paragraph.length >= lineSeparator.length) && (paragraph.substring(paragraph.length-lineSeparator.length)==lineSeparator)) {
+                    currentLineStartIndex = chindex+1
+                    currentLineLen = 0
                     lastWhiteSpaceIndex = -1
                 } else {
-                    paragraph+=ch
                     currentLineLen++
                     if (ch.isBreakableWhiteSpace()) {
-                        lastWhiteSpaceIndex = paragraph.lastIndex                       //save the position of the white space
+                        lastWhiteSpaceIndex = paragraph.lastIndex
                     }
-                    if (overflowed(currentLineLen, maxCharsPerLine)) {                  //If this has made us go over the line limit
+                    if (overflowed(currentLineLen, maxCharsPerLine)) {
                         if(theresWhiteSpaceInCurrentLine(lastWhiteSpaceIndex, currentLineStartIndex) && !leavesLineTooEmpty(lastWhiteSpaceIndex, currentLineStartIndex, minFill)) {  // There's a space and cutting there wouldn't leave the line too empty, we go to new line
-                            paragraph=paragraph.substituteSubStringAt(lastWhiteSpaceIndex, lineSeparator)   //substitutes the white space with the lineseparator
-                        } else { // if no whitespace in the current line  or if it would leave line too empty, we hyphenate.
+                            paragraph=paragraph.substituteSubStringAt(lastWhiteSpaceIndex, lineSeparator)
+                        } else {
                             paragraph = paragraph.insertSubStringAt(lineLastIndex(currentLineStartIndex, maxCharsPerLine), "-$lineSeparator")
                         }
-                        // In all cases we start a new line
+
                         currentLineStartIndex = paragraph.lineStartIndex(lineSeparator)
-                        currentLineLen = paragraph.length - currentLineStartIndex                       //Recompute current line length: from that new line start to the end.
-                        lastWhiteSpaceIndex = -1                                                        //reset white space index inside current line to negative (there's none): there can't be one because the one we just substituted was the last one in the paragraph
+                        currentLineLen = paragraph.length - currentLineStartIndex
+                        lastWhiteSpaceIndex = -1
                     }
                 }
             }
@@ -60,10 +58,10 @@ class PersonalizableSmartWrap(
         fun String.insertSubStringAt(index: Int, subString: String ) = substring(0,index) + subString + substring(index)
 
         @VisibleForTesting
-        fun String.substituteSubStringAt(index: Int, stringToInsert: String) = substring(0,index) + stringToInsert + substring(index+1) //Replace space/tab with a new line char.
+        fun String.substituteSubStringAt(index: Int, stringToInsert: String) = substring(0,index) + stringToInsert + substring(index+1)
 
         @VisibleForTesting
-        fun Char.isBreakableWhiteSpace() = ((this == ' ') || (this == '\t'))  //with tab, we might have to change stuff
+        fun Char.isBreakableWhiteSpace() = ((this == ' ') || (this == '\t'))
 
         @VisibleForTesting
         fun leavesLineTooEmpty(lastWhiteSpaceIndex: Int, currentLineStartIndex: Int, minFill: Int) = lastWhiteSpaceIndex - currentLineStartIndex < minFill
@@ -77,14 +75,11 @@ class PersonalizableSmartWrap(
         @VisibleForTesting
         fun lineLastIndex(currentLineStartIndex: Int, currentLineLen: Int) = currentLineStartIndex + (currentLineLen - 1)
 
-
         @VisibleForTesting
         fun overflowed(currentLineLen: Int, maxCharsPerLine: Int) = currentLineLen > maxCharsPerLine
     }
 
 }
-
-
 
 //class PersonalizableSmartWrap(
 //    private val maxCharsPerLine: Int,
