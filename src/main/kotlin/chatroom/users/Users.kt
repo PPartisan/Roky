@@ -8,11 +8,10 @@ val usersModule =
     module {
         scope<ChatroomWindow> {
             scoped { UsersPanel(presenter = get()) }
-            scoped { UsersListUseCase() }
             scoped {
                 UsersListPresenter(
-                    users = get(),
                     truncate = get(),
+                    repository = get(),
                     scope = get<ChatroomWindow>().windowScope,
                     dispatchers = get(),
                 )
