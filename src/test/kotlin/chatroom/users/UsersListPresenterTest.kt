@@ -1,23 +1,23 @@
- package chatroom.users
+package chatroom.users
 
- import arch.RokyDispatchers
- import chatroom.users.UsersViewState.Empty
- import chatroom.users.UsersViewState.Users
- import chatserver.*
- import coAnswersDelayed
- import io.mockk.*
- import kotlinx.coroutines.CoroutineScope
- import kotlinx.coroutines.ExperimentalCoroutinesApi
- import kotlinx.coroutines.flow.flowOf
- import kotlinx.coroutines.test.StandardTestDispatcher
- import kotlinx.coroutines.test.advanceUntilIdle
- import kotlinx.coroutines.test.runTest
- import org.junit.jupiter.api.Assertions.*
- import org.junit.jupiter.api.BeforeEach
- import org.junit.jupiter.api.Test
+import arch.RokyDispatchers
+import chatroom.users.UsersViewState.Empty
+import chatroom.users.UsersViewState.Users
+import chatserver.*
+import coAnswersDelayed
+import io.mockk.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
- @OptIn(ExperimentalCoroutinesApi::class)
- class UsersListPresenterTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class UsersListPresenterTest {
     private lateinit var scope: CoroutineScope
     private lateinit var subscribePresence: SubscribeChatRepository
     private lateinit var readPresence: ReadChatRepository<PresenceResult>
@@ -34,7 +34,7 @@
         every { subscribePresence.subscribe() } just runs
         every { subscribePresence.unsubscribe() } just runs
         every { repositories.readPresence() } returns readPresence
-        coEvery { readPresence.observe() } coAnswersDelayed {flowOf()}
+        coEvery { readPresence.observe() } coAnswersDelayed { flowOf() }
         val dispatchers: RokyDispatchers =
             mockk<RokyDispatchers>().apply {
                 every { main } returns dispatcher
@@ -80,7 +80,7 @@
                 view.show(
                     withArg {
                         assertTrue { it is Users }
-                        assertTrue { (it as Users).users == userSet }
+                        assertTrue { (it as Users).users.toSet() == userSet }
                     },
                 )
             }
@@ -107,4 +107,4 @@
     companion object {
         private val dispatcher = StandardTestDispatcher()
     }
- }
+}
