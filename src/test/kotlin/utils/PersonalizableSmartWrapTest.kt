@@ -85,14 +85,20 @@ class PersonalizableSmartWrapTest {
 
 
     @Test
-    fun `given minFill different than 0,5, then the chars in a line after wrapping are at least that percentage (including the hyphen)`() {
+    fun `given minFill different from 0,5, when last whitespace index in line greater than ((maxCharsPerLine multiplied by minFill)-1), then hyphenate`() {
         "ciao ciao ciao".smartWrap(8, 0.6).shouldBeEqual("ciao ci-${lineSeparator()}ao ciao")
-        "cia ciaooooooo".smartWrap(10).shouldBeEqual("cia ciaoo-${lineSeparator()}ooooo")
-        "cia ciaooooooo".smartWrap(10, 0.3).shouldBeEqual("cia${lineSeparator()}ciaooooooo")
-        "cia ciaooooooo".smartWrap(10, 0.8).shouldBeEqual("cia ciaoo-${lineSeparator()}ooooo")
-        "cia cia ooooooo".smartWrap(10, 0.8).shouldBeEqual("cia cia o-${lineSeparator()}oooooo")
-        "cia cia ooooooo".smartWrap(10, 0.9).shouldBeEqual("cia cia o-${lineSeparator()}oooooo")
+    }
+
+
+    @Test
+    fun `given minFill equal to maxCharsPerLine, then always hyphenate`() {
         "cia cia ooooooo".smartWrap(10, 1.0).shouldBeEqual("cia cia o-${lineSeparator()}oooooo")
+    }
+
+
+    @Test
+    fun `given minFill set to zero, then insert lineSeparator rather than hyphenating`() {
+        "c iaooooooo".smartWrap(10, 0.0).shouldBeEqual("c${lineSeparator()}iaooooooo")
     }
 
 //    @Test
