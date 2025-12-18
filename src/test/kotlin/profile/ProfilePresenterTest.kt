@@ -4,6 +4,7 @@ import arch.RokyDispatchers
 import chatserver.ProfileResult
 import chatserver.ReadChatRepository
 import chatserver.WriteChatRepository
+import chatserver.profiles.SupabaseProfilesRepository.Profile
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -43,13 +44,13 @@ class ProfilePresenterTest {
         }
         val writeUsername: WriteChatRepository<String> = mockk()
         every { writeUsername.write(any()) } answers {
-            val user = it.invocation.args [0] as String
+            val user = it.invocation.args[0] as String
             usernames.value =
                 if (user == INVALID_USER) {
                     ProfileResult.fail(RuntimeException())
                 } else {
                     val currentUsernames = usernames.value.item.toMutableMap()
-                    currentUsernames[user] = user
+                    currentUsernames[user] = Profile(user, user)
                     ProfileResult.ok(currentUsernames)
                 }
         }

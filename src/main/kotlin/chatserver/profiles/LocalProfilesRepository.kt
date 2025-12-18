@@ -7,6 +7,7 @@ import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
 import chatserver.WriteChatRepository
 import chatserver.messages.LocalChatMessages
+import chatserver.profiles.SupabaseProfilesRepository.Profile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -33,7 +34,7 @@ class LocalProfilesRepository(
         scope.launch(dispatchers.default) {
             while (true) {
                 val users = LocalChatMessages.sampleUsers.shuffled()
-                state.value = users.associateWith { it }.let(ProfileResult::ok)
+                state.value = users.associateWith { Profile(it, it) }.let(ProfileResult::ok)
                 delay(5.seconds)
             }
         }
@@ -50,7 +51,7 @@ class LocalProfilesRepository(
                 delay(2.seconds)
                 check(item.isValidUsername()) { "Could not assign current username." }
                 val profiles = latest().item.toMutableMap()
-                profiles[item] = item
+                profiles[item] = Profile(item, item)
                 state.value = ok(profiles)
             } catch (e: Exception) {
                 state.value = ProfileResult.fail(e)
