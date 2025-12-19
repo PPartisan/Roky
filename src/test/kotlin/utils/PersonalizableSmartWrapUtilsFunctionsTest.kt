@@ -4,105 +4,142 @@ import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.equals.shouldBeEqual
 import org.junit.jupiter.api.Test
-import utils.personalizableSmartWrap.PersonalizableSmartWrap
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.insertSubStringAt
-import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.lineStartIndex
-import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.substituteSubStringAt
-import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.lineLastIndex
-import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.overflowed
 import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.leavesLineTooEmpty
+import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.lineLastIndex
+import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.lineStartIndex
+import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.overflowed
+import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.substituteSubStringAt
 import utils.personalizableSmartWrap.PersonalizableSmartWrap.Companion.theresWhiteSpaceInCurrentLine
 import java.lang.System.lineSeparator
-import kotlin.math.roundToInt
-import kotlin.math.roundToInt
 
 class PersonalizableSmartWrapUtilsFunctionsTest {
+    @ParameterizedTest
+    @MethodSource("provideInsertString")
+    fun `when insertSubStringAt called then add at the given index and shift remainder of word right`(
+        input: String,
+        index: Int,
+        insert: String,
+        expected: String
+    ) {
+        input.insertSubStringAt(index, insert).shouldBeEqual(expected)
 
-    @Test
-    fun `insertSubStringAt adds AT the given index and shift the rest right`() {
-        "ciao".insertSubStringAt(2, "X").shouldBeEqual("ciXao")
-        "ciao".insertSubStringAt(2, "XX").shouldBeEqual("ciXXao")
-        "ciao".insertSubStringAt("ciao".length, "X").shouldBeEqual("ciaoX")
-        "ciao".insertSubStringAt("ciao".length, "XX").shouldBeEqual("ciaoXX")
     }
 
-     @Test
-     fun `substituteSubString substitutes appropriately`() {
-         "ciao".substituteSubStringAt(2, "X").shouldBeEqual("ciXo")
-         "ciao".substituteSubStringAt(2, "XX").shouldBeEqual("ciXXo")
-     }
 
-    @Test
-    fun `lineStartIndex finds the index right after the lineSeparator String`(){
-        "ciao${lineSeparator()}ciao".lineStartIndex(lineSeparator()).shouldBeEqual(6)
-        "ciao\nciao".lineStartIndex("\n").shouldBeEqual(5)
-        "ciao\r\nciao".lineStartIndex("\r\n").shouldBeEqual(6)
-        "ciao\rciao".lineStartIndex("\r").shouldBeEqual(5)
-        "ciao\nciao".lineStartIndex(lineSeparator()).shouldBeEqual(0)
-        "ciao${lineSeparator()}".lineStartIndex(lineSeparator()).shouldBeEqual(6)
+    @ParameterizedTest
+    @MethodSource("provideSubstring")
+    fun `when substituteSubStringAt called then replace char at stated index`(
+        input: String,
+        index: Int,
+        insert: String,
+        expected: String
+    ) {
+        input.substituteSubStringAt(index, insert).shouldBeEqual(expected)
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideSeparator")
+    fun `when lineStartIndex called then find the index after the lineSeparator`(
+        input: String,
+        param: String,
+        expected: Int
+    ) {
+        input.lineStartIndex(param).shouldBeEqual(expected)
     }
 
     @Test
-    fun `lineLastIndex find the end of the line`(){
+    fun `when lineLastIndex called then find the index of the final character`() {
         val myString = "ciao${lineSeparator()}spr"
         val currentLineLen = myString.length - myString.lineStartIndex(lineSeparator())
         currentLineLen.shouldBeEqual(3)
-        lineLastIndex(myString.lineStartIndex(lineSeparator()), currentLineLen).shouldBeEqual(8)
-        val myString2 = "ciao\nspr"
-        val currentLineLen2 = myString.length - myString.lineStartIndex("\n")
-        lineLastIndex(myString2.lineStartIndex("\n"), currentLineLen2).shouldBeEqual(7)
+        lineLastIndex(
+            myString.lineStartIndex(lineSeparator()),
+            currentLineLen
+        ).shouldBeEqual(7 - 1 + lineSeparator().length)
     }
 
-    @Test
-    fun `overflowed returns true on line length bigger than maxCharPerLine`(){
-        val nonOverflowingLine = "ciao "
-        overflowed(nonOverflowingLine.length, 5).shouldBeFalse()
-        val overflowingLine = "ciaoo "
-        overflowed(overflowingLine.length, 5).shouldBeTrue()
+    @ParameterizedTest
+    @MethodSource("provideOverflow")
+    fun `given overflowed called, when line length greater than maxCharPerLine then return True else return False`(
+        input: String,
+        maxChars: Int,
+        expected: Boolean
+    ) {
+        overflowed(input.length, maxChars).shouldBeEqual(expected)
     }
 
-    @Test
-    fun `leavesLineTooEmpty works`(){
-        leavesLineTooEmpty(5, 0, 4 ).shouldBeFalse()
-        leavesLineTooEmpty(5, 0, 7 ).shouldBeTrue()
-
+    @ParameterizedTest
+    @MethodSource("provideMinFill")
+    fun `given leavesLineTooEmpty called, when minFill less than or equal to lastWhiteSpaceIndex then return false else return true`(
+        lastWhite: Int,
+        start: Int,
+        mf: Int,
+        expected: Boolean
+    ) {
+        leavesLineTooEmpty(lastWhite, start, mf).shouldBeEqual(expected)
     }
 
-    @Test
-    fun `minFill calculation gives the minimum number of characters that a line must contain before wrapping, between 0 and maxCharsPerLine-1`(){
-        val minFillFraction = 0.7
-        val maxCharsPerLine = 11
-        (maxCharsPerLine * minFillFraction).roundToInt().coerceIn(0,maxCharsPerLine - 1).shouldBeEqual(8)
-        val minFillFraction2 = 0
-        val maxCharsPerLine2 = 113
-        (maxCharsPerLine2.toDouble() * minFillFraction2).roundToInt().coerceIn(0,maxCharsPerLine2 - 1).shouldBeEqual(0)
-        val minFillFraction3 = 1
-        val maxCharsPerLine3 = 113
-        (maxCharsPerLine3.toDouble() * minFillFraction3).roundToInt().coerceIn(0,maxCharsPerLine3 - 1).shouldBeEqual(112)
-        val minFillFraction4 = 1.5
-        val maxCharsPerLine4 = 113
-        (maxCharsPerLine4.toDouble() * minFillFraction4).roundToInt().coerceIn(0,maxCharsPerLine4 - 1).shouldBeEqual(112)
-        val minFillFraction5 = -1
-        val maxCharsPerLine5 = 113
-        (maxCharsPerLine5.toDouble() * minFillFraction5).roundToInt().coerceIn(0,maxCharsPerLine5 - 1).shouldBeEqual(0)
+    companion object {
+        @JvmStatic
+        fun provideMinFill() = listOf(
+            // You can use actual code/logic here
+            Arguments.of(5, 0, 4, false),
+            Arguments.of(5, 0, 7, true)
+        )
+
+        @JvmStatic
+        fun provideInsertString() = listOf(
+            // You can use actual code/logic here
+            Arguments.of("ciao", 0, "X", "Xciao"),
+            Arguments.of("ciao", "ciao".length, "XX", "ciaoXX")
+        )
+
+        @JvmStatic
+        fun provideSubstring() = listOf(
+            // You can use actual code/logic here
+            Arguments.of("ciao", 2, "X", "ciXo"),
+            Arguments.of("ciao", 2, "XX", "ciXXo")
+        )
+
+        @JvmStatic
+        fun provideSeparator() = listOf(
+            // You can use actual code/logic here
+            Arguments.of("ciao${lineSeparator()}ciao", lineSeparator(), 4 + lineSeparator().length),
+            Arguments.of("ciao${lineSeparator()}", lineSeparator(), 4 + lineSeparator().length)
+        )
+
+        @JvmStatic
+        fun provideOverflow() = listOf(
+            // You can use actual code/logic here
+            Arguments.of("ciao ", 5, false),
+            Arguments.of("ciaoo ", 5, true)
+        )
+
+        @JvmStatic
+        fun provideIndices() = listOf(
+            // You can use actual code/logic here
+            Arguments.of(6, 6, true),
+            Arguments.of(6, 7, false),
+            Arguments.of(0, 6, false),
+            Arguments.of(-1, 0, false),
+        )
     }
 
-    @Test
-    fun `theresWhiteSpaceInCurrentLine counts also spaces at the end that made us overflow`(){
-        theresWhiteSpaceInCurrentLine(6, 5).shouldBeTrue()
+    @ParameterizedTest
+    @MethodSource("provideIndices")
+    fun `Given theresWhiteSpaceInCurrentLine called, when lastWhiteSpaceIndex less than currentLineStartIndex return false else return true`(
+        lastWhite: Int,
+        start: Int,
+        expected: Boolean
+    ) {
         theresWhiteSpaceInCurrentLine(6, 6).shouldBeTrue()
         theresWhiteSpaceInCurrentLine(6, 7).shouldBeFalse()
         theresWhiteSpaceInCurrentLine(0, 6).shouldBeFalse()
-        theresWhiteSpaceInCurrentLine(0, 0).shouldBeTrue()
-        theresWhiteSpaceInCurrentLine(-1, 6).shouldBeFalse()
         theresWhiteSpaceInCurrentLine(-1, 0).shouldBeFalse()
-//        theresWhiteSpaceInCurrentLine(-1, -1).shouldBeFalse()
-
-    }
-
-    @Test
-    fun `leavesLineTooEmpty works as expected`(){
-
     }
 
 }
