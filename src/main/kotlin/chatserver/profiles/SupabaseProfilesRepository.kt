@@ -1,27 +1,20 @@
 package chatserver.profiles
 
-import chatserver.ProfileResult
-import chatserver.ReadChatRepository
-import chatserver.SubscribeChatRepository
-import chatserver.WriteChatRepository
+import chatserver.*
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.realtime.selectAsFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 class SupabaseProfilesRepository(
     private val client: SupabaseClient,
+    private val userId: LoggedInUserId,
     private val scope: CoroutineScope,
 ) : ReadChatRepository<ProfileResult>, WriteChatRepository<String>, SubscribeChatRepository {
     private val profiles: MutableStateFlow<ProfileResult> = MutableStateFlow(ProfileResult.ok(emptyMap()))
@@ -30,8 +23,27 @@ class SupabaseProfilesRepository(
 
     override fun observe(): Flow<ProfileResult> = profiles.asStateFlow()
 
-    override fun write(item: String) {
-        TODO("Not yet implemented")
+    override fun write(requestedUsername: String) {
+        if(requestedUsername.isBlank()){
+            throw IllegalArgumentException("Requested username must not be blank.")
+        }
+        val id = userId().ifBlank {
+            throw IllegalStateException("User ID must not be blank.")
+        }
+        val currentUsername = latest().item[id]?.username
+        if(currentUsername == requestedUsername){
+            throw IllegalStateException("Current username must not match requested username.")
+        }
+        scope.launch {
+            client.from("profiles")
+                .update({
+                    set("username", requestedUsername)
+                }){
+                    filter{
+                        eq("id", id)
+                    }
+                }
+        }
     }
 
     @OptIn(SupabaseExperimental::class)

@@ -10,4 +10,5 @@ val chatServerModule =
     module {
         includes(chatServerProfilesModule, chatServerMessagesModule, chatServerPresenceModule)
         factoryOf(::ChatRepositories)
+        factoryOf(::LoggedInUserId)
     }
