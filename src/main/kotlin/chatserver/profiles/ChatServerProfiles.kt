@@ -15,4 +15,13 @@ val chatServerProfilesModule =
                 ),
             )
         }
+        single {
+            SupabaseProfilesRepository(
+                get(),
+                get(),
+                CoroutineScope(
+                    SupervisorJob() + get<RokyDispatchers>().io,
+                ),
+            )
+        }
     }
