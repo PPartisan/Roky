@@ -6,13 +6,17 @@ import chatserver.SubscribeChatRepository
 import chatserver.WriteChatRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.realtime.selectAsFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 class SupabaseMessageRepository(
     private val client: SupabaseClient,
@@ -21,7 +25,6 @@ class SupabaseMessageRepository(
     private val messages: MutableStateFlow<MessageResult> = MutableStateFlow(MessageResult.ok(emptyList()))
 
     override fun latest(): MessageResult = messages.value
-
 
     override fun observe(): Flow<MessageResult> = messages.asStateFlow()
 
@@ -35,11 +38,19 @@ class SupabaseMessageRepository(
             .launchIn(scope)
     }
 
-
-    override fun write(item: String)   {
-        TODO("Not yet implemented")
+    override fun write(item: String) {
+        scope.launch {
+            client.from("messages").insert(item.toChatMessage())
+        }
     }
 
+    private fun String.toChatMessage() =
+        Message(
+            id = UUID.randomUUID().toString(),
+            profileId = client.auth.currentUserOrNull()?.id.orEmpty(),
+            content = this,
+            createdAt = Clock.System.now().toString(),
+        )
 
     override fun unsubscribe() {
         scope.cancel()
