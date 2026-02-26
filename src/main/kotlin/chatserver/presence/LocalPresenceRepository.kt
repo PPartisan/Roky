@@ -14,9 +14,9 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class LocalPresenceRepository(
-    private val users: () -> Set<String>,
     private val scope: CoroutineScope,
     private val dispatchers: RokyDispatchers,
+    private val users: () -> Set<String>,
 ) : SubscribeChatRepository, ReadChatRepository<PresenceResult> {
     private val state: MutableStateFlow<PresenceResult> = MutableStateFlow(PresenceResult.ok(emptySet()))
     private var job: Job? = null

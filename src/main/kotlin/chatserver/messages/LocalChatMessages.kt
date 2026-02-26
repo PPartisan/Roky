@@ -2,6 +2,7 @@ package chatserver.messages
 
 import arch.RokyDispatchers
 import chatserver.ChatMessageResult
+import chatserver.MessageResult
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
 import chatserver.WriteChatRepository
@@ -16,14 +17,14 @@ class LocalChatMessages(
     private val dispatchers: RokyDispatchers,
     private val scope: CoroutineScope = CoroutineScope(dispatchers.default + Job()),
     private val source: () -> Flow<String> = { emitEveryThreeSeconds(sampleUsers, sampleMessages) },
-) : ReadChatRepository<ChatMessageResult>, SubscribeChatRepository, WriteChatRepository<String> {
+) : ReadChatRepository<MessageResult>, SubscribeChatRepository, WriteChatRepository<String> {
     private var samples: Job? = null
-    private val _events = MutableStateFlow("")
+    private val _events = MutableStateFlow(listOf<String>())
     private val events = _events.asStateFlow()
 
-    override fun latest(): ChatMessageResult = events.toResult()
+    override fun latest(): MessageResult = events.toResult()
 
-    override fun observe(): Flow<ChatMessageResult> = events.map { ChatMessageResult.ok(it) }
+    override fun observe(): Flow<MessageResult> = events.map { MessageResult.ok(it) }
 
     override fun subscribe() {
         samples =
@@ -39,7 +40,7 @@ class LocalChatMessages(
     }
 
     companion object {
-        private fun StateFlow<String>.toResult(): ChatMessageResult = ChatMessageResult.ok(value)
+        private fun StateFlow<List<String>>.toResult(): MessageResult = MessageResult.ok(Message())
 
         private val sampleMessages =
             listOf(
