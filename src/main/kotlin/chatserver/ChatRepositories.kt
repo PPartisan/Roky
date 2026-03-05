@@ -25,14 +25,18 @@ class ChatRepositories(
     fun subscribeProfiles(): SubscribeChatRepository =
         if (USE_LOCAL_MOCKS) localProfiles else remoteProfiles
 
-    fun readMessages(): ReadChatRepository<ChatMessageResult> =
+    fun readMessages(): ReadChatRepository<MessageResult> =
         if (USE_LOCAL_MOCKS) localMessages else remoteMessages
 
-    fun subscribeMessages(): SubscribeChatRepository = localMessages
+    fun subscribeMessages(): SubscribeChatRepository =
+        if (USE_LOCAL_MOCKS) localMessages else remoteMessages
 
-    fun writeMessages(): WriteChatRepository<String> = localMessages
+    fun writeMessages(): WriteChatRepository<String> =
+        if (USE_LOCAL_MOCKS) localMessages else remoteMessages
 
-    fun subscribePresence(): SubscribeChatRepository = localPresence
+    fun subscribePresence(): SubscribeChatRepository =
+        if (USE_LOCAL_MOCKS)  localPresence else remotePresence
 
-    fun readPresence(): ReadChatRepository<PresenceResult> = localPresence
+    fun readPresence(): ReadChatRepository<PresenceResult> =
+        if (USE_LOCAL_MOCKS) localPresence else remotePresence
 }

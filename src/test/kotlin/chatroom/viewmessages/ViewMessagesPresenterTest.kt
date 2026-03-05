@@ -3,7 +3,6 @@ package chatroom.viewmessages
 import arch.RokyDispatchers
 import chatroom.viewmessages.ViewMessagesViewState.Messages
 import chatroom.viewmessages.ViewMessagesViewState.NoMessages
-import chatserver.ChatMessageResult
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
 import io.mockk.*

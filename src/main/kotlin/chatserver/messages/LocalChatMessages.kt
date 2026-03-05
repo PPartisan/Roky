@@ -1,7 +1,7 @@
 package chatserver.messages
 
 import arch.RokyDispatchers
-import chatserver.ChatMessageResult
+import chatserver.Message
 import chatserver.MessageResult
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
@@ -16,21 +16,23 @@ import kotlin.time.Duration.Companion.seconds
 class LocalChatMessages(
     private val dispatchers: RokyDispatchers,
     private val scope: CoroutineScope = CoroutineScope(dispatchers.default + Job()),
-    private val source: () -> Flow<String> = { emitEveryThreeSeconds(sampleUsers, sampleMessages) },
+    private val source: () -> Flow<Message> = { emitEveryThreeSeconds(sampleUsers, sampleMessages) },
 ) : ReadChatRepository<MessageResult>, SubscribeChatRepository, WriteChatRepository<String> {
     private var samples: Job? = null
-    private val _events = MutableStateFlow(listOf<String>())
+    private val _events = MutableStateFlow(listOf<Message>())
     private val events = _events.asStateFlow()
 
-    override fun latest(): MessageResult = events.toResult()
+    override fun latest(): MessageResult = MessageResult.ok(events.value)
 
     override fun observe(): Flow<MessageResult> = events.map { MessageResult.ok(it) }
 
     override fun subscribe() {
         samples =
             scope.launch {
-                source().cancellable().collect {
-                    _events.value = it
+                source().cancellable().collect { latestMessage ->
+                    _events.update { allMessages ->
+                        allMessages + latestMessage
+                    }
                 }
             }
     }
@@ -40,8 +42,6 @@ class LocalChatMessages(
     }
 
     companion object {
-        private fun StateFlow<List<String>>.toResult(): MessageResult = MessageResult.ok(Message())
-
         private val sampleMessages =
             listOf(
                 "This is a coup!",
@@ -79,20 +79,21 @@ class LocalChatMessages(
                 "Dunia",
                 "Stefano",
                 "Mike",
+                "Niamh"
             )
 
         private fun emitEveryThreeSeconds(
             users: List<String>,
             messages: List<String>,
-        ) = flow {
+        ): Flow<Message> = flow {
             while (true) {
                 delay(3.seconds)
-                emit("${users.random()}: ${messages.random()}")
+                emit(Message(users.random(), messages.random()))
             }
         }
     }
 
     override fun write(item: String) {
-        _events.value = "Me: $item"
+        _events.update { it + Message("Me", item) }
     }
 }
