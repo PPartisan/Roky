@@ -17,5 +17,5 @@ data class MessageResult(
 
 data class Message(
     val userId: String,
-    val message: String
+    val message: String,
 )

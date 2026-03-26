@@ -79,18 +79,19 @@ class LocalChatMessages(
                 "Dunia",
                 "Stefano",
                 "Mike",
-                "Niamh"
+                "Niamh",
             )
 
         private fun emitEveryThreeSeconds(
             users: List<String>,
             messages: List<String>,
-        ): Flow<Message> = flow {
-            while (true) {
-                delay(3.seconds)
-                emit(Message(users.random(), messages.random()))
+        ): Flow<Message> =
+            flow {
+                while (true) {
+                    delay(3.seconds)
+                    emit(Message(users.random(), messages.random()))
+                }
             }
-        }
     }
 
     override fun write(item: String) {

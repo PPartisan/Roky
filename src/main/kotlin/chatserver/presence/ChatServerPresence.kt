@@ -17,13 +17,13 @@ val chatServerPresenceModule =
                     with(sampleUsers) {
                         shuffled().subList(0, (4..<size).random()).toSet()
                     }
-                }
+                },
             )
         }
         single {
             supabasePresenceRepository(
                 client = get(),
-                scope = CoroutineScope(SupervisorJob() + get<RokyDispatchers>().default)
+                scope = CoroutineScope(SupervisorJob() + get<RokyDispatchers>().default),
             )
         }
     }
@@ -31,10 +31,10 @@ val chatServerPresenceModule =
 private fun localPresenceRepository(
     scope: CoroutineScope,
     dispatchers: RokyDispatchers,
-    users: () -> Set<String>
+    users: () -> Set<String>,
 ): LocalPresenceRepository = LocalPresenceRepository(scope, dispatchers, users)
 
 private fun supabasePresenceRepository(
     client: SupabaseClient,
-    scope: CoroutineScope
+    scope: CoroutineScope,
 ): SupabasePresenceRepository = SupabasePresenceRepository(client, scope)
