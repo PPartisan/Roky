@@ -29,7 +29,7 @@ class LocalChatMessages(
     override fun subscribe() {
         samples =
             scope.launch {
-                source().cancellable().collect { latestMessage ->
+                source().onEach { println(it) }.cancellable().collect { latestMessage ->
                     _events.update { allMessages ->
                         allMessages + latestMessage
                     }
@@ -65,6 +65,7 @@ class LocalChatMessages(
                 "I just think it's something going around",
                 "Don't just type out what I'm saying Mike",
                 ":breathing_noises:",
+                "Wawu!!!!!",
             )
 
         val sampleUsers =
@@ -80,6 +81,7 @@ class LocalChatMessages(
                 "Stefano",
                 "Mike",
                 "Niamh",
+                "Chioma",
             )
 
         private fun emitEveryThreeSeconds(
