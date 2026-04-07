@@ -1,7 +1,6 @@
 package chatserver
 
 import chatserver.ReadChatRepository.ReadResult
-import chatserver.messages.SupabaseMessageRepository.*
 
 data class MessageResult(
     override val isOk: Boolean,
@@ -15,3 +14,8 @@ data class MessageResult(
         fun fail(e: Exception? = null): MessageResult = MessageResult(false, emptyList(), e)
     }
 }
+
+data class Message(
+    val userId: String,
+    val message: String,
+)

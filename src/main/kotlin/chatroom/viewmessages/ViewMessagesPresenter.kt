@@ -4,7 +4,7 @@ import arch.Presenter
 import arch.RokyDispatchers
 import chatroom.viewmessages.ViewMessagesViewState.Messages
 import chatroom.viewmessages.ViewMessagesViewState.NoMessages
-import chatserver.ChatMessageResult
+import chatserver.MessageResult
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 
 class ViewMessagesPresenter(
     private val windowScope: CoroutineScope,
-    private val read: ReadChatRepository<ChatMessageResult>,
+    private val read: ReadChatRepository<MessageResult>,
     private val channel: SubscribeChatRepository,
     dispatchers: RokyDispatchers,
 ) : Presenter<ViewMessagesView>(dispatchers) {
@@ -24,7 +24,7 @@ class ViewMessagesPresenter(
         windowScope.launch(dispatchers.io) {
             read.observe()
                 .filter { it.isOk }
-                .map { it.item }
+                .map { it.item.lastOrNull()?.let { "${it.userId}: ${it.message}" }.orEmpty() }
                 .map(::Messages)
                 .collect { message ->
                     withContext(dispatchers.main) {

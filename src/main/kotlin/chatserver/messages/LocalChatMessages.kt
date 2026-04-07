@@ -1,7 +1,8 @@
 package chatserver.messages
 
 import arch.RokyDispatchers
-import chatserver.ChatMessageResult
+import chatserver.Message
+import chatserver.MessageResult
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
 import chatserver.WriteChatRepository
@@ -15,21 +16,23 @@ import kotlin.time.Duration.Companion.seconds
 class LocalChatMessages(
     private val dispatchers: RokyDispatchers,
     private val scope: CoroutineScope = CoroutineScope(dispatchers.default + Job()),
-    private val source: () -> Flow<String> = { emitEveryThreeSeconds(sampleUsers, sampleMessages) },
-) : ReadChatRepository<ChatMessageResult>, SubscribeChatRepository, WriteChatRepository<String> {
+    private val source: () -> Flow<Message> = { emitEveryThreeSeconds(sampleUsers, sampleMessages) },
+) : ReadChatRepository<MessageResult>, SubscribeChatRepository, WriteChatRepository<String> {
     private var samples: Job? = null
-    private val _events = MutableStateFlow("")
+    private val _events = MutableStateFlow(listOf<Message>())
     private val events = _events.asStateFlow()
 
-    override fun latest(): ChatMessageResult = events.toResult()
+    override fun latest(): MessageResult = MessageResult.ok(events.value)
 
-    override fun observe(): Flow<ChatMessageResult> = events.map { ChatMessageResult.ok(it) }
+    override fun observe(): Flow<MessageResult> = events.map { MessageResult.ok(it) }
 
     override fun subscribe() {
         samples =
             scope.launch {
-                source().cancellable().collect {
-                    _events.value = it
+                source().onEach { println(it) }.cancellable().collect { latestMessage ->
+                    _events.update { allMessages ->
+                        allMessages + latestMessage
+                    }
                 }
             }
     }
@@ -39,8 +42,6 @@ class LocalChatMessages(
     }
 
     companion object {
-        private fun StateFlow<String>.toResult(): ChatMessageResult = ChatMessageResult.ok(value)
-
         private val sampleMessages =
             listOf(
                 "This is a coup!",
@@ -64,6 +65,7 @@ class LocalChatMessages(
                 "I just think it's something going around",
                 "Don't just type out what I'm saying Mike",
                 ":breathing_noises:",
+                "Wawu!!!!!",
             )
 
         val sampleUsers =
@@ -78,20 +80,23 @@ class LocalChatMessages(
                 "Dunia",
                 "Stefano",
                 "Mike",
+                "Niamh",
+                "Chioma",
             )
 
         private fun emitEveryThreeSeconds(
             users: List<String>,
             messages: List<String>,
-        ) = flow {
-            while (true) {
-                delay(3.seconds)
-                emit("${users.random()}: ${messages.random()}")
+        ): Flow<Message> =
+            flow {
+                while (true) {
+                    delay(3.seconds)
+                    emit(Message(users.random(), messages.random()))
+                }
             }
-        }
     }
 
     override fun write(item: String) {
-        _events.value = "Me: $item"
+        _events.update { it + Message("Me", item) }
     }
 }

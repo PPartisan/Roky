@@ -1,5 +1,6 @@
 package chatserver.messages
 
+import chatserver.Message
 import chatserver.MessageResult
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
@@ -31,8 +32,11 @@ class SupabaseMessageRepository(
     @OptIn(SupabaseExperimental::class)
     override fun subscribe() {
         client.from("messages")
-            .selectAsFlow(Message::id)
-            .map { MessageResult.ok(it) }
+            .selectAsFlow(SupabaseMessage::id)
+            .map { supabaseMessages ->
+                val messages = supabaseMessages.map { Message(it.profileId, it.content) }
+                MessageResult.ok(messages)
+            }
             .onEach { messages.value = it }
             .catch { println(it) }
             .launchIn(scope)
@@ -45,7 +49,7 @@ class SupabaseMessageRepository(
     }
 
     private fun String.toChatMessage() =
-        Message(
+        SupabaseMessage(
             id = UUID.randomUUID().toString(),
             profileId = client.auth.currentUserOrNull()?.id.orEmpty(),
             content = this,
@@ -57,7 +61,7 @@ class SupabaseMessageRepository(
     }
 
     @Serializable
-    data class Message(
+    data class SupabaseMessage(
         @SerialName("id") val id: String,
         @SerialName("profile_id") val profileId: String,
         @SerialName("content") val content: String,
