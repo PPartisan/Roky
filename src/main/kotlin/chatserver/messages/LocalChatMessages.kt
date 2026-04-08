@@ -29,7 +29,7 @@ class LocalChatMessages(
     override fun subscribe() {
         samples =
             scope.launch {
-                source().onEach { println(it) }.cancellable().collect { latestMessage ->
+                source().cancellable().collect { latestMessage ->
                     _events.update { allMessages ->
                         allMessages + latestMessage
                     }
