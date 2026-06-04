@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 class UsersListPresenter(
     private val truncate: UsersListTruncation,
     private val repository: ChatRepositories,
+    private val usersList: DisplayableUsersList,
     private val scope: CoroutineScope,
     dispatchers: RokyDispatchers,
 ) : Presenter<UsersListView>(dispatchers) {
@@ -25,8 +26,8 @@ class UsersListPresenter(
         job =
             scope.launch(dispatchers.io) {
                 repository.subscribePresence().subscribe()
-                repository.readPresence().observe()
-                    .map { it.item.toList() }
+                repository.subscribeProfiles().subscribe()
+                usersList()
                     .truncateUsernames()
                     .map(::Users)
                     .collect { state ->
@@ -43,6 +44,7 @@ class UsersListPresenter(
 
     override fun onDetach(view: UsersListView) {
         repository.subscribePresence().unsubscribe()
+        repository.subscribeProfiles().unsubscribe()
         job?.cancel()
     }
 
