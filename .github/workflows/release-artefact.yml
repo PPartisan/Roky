@@ -60,7 +60,7 @@ jobs:
                     echo "## Changelog: $PREV_TAG ➔ $CURRENT_TAG" > release_notes.md
                     echo "" >> release_notes.md
 
-                    ISSUES=$(git log ${PREV_TAG}..HEAD --pretty=format:"%s" | grep -oE '^#[0-9]+' | tr -d '#' | sort -u)
+                    ISSUES=$(git log ${PREV_TAG}..HEAD --pretty=format:"%s" | grep -oE '^#[0-9]+' | tr -d '#' | sort -nu)
 
                     if [ -z "$ISSUES" ]; then
                         echo "*No specific issues referenced in commit messages for this release.*" >> release_notes.md
