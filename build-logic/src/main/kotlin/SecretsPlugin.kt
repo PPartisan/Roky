@@ -8,16 +8,17 @@ import java.util.Properties
 
 abstract class SecretsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        fun String.asProps(filterBy: (Map.Entry<*,*>) -> Boolean = { true }) : Properties =
+        fun String.asProps(filterBy: (Map.Entry<*, *>) -> Boolean = { true }): Properties =
             project.rootProject.file(this).asProps().filter(filterBy).asProperties()
 
         fun String.asDir() =
             project.layout.buildDirectory.dir(this)
 
         val secrets = SECRETS_PROPERTIES_FILE.asProps()
+            .useEnvOverridesIfTheyExist(KEY_SERVER_URL, KEY_CLIENT_KEY)
         val local = GRADLE_PROPERTIES_FILE.asProps {
             it.key == KEY_USE_LOCAL_MOCKS
-        }
+        }.useEnvOverridesIfTheyExist(KEY_USE_LOCAL_MOCKS)
         val dir = OUTPUT_DIR.asDir()
 
         val generateSecrets = project.tasks.register(TASK_NAME) {
@@ -92,65 +93,72 @@ abstract class SecretsPlugin : Plugin<Project> {
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         """.trimIndent()
 
-        private fun Map<*,*>.asProperties() : Properties =
+        private fun Properties.useEnvOverridesIfTheyExist(vararg keys: String): Properties = apply {
+            keys.forEach { key ->
+                System.getenv(key)?.let { envValue -> this[key] = envValue }
+            }
+        }
+
+        private fun Map<*, *>.asProperties(): Properties =
             Properties().apply { putAll(this@asProperties) }
 
         private fun Provider<Directory>.createFile(file: String, block: File.() -> Unit) =
             get().asFile.resolve("$file.kt").apply(block)
 
-        private fun Properties.isValid() : Boolean {
-            if(isEmpty)
+        private fun Properties.isValid(): Boolean {
+            if (isEmpty)
                 return false
             return containsKey(KEY_CLIENT_KEY) && containsKey(KEY_SERVER_URL)
         }
 
-        private fun onUseLocalMocks() : List<Properties> {
+        private fun onUseLocalMocks(): List<Properties> {
             println(useLocalMocksMsg)
             return defaults()
         }
 
-        private fun onUseRemoteButNotSecrets() : List<Properties> {
+        private fun onUseRemoteButNotSecrets(): List<Properties> {
             println(missingSecretPropsErrorMsg)
             return defaults()
         }
 
-        private fun File.asProps() : Properties = Properties().apply {
-            if(exists())
+        private fun File.asProps(): Properties = Properties().apply {
+            if (exists())
                 inputStream().use { load(it) }
         }
 
-        private fun defaults() : List<Properties> = Properties().apply {
+        private fun defaults(): List<Properties> = Properties().apply {
             this[KEY_USE_LOCAL_MOCKS] = true
             listOf(KEY_SERVER_URL, KEY_CLIENT_KEY).forEach { this[it] = "" }
         }.let(::listOf)
 
-        private fun Map<*,*>.isTrue() =
-            this[KEY_USE_LOCAL_MOCKS]?.toString()?.toBooleanStrictOrNull()?:false
+        private fun Map<*, *>.isTrue() =
+            this[KEY_USE_LOCAL_MOCKS]?.toString()?.toBooleanStrictOrNull() ?: false
 
-        private fun Collection<Properties>.asText() : String =
+        private fun Collection<Properties>.asText(): String =
             flatMap { it.entries }
                 .fold(setOf<Pair<String, String>>()) { acc, it -> acc + setOf(it.toStringPair()) }
                 .asText()
 
-        private fun Set<Pair<String,String>>.asText() : String = buildString {
+        private fun Set<Pair<String, String>>.asText(): String = buildString {
             header()
             this@asText.forEach { appendLine(it.toConstant()) }
             footer()
         }
 
-        private fun Map.Entry<*,*>.toStringPair() =
+        private fun Map.Entry<*, *>.toStringPair() =
             "$key" to "$value"
 
-        private fun Pair<String,String>.toConstant() : String =
-            (if(second.isBoolean()) second else "\"$second\"").let {
+        private fun Pair<String, String>.toConstant(): String =
+            (if (second.isBoolean()) second else "\"$second\"").let {
                 """    const val $first = $it"""
             }
 
-        private fun String.isBoolean() : Boolean =
+        private fun String.isBoolean(): Boolean =
             toBooleanStrictOrNull() != null
 
         private fun StringBuilder.header() =
             appendLine("object $OUTPUT_FILE {")
+
         private fun StringBuilder.footer() =
             appendLine("}")
     }

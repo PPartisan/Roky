@@ -9,7 +9,6 @@ import help.helpModule
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.logging.LogLevel.INFO
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.ktor.client.HttpClient
@@ -62,7 +61,7 @@ val mainModules =
         singleOf(::StopApp)
         single<SupabaseClient> {
             createSupabaseClient(Secrets.SERVER_URL, Secrets.CLIENT_KEY) {
-                defaultLogLevel = INFO
+                defaultLogLevel = io.github.jan.supabase.logging.LogLevel.NONE
                 install(Auth)
                 install(Postgrest)
                 install(Realtime)

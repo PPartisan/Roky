@@ -2,6 +2,7 @@
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.*
 
 plugins {
+    application
     kotlin("jvm") version "2.1.0"
     kotlin("plugin.serialization") version "2.1.0"
     id("org.jetbrains.kotlinx.kover").version("0.8.3")
@@ -11,7 +12,10 @@ plugins {
 }
 
 group = "com.github.ppartisan.roky"
-version = "1.0-SNAPSHOT"
+
+application {
+    mainClass.set("MainKt")
+}
 
 ktlint {
     android = false
