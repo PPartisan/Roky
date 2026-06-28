@@ -29,8 +29,8 @@ jobs:
             -   name: Build Distribution Zip
                 env:
                     USE_LOCAL_MOCKS: "false"
-                    SERVER_URL: ${{ secrets.SUPABASE_SERVER_URL }}
-                    CLIENT_KEY: ${{ secrets.SUPABASE_CLIENT_KEY }}
+                    SERVER_URL: ${{ secrets.SERVER_URL }}
+                    CLIENT_KEY: ${{ secrets.CLIENT_KEY }}
                 run: ./gradlew distZip --no-daemon
 
             -   name: Extract Version
