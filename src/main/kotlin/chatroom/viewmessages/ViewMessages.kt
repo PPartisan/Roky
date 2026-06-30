@@ -12,10 +12,9 @@ val viewMessagesModule =
                 ViewMessagesPresenter(
                     windowScope = get<ChatroomWindow>().windowScope,
                     dispatchers = get(),
-                    read = get(),
+                    read = get<ChatRepositories>().readMessages(),
                     channel = get<ChatRepositories>().subscribeMessages(),
                 )
             }
-            scoped { DisplayableMessages(get()) }
         }
     }
