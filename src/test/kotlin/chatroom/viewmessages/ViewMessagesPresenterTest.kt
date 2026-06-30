@@ -3,9 +3,6 @@ package chatroom.viewmessages
 import arch.RokyDispatchers
 import chatroom.viewmessages.ViewMessagesViewState.Messages
 import chatroom.viewmessages.ViewMessagesViewState.NoMessages
-import chatserver.Message
-import chatserver.MessageResult
-import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
 import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +19,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class ViewMessagesPresenterTest {
     private lateinit var channel: SubscribeChatRepository
-    private lateinit var read: ReadChatRepository<MessageResult>
+    private lateinit var read: DisplayableMessages
     private lateinit var scope: CoroutineScope
     private lateinit var view: ViewMessagesView
     private lateinit var presenter: ViewMessagesPresenter
@@ -31,7 +28,7 @@ class ViewMessagesPresenterTest {
     fun setUp() {
         channel = mockk(relaxed = true)
         read = mockk()
-        every { read.observe() } returns flowOf()
+        every { read() } returns flowOf()
         view = mockk(relaxed = true)
         view = mockk(relaxed = true)
         val dispatchers: RokyDispatchers =
@@ -55,31 +52,12 @@ class ViewMessagesPresenterTest {
     @Test
     fun `given message exist, when attached, then show message`() =
         runTest(dispatcher) {
-            val messages = listOf(Message("Kai", "Biggleswad ez badd"))
-            every { read.observe() } returns flowOf(MessageResult.ok(messages))
+            every { read() } returns flowOf("Kai: Biggleswad ez badd")
             presenter.attach(view)
             advanceUntilIdle()
             verifyOrder {
                 view.show(NoMessages)
                 view.show(assertMessage("Kai: Biggleswad ez badd"))
-            }
-        }
-
-    @Test
-    fun `given message exist, and message is not ok, when attached, then show nothing`() =
-        runTest(dispatcher) {
-            every { read.observe() } returns flowOf(MessageResult.fail(RuntimeException("Connection with server failed")))
-            presenter.attach(view)
-            advanceUntilIdle()
-            verifyOrder {
-                view.show(NoMessages)
-            }
-            verify(exactly = 0) {
-                view.show(
-                    withArg {
-                        assertTrue { it is Messages }
-                    },
-                )
             }
         }
 
@@ -101,12 +79,10 @@ class ViewMessagesPresenterTest {
     @Test
     fun `given two messages exist, when attached, then show two messages`() =
         runTest(dispatcher) {
-            val messageOne = listOf(Message("Kai", "Pokemon good"))
-            val messageTwo = listOf(Message("Allie", "Barry is the best"))
-            every { read.observe() } returns
+            every { read() } returns
                 flowOf(
-                    MessageResult.ok(messageOne),
-                    MessageResult.ok(messageOne + messageTwo),
+                    "Kai: Pokemon good",
+                    "Allie: Barry is the best",
                 )
 
             presenter.attach(view)
