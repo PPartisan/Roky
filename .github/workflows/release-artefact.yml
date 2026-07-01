@@ -61,7 +61,7 @@ jobs:
                     PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)
                     CURRENT_TAG="v${{ env.VERSION }}${{ env.CHANNEL_SUFFIX }}"
 
-                    echo "## Changelog: $PREV_TAG ? $CURRENT_TAG" > release_notes.md
+                    echo "## Changelog: $PREV_TAG > $CURRENT_TAG" > release_notes.md
                     echo "" >> release_notes.md
 
                     ISSUES=$(git log ${PREV_TAG}..HEAD --pretty=format:"%s" | grep -oE '^#[0-9]+' | tr -d '#' | sort -nu)
@@ -80,7 +80,7 @@ jobs:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 run: |
                     gh release create "v${{ env.VERSION }}${{ env.CHANNEL_SUFFIX }}" \
-                        --title "Roky v${{ env.VERSION }} ${{ env.CHANNEL_SUFFIX }}" \
+                        --title "Roky v${{ env.VERSION }}${{ env.CHANNEL_SUFFIX }}" \
                         --notes-file release_notes.md \
                         ${{ env.PRERELEASE_FLAG }} \
                         build/distributions/Roky*.zip

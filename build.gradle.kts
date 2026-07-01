@@ -1,4 +1,3 @@
-
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.*
 
 plugins {
@@ -56,6 +55,10 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
+    val jnaVersion = "5.14.0"
+    implementation("net.java.dev.jna:jna:$jnaVersion")
+    implementation("net.java.dev.jna:jna-platform:$jnaVersion")
+
     testImplementation(kotlin("test"))
     testImplementation("io.kotest:kotest-assertions-core:5.9.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.1.0")
@@ -77,6 +80,29 @@ tasks.jar {
         attributes["Main-Class"] = "MainKt"
     }
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+}
+
+tasks.named<CreateStartScripts>("startScripts") {
+    doLast {
+        val text =
+            windowsScript.readText()
+                .replace(
+                    oldValue = "set JAVA_EXE=java.exe",
+                    newValue = "set JAVA_EXE=java.exe\r\nset JAVAW_EXE=javaw.exe",
+                ).replace(
+                    oldValue = "set JAVA_EXE=%JAVA_HOME%/bin/java.exe",
+                    newValue = "set JAVA_EXE=%JAVA_HOME%/bin/java.exe\r\nset JAVAW_EXE=%JAVA_HOME%/bin/javaw.exe",
+                ).replace(
+                    oldValue = "\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%",
+                    newValue = "start \"Roky\" \"%JAVAW_EXE%\" %DEFAULT_JVM_OPTS%",
+                )
+                .replace(
+                    regex = Regex("set CLASSPATH=%APP_HOME%\\\\lib\\\\.*"),
+                    replacement = "set CLASSPATH=%APP_HOME%\\\\lib\\\\*",
+                )
+
+        windowsScript.writeText(text)
+    }
 }
 
 kotlin {
