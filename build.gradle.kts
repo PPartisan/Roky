@@ -8,12 +8,18 @@ plugins {
     id("io.gitlab.arturbosch.detekt").version("1.23.3")
     id("org.jlleitschuh.gradle.ktlint").version("12.1.2")
     id("secrets-plugin")
+    id("com.github.gmazzo.buildconfig") version "6.0.10"
 }
 
 group = "com.github.ppartisan.roky"
 
 application {
     mainClass.set("MainKt")
+}
+
+buildConfig {
+    buildConfigField("String", "VERSION", "\"${version}\"")
+    packageName("com.github.ppartisan.roky")
 }
 
 ktlint {
@@ -25,6 +31,9 @@ ktlint {
     }
     filter {
         exclude("**/style-violations.kt")
+        exclude {
+            it.file.path.contains("generated")
+        }
     }
 }
 
