@@ -9,13 +9,12 @@ import help.helpModule
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.logging.LogLevel.INFO
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.EMPTY
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -62,7 +61,7 @@ val mainModules =
         singleOf(::StopApp)
         single<SupabaseClient> {
             createSupabaseClient(Secrets.SERVER_URL, Secrets.CLIENT_KEY) {
-                defaultLogLevel = INFO
+                defaultLogLevel = io.github.jan.supabase.logging.LogLevel.NONE
                 install(Auth)
                 install(Postgrest)
                 install(Realtime)
@@ -72,7 +71,7 @@ val mainModules =
 
 fun HttpClientConfig<*>.default() {
     install(Logging) {
-        logger = Logger.DEFAULT
+        logger = Logger.EMPTY
         level = LogLevel.ALL
     }
 }

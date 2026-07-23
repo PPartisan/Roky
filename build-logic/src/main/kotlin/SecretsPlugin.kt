@@ -5,6 +5,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSetContainer
 import java.io.File
 import java.util.Properties
+import javax.xml.transform.OutputKeys
 
 abstract class SecretsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -14,10 +15,10 @@ abstract class SecretsPlugin : Plugin<Project> {
         fun String.asDir() =
             project.layout.buildDirectory.dir(this)
 
-        val secrets = SECRETS_PROPERTIES_FILE.asProps()
+        val secrets = SECRETS_PROPERTIES_FILE.asProps().useEnvOverridesIfTheyExist(KEY_SERVER_URL, KEY_CLIENT_KEY)
         val local = GRADLE_PROPERTIES_FILE.asProps {
             it.key == KEY_USE_LOCAL_MOCKS
-        }
+        }.useEnvOverridesIfTheyExist(KEY_USE_LOCAL_MOCKS)
         val dir = OUTPUT_DIR.asDir()
 
         val generateSecrets = project.tasks.register(TASK_NAME) {
@@ -91,6 +92,14 @@ abstract class SecretsPlugin : Plugin<Project> {
             This task will generate minimal default values to compile.
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         """.trimIndent()
+
+        private fun Properties.useEnvOverridesIfTheyExist(vararg keys: String) : Properties = apply {
+            keys.forEach { key ->
+                System.getenv(key)?.also { envValue ->
+                    this[key] = envValue
+                }
+            }
+        }
 
         private fun Map<*,*>.asProperties() : Properties =
             Properties().apply { putAll(this@asProperties) }

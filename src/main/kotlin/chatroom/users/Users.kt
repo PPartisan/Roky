@@ -12,10 +12,12 @@ val usersModule =
                 UsersListPresenter(
                     truncate = get(),
                     repository = get(),
+                    usersList = get(),
                     scope = get<ChatroomWindow>().windowScope,
                     dispatchers = get(),
                 )
             }
+            scoped { DisplayableUsersList(get()) }
         }
         factory { UsersListTruncation(LEFT_WIDTH - 3) }
     }

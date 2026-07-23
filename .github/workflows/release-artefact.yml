@@ -1,0 +1,88 @@
+name: Generate Release Artefact
+
+
+on:
+    push:
+        branches:
+            - 'main'
+            - 'release/**'
+
+jobs:
+    build-and-upload:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@v4
+                with:
+                    fetch-depth: 0
+
+            -   name: Setup JDK17
+                uses: actions/setup-java@v4
+                with:
+                    java-version: '17'
+                    distribution: 'temurin'
+                    cache: 'gradle'
+
+            -   name: Build Distribution Zip
+                env:
+                    USE_LOCAL_MOCKS: "false"
+                    SERVER_URL: ${{ secrets.SERVER_URL }}
+                    CLIENT_KEY: ${{ secrets.CLIENT_KEY }}
+                run: ./gradlew distZip --no-daemon
+
+            -   name: Extract Version
+                id: get_version
+                run: echo "VERSION=$(./gradlew properties -q | grep -Po '^version:\s+\K.*$')" >> $GITHUB_ENV
+
+            -   name: Determine Release Channel
+                id: channel
+                run: |
+                    if [[ "${{ github.ref }}" == refs/heads/main ]]; then
+                        echo "CHANNEL_SUFFIX=-stable" >> $GITHUB_ENV
+                        echo "PRERELEASE_FLAG=" >> $GITHUB_ENV
+                    else
+                        echo "CHANNEL_SUFFIX=-beta" >> $GITHUB_ENV
+                        echo "PRERELEASE_FLAG=--prerelease" >> $GITHUB_ENV
+                    fi
+
+            -   name: Rename Artefact
+                run: |
+                    path="build/distributions"
+                    dist=$(ls "$path"/*.zip)
+                    mv "$dist" "$path/Roky${{ env.CHANNEL_SUFFIX }}-${{ env.VERSION }}.zip"
+
+            -   name: Create Release Notes
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                run: |
+                    PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)
+                    CURRENT_TAG="v${{ env.VERSION }}${{ env.CHANNEL_SUFFIX }}"
+
+                    echo "## Changelog: $PREV_TAG > $CURRENT_TAG" > release_notes.md
+                    echo "" >> release_notes.md
+
+                    ISSUES=$(git log ${PREV_TAG}..HEAD --pretty=format:"%s" | grep -oE '^#[0-9]+' | tr -d '#' | sort -nu)
+
+                    if [ -z "$ISSUES" ]; then
+                        echo "*No specific issues referenced in commit messages for this release.*" >> release_notes.md
+                    else
+                        for ISSUE in $ISSUES; do
+                            TITLE=$(gh issue view $ISSUE --json title --jq '.title' 2>/dev/null || echo "Title unavailable")
+                            echo "* **[#$ISSUE](https://github.com/${{ github.repository }}/issues/$ISSUE)**: $TITLE" >> release_notes.md
+                        done
+                    fi
+
+            -   name: Create Permanent GitHub Release
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                run: |
+                    gh release create "v${{ env.VERSION }}${{ env.CHANNEL_SUFFIX }}" \
+                        --title "Roky v${{ env.VERSION }}${{ env.CHANNEL_SUFFIX }}" \
+                        --notes-file release_notes.md \
+                        ${{ env.PRERELEASE_FLAG }} \
+                        build/distributions/Roky*.zip
+
+

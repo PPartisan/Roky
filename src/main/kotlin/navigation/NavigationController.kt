@@ -1,5 +1,6 @@
 package navigation
 
+import about.AboutWindow
 import chatroom.ChatroomWindow
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI
 import com.googlecode.lanterna.gui2.Window
@@ -28,7 +29,7 @@ class NavigationController(
     }
 
     override fun toAbout() {
-        println("About")
+        setActiveWindow(AboutWindow(this))
     }
 
     override fun toMainMenu() {
