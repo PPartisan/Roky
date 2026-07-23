@@ -24,7 +24,7 @@ class SupabaseProfilesRepository(
     override fun observe(): Flow<ProfileResult> = profiles.asStateFlow()
 
     override fun write(requestedUsername: String) {
-        require(requestedUsername.isBlank()) {
+        require(requestedUsername.isNotBlank()) {
             "Requested username must not be blank."
         }
         val id =
