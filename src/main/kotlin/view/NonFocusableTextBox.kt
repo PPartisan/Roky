@@ -16,7 +16,7 @@ import com.googlecode.lanterna.input.KeyType.Enter
  * @param size The size of the text box. It is recommended to hardcocde this as dynamic layouts are unpredictable.
  * @param initialContent The initial content; defaults to empty.
  */
-class NonFocusableTextBox(size: TerminalSize, initialContent: String = "") : TextBox(size, initialContent) {
+class NonFocusableTextBox(size: TerminalSize, initialContent: String = "") : TextBox(size, initialContent, TextBox.Style.MULTI_LINE) {
     init {
         // Filter input to allow navigation keys but block user editing
         setInputFilter { _, keyStroke: KeyStroke -> keyStroke.keyType !in arrayOf(Enter, Backspace, Character) }

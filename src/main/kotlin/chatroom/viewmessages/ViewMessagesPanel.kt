@@ -9,7 +9,9 @@ import com.googlecode.lanterna.gui2.BorderLayout.Location.CENTER
 import com.googlecode.lanterna.gui2.Borders
 import com.googlecode.lanterna.gui2.Label
 import com.googlecode.lanterna.gui2.Panel
+import com.googlecode.lanterna.gui2.TextBox
 import view.NonFocusableTextBox
+import java.lang.System.lineSeparator
 
 class ViewMessagesPanel(
     presenter: ViewMessagesPresenter,
@@ -62,6 +64,7 @@ class ViewMessagesPanel(
         empty.isVisible = false
         messages.isVisible = true
         textGUI.guiThread.invokeLater {
+//            state.message.split(lineSeparator()).forEach { message -> messages.addLineAndMaybeScrollDown(message) }
             messages.addLineAndMaybeScrollDown(state.message)
         }
     }
