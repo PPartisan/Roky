@@ -23,26 +23,15 @@ class SupabaseProfilesRepository(
 
     override fun observe(): Flow<ProfileResult> = profiles.asStateFlow()
 
-    override fun write(requestedUsername: String) {
-        require(requestedUsername.isBlank()) {
-            "Requested username must not be blank."
-        }
-        val id =
-            userId().ifBlank {
-                throw IllegalStateException("User ID must not be blank.")
-            }
-        val currentUsername = latest().item[id]?.username
-        check(currentUsername == requestedUsername) {
-            "Current username must not match requested username."
-        }
+    override fun write(item: String) {
         scope.launch {
             try {
                 client.from("profiles")
                     .update({
-                        set("username", requestedUsername)
+                        set("username", item)
                     }) {
                         filter {
-                            eq("id", id)
+                            eq("id", userId())
                         }
                     }
             } catch (e: Exception) {
