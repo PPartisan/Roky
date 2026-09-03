@@ -14,7 +14,7 @@ class UsersPanel(
     presenter: UsersListPresenter,
 ) : Panel(BorderLayout()), BorderedPanel, UsersListView {
     private val empty = Label("Loading...").setLayoutData(CENTER)
-    private val users = TextBox().setLayoutData(CENTER).setReadOnly(true)
+    private val users = TextBox().setLayoutData(CENTER).setReadOnly(true).setEnabled(false)
 
     init {
         addComponent(empty)
