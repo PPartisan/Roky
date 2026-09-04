@@ -14,10 +14,3 @@ fun String.substituteCharAt(
     index: Int,
     stringToInsert: String,
 ) = substring(0, index) + stringToInsert + substring(index + 1) // Replace space/tab with a new line char.
-
-// private fun String.truncate(maxCharsPerLine: Int = 30) =
-//    if (length > maxCharsPerLine) {
-//        replace(Regex("(.{1,$maxCharsPerLine})(\\s|$)"), "$1\n")
-//    } else {
-//        this
-//    }
