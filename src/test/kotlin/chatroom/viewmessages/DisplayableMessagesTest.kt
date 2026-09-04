@@ -77,13 +77,13 @@ class DisplayableMessagesTest {
             every { users.latest() } returns ProfileResult.ok(mapOf("id" to Profile("id", "Neamah")))
             every { messages.observe() } returns
                 flowOf(
-                    MessageResult.ok(listOf(Message("id", "I hate my student, but not as much as i hate myself"))),
+                    MessageResult.ok(listOf(Message("id", "I hate my student"))),
                 )
             backgroundScope.launch { displayableMessages().collect(emissions::add) }
             advanceTimeBy(10.seconds)
             emissions.shouldContainExactly(
                 "Tony KnowsItAll: I will fail everyone",
-                "Neamah: I hate my student, but not as much as i hate myself",
+                "Neamah: I hate my student",
             )
         }
 }
