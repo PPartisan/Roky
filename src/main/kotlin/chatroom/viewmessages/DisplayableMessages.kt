@@ -2,8 +2,12 @@ package chatroom.viewmessages
 
 import chatserver.ChatRepositories
 import kotlinx.coroutines.flow.*
+import utils.SmartWrapIndenting
 
-class DisplayableMessages(private val repositories: ChatRepositories) {
+class DisplayableMessages(
+    private val repositories: ChatRepositories,
+    private val wrap: SmartWrapIndenting,
+) {
     operator fun invoke(): Flow<String> =
         repositories.readMessages().observe()
             .filter { it.isOk }
@@ -14,4 +18,7 @@ class DisplayableMessages(private val repositories: ChatRepositories) {
                 val user = usernames[message.userId]?.username ?: "anon"
                 "$user: ${message.message}"
             }
+            .wrapText()
+
+    private fun Flow<String>.wrapText() = map(wrap::invoke)
 }

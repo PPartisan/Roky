@@ -11,13 +11,6 @@ object LanternaMarkdown : RenderMarkdown {
         return rows
     }
 
-    private fun String.truncate(maxCharsPerLine: Int = 30) =
-        if (length > maxCharsPerLine) {
-            replace(Regex("(.{1,$maxCharsPerLine})(\\s|$)"), "$1\n")
-        } else {
-            this
-        }
-
     private fun render(
         node: Node,
         accumulator: MutableList<FormattedTextRow>,
@@ -30,6 +23,13 @@ object LanternaMarkdown : RenderMarkdown {
             }
         }
     }
+
+    private fun String.truncate(maxCharsPerLine: Int = 30) =
+        if (length > maxCharsPerLine) {
+            replace(Regex("(.{1,$maxCharsPerLine})(\\s|$)"), "$1\n")
+        } else {
+            this
+        }
 
     private val LEAF_CLASSES =
         setOf(
