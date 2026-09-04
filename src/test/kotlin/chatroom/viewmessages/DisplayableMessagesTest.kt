@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import utils.SmartWrapIndenting
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -35,7 +36,8 @@ class DisplayableMessagesTest {
                 every { it.readProfiles() } returns users
                 every { it.readMessages() } returns messages
             }
-        displayableMessages = DisplayableMessages(repository)
+        val wrapIndenting= SmartWrapIndenting()
+        displayableMessages = DisplayableMessages(repository, wrapIndenting)
     }
 
     @Test

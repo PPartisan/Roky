@@ -52,7 +52,7 @@ class SmartWrapIndenting(
                                 if (!leavesLineTooEmpty()) {
                                     paragraph = paragraph.substituteCharAt(
                                         lastWhiteSpaceIndex,
-                                        "$lineSeparator$indentation**"
+                                        "$lineSeparator$indentation"
                                     )
                                     recomputeValsForNewLine()
                                 } else {
@@ -94,14 +94,14 @@ class SmartWrapIndenting(
         private fun cutWordAndHyphenate() {
             paragraph = paragraph.insertSubStringAt(
                 currentLineLastIndex(),
-                "-$lineSeparator$indentation**"
+                "-$lineSeparator$indentation"
             )
 
             recomputeValsForNewLine()
         }
 
         private fun startNewLine() {
-            paragraph += lineSeparator + indentation +"UU"
+            paragraph += lineSeparator + indentation
             recomputeValsForNewLine()
         }
 
