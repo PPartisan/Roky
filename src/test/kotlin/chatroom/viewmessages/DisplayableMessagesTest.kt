@@ -36,7 +36,7 @@ class DisplayableMessagesTest {
                 every { it.readProfiles() } returns users
                 every { it.readMessages() } returns messages
             }
-        val wrapIndenting= SmartWrapIndenting()
+        val wrapIndenting = SmartWrapIndenting()
         displayableMessages = DisplayableMessages(repository, wrapIndenting)
     }
 

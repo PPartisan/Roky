@@ -13,7 +13,7 @@ import view.NonFocusableTextBox
 import java.lang.System.lineSeparator
 
 class ViewMessagesPanel(
-    presenter: ViewMessagesPresenter
+    presenter: ViewMessagesPresenter,
 ) : Panel(BorderLayout()), BorderedPanel, ViewMessagesView {
     private val empty: Label = Label("").setLayoutData(CENTER)
     private val messages: NonFocusableTextBox =
@@ -64,7 +64,8 @@ class ViewMessagesPanel(
         messages.isVisible = true
         textGUI.guiThread.invokeLater {
             state.message.separateLines().forEach {
-                line -> messages.addLineAndMaybeScrollDown(line)
+                    line ->
+                messages.addLineAndMaybeScrollDown(line)
             }
         }
     }

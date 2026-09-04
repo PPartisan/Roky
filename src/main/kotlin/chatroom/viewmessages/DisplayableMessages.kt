@@ -6,7 +6,7 @@ import utils.SmartWrapIndenting
 
 class DisplayableMessages(
     private val repositories: ChatRepositories,
-    private val wrap: SmartWrapIndenting
+    private val wrap: SmartWrapIndenting,
 ) {
     operator fun invoke(): Flow<String> =
         repositories.readMessages().observe()
@@ -20,6 +20,5 @@ class DisplayableMessages(
             }
             .wrapText()
 
-    private fun Flow<String>.wrapText() =
-        map(wrap::invoke)
+    private fun Flow<String>.wrapText() = map(wrap::invoke)
 }
