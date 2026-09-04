@@ -10,9 +10,10 @@ import com.googlecode.lanterna.gui2.Borders
 import com.googlecode.lanterna.gui2.Label
 import com.googlecode.lanterna.gui2.Panel
 import view.NonFocusableTextBox
+import java.lang.System.lineSeparator
 
 class ViewMessagesPanel(
-    presenter: ViewMessagesPresenter,
+    presenter: ViewMessagesPresenter
 ) : Panel(BorderLayout()), BorderedPanel, ViewMessagesView {
     private val empty: Label = Label("").setLayoutData(CENTER)
     private val messages: NonFocusableTextBox =
@@ -62,7 +63,13 @@ class ViewMessagesPanel(
         empty.isVisible = false
         messages.isVisible = true
         textGUI.guiThread.invokeLater {
-            messages.addLineAndMaybeScrollDown(state.message)
+            state.message.separateLines().forEach {
+                line -> messages.addLineAndMaybeScrollDown(line)
+            }
         }
+    }
+
+    fun String.separateLines(): List<String> {
+        return split(lineSeparator())
     }
 }

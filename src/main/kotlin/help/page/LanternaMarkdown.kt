@@ -44,12 +44,12 @@ object LanternaMarkdown : RenderMarkdown {
 
     private fun toFormattedRow(node: Node): FormattedTextRow =
         when (node) {
-            is StrongEmphasis -> FormattedTextRow.Bold(node.text.toString().truncate())
-            is Emphasis -> FormattedTextRow.Italic(node.text.toString().truncate())
+            is StrongEmphasis -> FormattedTextRow.Bold(node.text.toString())
+            is Emphasis -> FormattedTextRow.Italic(node.text.toString())
             is HardLineBreak -> FormattedTextRow.LineBreak()
-            is Heading -> FormattedTextRow.Header(node.text.toString().truncate())
-            is Link -> FormattedTextRow.Hyperlink(node.text.toString().truncate(), node.url?.toString().orEmpty())
-            is Text -> FormattedTextRow.PlainText(node.chars.toString().truncate())
+            is Heading -> FormattedTextRow.Header(node.text.toString())
+            is Link -> FormattedTextRow.Hyperlink(node.text.toString(), node.url?.toString().orEmpty())
+            is Text -> FormattedTextRow.PlainText(node.chars.toString())
 
             else -> throw IllegalArgumentException("Node is not a leaf node.")
         }

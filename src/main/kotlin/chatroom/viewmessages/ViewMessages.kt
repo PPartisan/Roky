@@ -3,6 +3,7 @@ package chatroom.viewmessages
 import chatroom.ChatroomWindow
 import chatserver.ChatRepositories
 import org.koin.dsl.module
+import utils.SmartWrapIndenting
 
 val viewMessagesModule =
     module {
@@ -16,6 +17,7 @@ val viewMessagesModule =
                     channel = get<ChatRepositories>().subscribeMessages(),
                 )
             }
-            scoped { DisplayableMessages(get()) }
+            scoped { DisplayableMessages(get(), get()) }
         }
+        factory { SmartWrapIndenting() }
     }
