@@ -23,7 +23,7 @@ class SmartWrapIndentingKtTest {
     }
 
     @Test
-    fun `when string with no spaces is longer than twice maxCharPerLine, then return string split in 3 lines with hyphens`() {
+    fun `when string with no spaces is longer than twice maxCharPerLine, then return string split in multiple lines with hyphens`() {
         val myString = "1234567890123"
         myString.smartWrap(6).shouldBeEqual("12345-\n" +
             "   67-${lineSeparator()}" +
