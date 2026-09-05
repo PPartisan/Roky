@@ -9,5 +9,5 @@ sealed interface ViewMessagesViewState {
         const val STATUS = "No Messages Yet"
     }
 
-    data class Messages(val message: String) : ViewMessagesViewState
+    data class Messages(val lines: List<String>) : ViewMessagesViewState
 }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import utils.SmartWrap
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -35,53 +36,100 @@ class DisplayableMessagesTest {
                 every { it.readProfiles() } returns users
                 every { it.readMessages() } returns messages
             }
-        displayableMessages = DisplayableMessages(repository)
+        displayableMessages = DisplayableMessages(repository, SmartWrap(50))
     }
 
     @Test
-    fun `when known user sends message, then show username and message`() =
+    fun `when known user sends message, and message is less than one line long, then show username and message`() =
         runTest {
             every { users.latest() } returns ProfileResult.ok(mapOf("id" to Profile("id", "Tony KnowsItAll")))
             every { messages.observe() } returns flowOf(MessageResult.ok(listOf(Message("id", "I will fail everyone"))))
-            val emissions = mutableListOf<String>()
+            val emissions = mutableListOf<List<String>>()
             backgroundScope.launch { displayableMessages().collect(emissions::add) }
             advanceTimeBy(10.seconds)
-            emissions.shouldContainExactly("Tony KnowsItAll: I will fail everyone")
+            emissions[0].shouldContainExactly("Tony KnowsItAll: I will fail everyone")
         }
 
     @Test
-    fun `when unknown user post message, then show anon message`() =
+    fun `when known user sends message, and message was sent with many short sentences, then show message split by receiver preferred line length`() =
+        runTest {
+            every { users.latest() } returns ProfileResult.ok(mapOf("id" to Profile("id", "Tony KnowsItAll")))
+            every { messages.observe() } returns
+                flowOf(
+                    MessageResult.ok(
+                        listOf(
+                            Message(
+                                "id",
+                                "I will\nfail\neveryone\n\n",
+                            ),
+                        ),
+                    ),
+                )
+            val emissions = mutableListOf<List<String>>()
+            backgroundScope.launch { displayableMessages().collect(emissions::add) }
+            advanceTimeBy(10.seconds)
+            emissions[0].shouldContainExactly("Tony KnowsItAll: I will fail everyone")
+        }
+
+    @Test
+    fun `when known user sends message, and message overflows max line size, then show message split by receiver preference`() =
+        runTest {
+            every { users.latest() } returns ProfileResult.ok(mapOf("id" to Profile("id", "Tony KnowsItAll")))
+            every { messages.observe() } returns
+                flowOf(
+                    MessageResult.ok(
+                        listOf(
+                            Message(
+                                "id",
+                                "I will fail everyone because I hate all my students",
+                            ),
+                        ),
+                    ),
+                )
+            val emissions = mutableListOf<List<String>>()
+            backgroundScope.launch { displayableMessages().collect(emissions::add) }
+            advanceTimeBy(10.seconds)
+            emissions[0].shouldContainExactly(
+                "Tony KnowsItAll: I will fail everyone because I ",
+                "hate all my students",
+            )
+        }
+
+    @Test
+    fun `when unknown user post message, and message is less than one line long, then show anon message`() =
         runTest {
             every { users.latest() } returns ProfileResult.ok(emptyMap())
             every { messages.observe() } returns flowOf(MessageResult.ok(listOf(Message("id", "I will fail everyone"))))
-            val emissions = mutableListOf<String>()
+            val emissions = mutableListOf<List<String>>()
             backgroundScope.launch { displayableMessages().collect(emissions::add) }
             advanceTimeBy(10.seconds)
-            emissions.shouldContainExactly("anon: I will fail everyone")
+            emissions[0].shouldContainExactly("anon: I will fail everyone")
         }
 
     @Test
-    fun `when know user sends message, and changes its name, then show new name`() =
+    fun `when know user sends message, and all messages are less than one line long, and user changes their name, then show new name`() =
         runTest {
             every { users.latest() } returns ProfileResult.ok(mapOf("id" to Profile("id", "Tony KnowsItAll")))
             every { messages.observe() } returns
                 flowOf(
                     MessageResult.ok(listOf(Message("id", "I will fail everyone"))),
                 )
-            val emissions = mutableListOf<String>()
+            val emissions = mutableListOf<List<String>>()
             backgroundScope.launch { displayableMessages().collect(emissions::add) }
             advanceTimeBy(10.seconds)
 
             every { users.latest() } returns ProfileResult.ok(mapOf("id" to Profile("id", "Neamah")))
             every { messages.observe() } returns
                 flowOf(
-                    MessageResult.ok(listOf(Message("id", "I hate my student, but not as much as i hate myself"))),
+                    MessageResult.ok(listOf(Message("id", "I hate my students..."))),
                 )
             backgroundScope.launch { displayableMessages().collect(emissions::add) }
             advanceTimeBy(10.seconds)
-            emissions.shouldContainExactly(
+            emissions[0].shouldContainExactly(
                 "Tony KnowsItAll: I will fail everyone",
-                "Neamah: I hate my student, but not as much as i hate myself",
+            )
+            emissions[1].shouldContainExactly(
+                "Neamah: I hate my students...",
             )
         }
 }
