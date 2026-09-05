@@ -3,12 +3,8 @@ package chatroom.viewmessages
 import chatroom.BorderedPanel
 import chatroom.viewmessages.ViewMessagesViewState.*
 import com.googlecode.lanterna.TerminalSize
-import com.googlecode.lanterna.gui2.Border
-import com.googlecode.lanterna.gui2.BorderLayout
+import com.googlecode.lanterna.gui2.*
 import com.googlecode.lanterna.gui2.BorderLayout.Location.CENTER
-import com.googlecode.lanterna.gui2.Borders
-import com.googlecode.lanterna.gui2.Label
-import com.googlecode.lanterna.gui2.Panel
 import view.NonFocusableTextBox
 
 class ViewMessagesPanel(
@@ -62,7 +58,7 @@ class ViewMessagesPanel(
         empty.isVisible = false
         messages.isVisible = true
         textGUI.guiThread.invokeLater {
-            messages.addLineAndMaybeScrollDown(state.message)
+            state.lines.forEach(messages::addLineAndMaybeScrollDown)
         }
     }
 }

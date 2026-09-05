@@ -52,7 +52,7 @@ class ViewMessagesPresenterTest {
     @Test
     fun `given message exist, when attached, then show message`() =
         runTest(dispatcher) {
-            every { read() } returns flowOf("Kai: Biggleswad ez badd")
+            every { read() } returns flowOf(listOf("Kai: Biggleswad ez badd"))
             presenter.attach(view)
             advanceUntilIdle()
             verifyOrder {
@@ -81,8 +81,8 @@ class ViewMessagesPresenterTest {
         runTest(dispatcher) {
             every { read() } returns
                 flowOf(
-                    "Kai: Pokemon good",
-                    "Allie: Barry is the best",
+                    listOf("Kai: Pokemon good"),
+                    listOf("Allie: Barry is the best"),
                 )
 
             presenter.attach(view)
@@ -99,7 +99,7 @@ class ViewMessagesPresenterTest {
             assertTrue { it is Messages }
             assertEquals(
                 message,
-                (it as Messages).message,
+                (it as Messages).lines[0],
             )
         }
     }
