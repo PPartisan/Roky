@@ -82,9 +82,9 @@ class LoginWindow(
     }
 
     override fun close() {
-        super.close()
         scope.close()
-        windowScope.cancel()
+        cancel()
+        super.close()
     }
 
     override fun show(state: LoginViewState) =

@@ -9,7 +9,7 @@ val helpModule =
             scoped {
                 HelpPresenter(
                     dispatchers = get(),
-                    windowScope = get<HelpWindow>().windowScope,
+                    windowScope = get<HelpWindow>(),
                     page = FetchHelpPage(get())::invoke,
                 )
             }

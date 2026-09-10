@@ -2,6 +2,8 @@ package chatroom.viewmessages
 
 import arch.Presenter
 import arch.RokyDispatchers
+import chatroom.logSubscribe
+import chatroom.logUnsubscribe
 import chatroom.viewmessages.ViewMessagesViewState.Messages
 import chatroom.viewmessages.ViewMessagesViewState.NoMessages
 import chatserver.SubscribeChatRepository
@@ -25,10 +27,10 @@ class ViewMessagesPresenter(
                 }
             }
         }
-        channel.subscribe()
+        channel.subscribe().logSubscribe("messages")
     }
 
     override fun onDetach(view: ViewMessagesView) {
-        channel.unsubscribe()
+        channel.unsubscribe().logUnsubscribe("messages")
     }
 }

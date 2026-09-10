@@ -60,7 +60,7 @@ class MainMenuWindow(
 
     override fun close() {
         presenter.detach()
-        windowScope.cancel()
+        cancel()
         window.close()
         scope.close()
     }

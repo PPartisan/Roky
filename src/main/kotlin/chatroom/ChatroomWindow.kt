@@ -17,13 +17,27 @@ import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.createScope
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
+import org.koin.core.scope.ScopeCallback
+import utils.FileLogger
 import view.AppWindow
 import view.linearLayoutFill
 
 class ChatroomWindow(
     menu: NavigateToMainMenu,
 ) : AppWindow("Chatroom", menu), KoinScopeComponent, WindowScope by WindowScopeProvider() {
-    override val scope: Scope by lazy { createScope(this) }
+    override val scope: Scope by lazy {
+        createScope(this).apply {
+            FileLogger.log("Koin Scope created for ChatroomWindow")
+
+            registerCallback(
+                object : ScopeCallback {
+                    override fun onScopeClose(scope: Scope) {
+                        FileLogger.log("Koin Scope closed for ChatroomWindow")
+                    }
+                },
+            )
+        }
+    }
     private val viewMessages: ViewMessagesPanel by inject()
     private val sendMessages: SendMessagePanel by inject()
     private val usersList: UsersPanel by inject()
@@ -53,8 +67,9 @@ class ChatroomWindow(
     }
 
     override fun close() {
-        super.close()
+        FileLogger.log("Closing ChatroomWindow...")
         scope.close()
-        windowScope.cancel()
+        cancel("Window closed")
+        super.close()
     }
 }

@@ -10,7 +10,7 @@ val mainMenuModules =
                     quit = get(),
                     navigate = get(),
                     authenticator = get(),
-                    windowScope = get<MainMenuWindow>().windowScope,
+                    windowScope = get<MainMenuWindow>(),
                     dispatchers = get(),
                 )
             }

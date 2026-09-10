@@ -22,7 +22,6 @@ class LocalPresenceRepository(
     private var job: Job? = null
 
     override fun subscribe() {
-        unsubscribe()
         job =
             scope.launch(dispatchers.default) {
                 while (true) {

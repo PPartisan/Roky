@@ -1,0 +1,15 @@
+--- App Started at 2026-09-05T15:52:06.667760622 ---
+[15:52:06.676] presence::subscribing
+[15:52:06.682] profiles::subscribing
+[15:52:06.702] presence::subscribing
+[15:52:06.702] profiles::subscribing
+[15:52:06.758] presence::subscribing
+[15:52:06.759] profiles::subscribing
+[15:52:06.786] presence::subscribing
+[15:52:06.786] profiles::subscribing
+[15:52:06.978] messages::subscribing
+[15:52:06.979] messages::unsubscribing
+[15:52:06.992] messages::subscribing
+[15:52:07.017] messages::subscribing
+[15:52:07.025] messages::subscribing
+[15:52:07.035] messages::subscribing

@@ -8,7 +8,7 @@ val loginModules =
         scope<LoginWindow> {
             scoped {
                 LoginPresenter(
-                    windowScope = get<LoginWindow>().windowScope,
+                    windowScope = get<LoginWindow>(),
                     dispatchers = get(),
                     login = get(),
                     authState = get(),

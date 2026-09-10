@@ -2,6 +2,8 @@ package chatroom.users
 
 import arch.Presenter
 import arch.RokyDispatchers
+import chatroom.logSubscribe
+import chatroom.logUnsubscribe
 import chatroom.users.UsersViewState.*
 import chatserver.ChatRepositories
 import kotlinx.coroutines.CoroutineScope
@@ -25,8 +27,8 @@ class UsersListPresenter(
 
         job =
             scope.launch(dispatchers.io) {
-                repository.subscribePresence().subscribe()
-                repository.subscribeProfiles().subscribe()
+                repository.subscribePresence().subscribe().logSubscribe("presence")
+                repository.subscribeProfiles().subscribe().logSubscribe("profiles")
                 usersList()
                     .truncateUsernames()
                     .map(::Users)
@@ -43,8 +45,8 @@ class UsersListPresenter(
     }
 
     override fun onDetach(view: UsersListView) {
-        repository.subscribePresence().unsubscribe()
-        repository.subscribeProfiles().unsubscribe()
+        repository.subscribePresence().unsubscribe().logUnsubscribe("presence")
+        repository.subscribeProfiles().unsubscribe().logUnsubscribe("profiles")
         job?.cancel()
     }
 

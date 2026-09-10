@@ -79,7 +79,7 @@ class ProfileWindow(
     override fun close() {
         super.close()
         scope.close()
-        windowScope.cancel()
+        cancel()
     }
 
     private fun setUiInteractable(isInteractable: Boolean) {

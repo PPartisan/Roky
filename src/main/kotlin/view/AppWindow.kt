@@ -1,5 +1,6 @@
 package view
 
+import com.googlecode.lanterna.TerminalRectangle
 import com.googlecode.lanterna.gui2.BasicWindow
 import com.googlecode.lanterna.gui2.Window
 import com.googlecode.lanterna.input.KeyStroke
@@ -19,6 +20,10 @@ open class AppWindow(
         }
 
         return window.handleInput(key)
+    }
+
+    override fun getBounds(): TerminalRectangle? {
+        return window.getBounds()
     }
 
     override fun close() {
