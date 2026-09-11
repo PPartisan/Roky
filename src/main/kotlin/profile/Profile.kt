@@ -7,7 +7,7 @@ val profileModules =
         scope<ProfileWindow> {
             scoped {
                 ProfilePresenter(
-                    windowScope = get<ProfileWindow>().windowScope,
+                    windowScope = get<ProfileWindow>(),
                     repositories = get(),
                     dispatchers = get(),
                 )

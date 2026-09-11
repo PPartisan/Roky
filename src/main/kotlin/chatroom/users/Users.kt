@@ -13,7 +13,7 @@ val usersModule =
                     truncate = get(),
                     repository = get(),
                     usersList = get(),
-                    scope = get<ChatroomWindow>().windowScope,
+                    scope = get<ChatroomWindow>(),
                     dispatchers = get(),
                 )
             }

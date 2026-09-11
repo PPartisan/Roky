@@ -11,7 +11,7 @@ val sendMessagesModule =
                 SendMessagePresenter(
                     dispatchers = get(),
                     message = get<ChatRepositories>().writeMessages(),
-                    windowScope = get<ChatroomWindow>().windowScope,
+                    windowScope = get<ChatroomWindow>(),
                 )
             }
             scoped { SendMessagePanel(get()) }

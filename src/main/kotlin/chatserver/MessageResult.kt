@@ -16,6 +16,7 @@ data class MessageResult(
 }
 
 data class Message(
+    val messageId: String,
     val userId: String,
     val message: String,
 )

@@ -55,6 +55,6 @@ class ChatroomWindow(
     override fun close() {
         super.close()
         scope.close()
-        windowScope.cancel()
+        cancel()
     }
 }

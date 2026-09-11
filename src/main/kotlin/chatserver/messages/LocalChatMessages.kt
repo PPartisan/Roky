@@ -11,6 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 class LocalChatMessages(
@@ -91,12 +92,12 @@ class LocalChatMessages(
             flow {
                 while (true) {
                     delay(3.seconds)
-                    emit(Message(users.random(), messages.random()))
+                    emit(Message(UUID.randomUUID().toString(),users.random(), messages.random()))
                 }
             }
     }
 
     override fun write(item: String) {
-        _events.update { it + Message("Me", item) }
+        _events.update { it + Message(UUID.randomUUID().toString(), "Me", item) }
     }
 }

@@ -76,7 +76,7 @@ class HelpWindow(
 
     override fun close() {
         scope.close()
-        windowScope.cancel()
+        cancel()
         super.close()
     }
 }
