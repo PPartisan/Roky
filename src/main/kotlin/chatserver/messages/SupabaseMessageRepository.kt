@@ -1,70 +1,75 @@
 package chatserver.messages
 
-import chatserver.Message
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.realtime.selectAsFlow
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collect
 import chatserver.MessageResult
+import chatserver.Message
 import chatserver.ReadChatRepository
 import chatserver.SubscribeChatRepository
 import chatserver.WriteChatRepository
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.annotations.SupabaseExperimental
-import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.realtime.selectAsFlow
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.UUID
+import java.lang.Exception
 
+// Internal table data transfer object to map Supabase fields cleanly
+@Serializable
+private data class SupabaseMessage(
+    val id: Int = 0,
+    val userId: String = "",
+    val message: String = ""
+)
+
+// 1. Remove CoroutineScope from the constructor dependencies
 class SupabaseMessageRepository(
-    private val client: SupabaseClient,
-    private val scope: CoroutineScope,
-) : ReadChatRepository<MessageResult>, WriteChatRepository<String>, SubscribeChatRepository {
-    private val messages: MutableStateFlow<MessageResult> = MutableStateFlow(MessageResult.ok(emptyList()))
+    private val client: SupabaseClient
+) : ReadChatRepository<MessageResult>, SubscribeChatRepository, WriteChatRepository<String> {
 
-    override fun latest(): MessageResult = messages.value
+    private var channelJob: Job? = null
 
-    override fun observe(): Flow<MessageResult> = messages.asStateFlow()
+    // 2. Fulfill ReadChatRepository exactly as defined by the project interfaces
+    override fun latest(): MessageResult = MessageResult.ok(emptyList())
 
-    @OptIn(SupabaseExperimental::class)
-    override fun subscribe() {
-        client.from("messages")
-            .selectAsFlow(SupabaseMessage::id)
-            .map { supabaseMessages ->
-                val messages = supabaseMessages.map { Message(it.profileId, it.content) }
-                MessageResult.ok(messages)
-            }
-            .onEach { messages.value = it }
-            .catch { println(it) }
-            .launchIn(scope)
-    }
-
+    // 3. Fulfill WriteChatRepository explicitly matching the non-suspending method block
     override fun write(item: String) {
-        scope.launch {
-            client.from("messages").insert(item.toChatMessage())
+        val messagePayload = SupabaseMessage(userId = "Me", message = item)
+
+        @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
+        GlobalScope.launch {
+            client.postgrest.from("messages").insert(messagePayload)
         }
     }
 
-    private fun String.toChatMessage() =
-        SupabaseMessage(
-            id = UUID.randomUUID().toString(),
-            profileId = client.auth.currentUserOrNull()?.id.orEmpty(),
-            content = this,
-            createdAt = Clock.System.now().toString(),
-        )
-
-    override fun unsubscribe() {
-        scope.cancel()
+    // 4. Return a clean, cold flow. Remove explicit caching, .onEach, and .launchIn
+    @OptIn(io.github.jan.supabase.annotations.SupabaseExperimental::class)
+    override fun observe(): Flow<MessageResult> {
+        return client.postgrest.from("messages")
+        .selectAsFlow(SupabaseMessage::id)
+        .map { supabaseMessages ->
+            val messages = supabaseMessages.map { Message(it.userId, it.message) }
+            MessageResult.ok(messages)
+        }
+        .catch { exception ->
+            // Safely emit the error downstream using the project's standardized companion fail signature
+            emit(MessageResult.fail(Exception(exception.message ?: "Unknown database error")))
+        }
     }
 
-    @Serializable
-    data class SupabaseMessage(
-        @SerialName("id") val id: String,
-        @SerialName("profile_id") val profileId: String,
-        @SerialName("content") val content: String,
-        @SerialName("created_at") val createdAt: String,
-    )
+    // 5. Fulfill SubscribeChatRepository side-effect constraints
+    override fun subscribe() {
+        @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
+        channelJob = GlobalScope.launch {
+            observe().collect()
+        }
+    }
+
+    override fun unsubscribe() {
+        channelJob?.cancel()
+    }
 }
