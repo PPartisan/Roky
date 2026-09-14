@@ -43,3 +43,8 @@ bin/
 
 ### Secret Keys ###
 secrets.properties
+
+# IDE & LSP Caches
+.kotlin/
+*.db
+.kls/
