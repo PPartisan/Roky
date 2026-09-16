@@ -1,22 +1,16 @@
-
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.*
 
 plugins {
-    application
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("jvm") version "2.1.0" apply false
+    kotlin("plugin.serialization") version "2.1.0" apply false
     id("org.jetbrains.kotlinx.kover").version("0.8.3")
     id("io.gitlab.arturbosch.detekt").version("1.23.3")
     id("org.jlleitschuh.gradle.ktlint").version("12.1.2")
-    id("secrets-plugin")
 }
 
 group = "com.github.ppartisan.roky"
 
-application {
-    mainClass.set("MainKt")
-}
-
+// Global static analysis configuration setup
 ktlint {
     android = false
     reporters {
@@ -29,56 +23,26 @@ ktlint {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    val ktorVersion = "3.0.0"
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("io.ktor:ktor-client-java:$ktorVersion")
-    implementation("io.ktor:ktor-client-logging:$ktorVersion")
-
-    val supabaseVersion = "3.1.1"
-    implementation(platform("io.github.jan-tennert.supabase:bom:$supabaseVersion"))
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.github.jan-tennert.supabase:auth-kt")
-    implementation("io.github.jan-tennert.supabase:realtime-kt")
-
-    implementation("org.slf4j:slf4j-simple:2.0.16")
-
-    implementation("com.googlecode.lanterna:lanterna:3.1.1")
-    implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
-
-    implementation(project.dependencies.platform("io.insert-koin:koin-bom:3.5.6"))
-    implementation("io.insert-koin:koin-core")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-
-    testImplementation(kotlin("test"))
-    testImplementation("io.kotest:kotest-assertions-core:5.9.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.1.0")
-    testImplementation("io.mockk:mockk:1.13.12")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.named("build") {
+// RESOLUTION: Safely hooks static analysis checks into the execution path
+// without assuming a standard JVM 'build' task exists at the monolithic root container.
+tasks.matching { it.name == "build" }.configureEach {
     dependsOn("ktlintCheck")
 }
 
-tasks.jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest {
-        attributes["Main-Class"] = "MainKt"
-    }
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+// Alternatively, you can run linting explicitly as a root-level gate check
+tasks.register("checkQuality") {
+    group = "verification"
+    description = "Executes global static analysis rules across the codebase workspace."
+    dependsOn("ktlintCheck", "detekt")
 }
 
-kotlin {
-    jvmToolchain(17)
+// =============================================================================
+// GLOBAL SUBPROJECT TOOLCHAIN CONFIGURATION
+// =============================================================================
+subprojects {
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> {
+            jvmToolchain(17)
+        }
+    }
 }
