@@ -3,7 +3,6 @@ package chatroom.viewmessages
 import arch.RokyDispatchers
 import chatroom.viewmessages.ViewMessagesViewState.Messages
 import chatroom.viewmessages.ViewMessagesViewState.NoMessages
-import chatserver.SubscribeChatRepository
 import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

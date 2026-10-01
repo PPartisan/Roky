@@ -16,12 +16,23 @@ class SupabaseProfilesRepository(
     private val client: SupabaseClient,
     private val userId: LoggedInUserId,
     private val scope: CoroutineScope,
-) : ReadChatRepository<ProfileResult>, WriteChatRepository<String>, SubscribeChatRepository {
-    private val profiles: MutableStateFlow<ProfileResult> = MutableStateFlow(ProfileResult.ok(emptyMap()))
+) : ReadChatRepository<ProfileResult>, WriteChatRepository<String> {
 
-    override fun latest(): ProfileResult = profiles.value
+@OptIn(SupabaseExperimental::class)
+private val events: SharedFlow<ProfileResult> = client.from("profiles")
+    .selectAsFlow(Profile::id)
+    .map { it.associateBy(Profile::id) }
+    .map { ProfileResult.ok(it) }
+    .catch { println(it) }
+    .shareIn(
+        scope = scope,
+        started = SharingStarted.WhileSubscribed(),
+        replay = 1
+    )
 
-    override fun observe(): Flow<ProfileResult> = profiles.asStateFlow()
+    override fun latest(): ProfileResult = events.replayCache.firstOrNull()?: ProfileResult.ok(emptyMap())
+
+    override fun observe(): Flow<ProfileResult> = events
 
     override fun write(item: String) {
         scope.launch {
@@ -35,24 +46,11 @@ class SupabaseProfilesRepository(
                         }
                     }
             } catch (e: Exception) {
-                profiles.value = ProfileResult.fail(e)
+                println("Exception occurred while sending item. Exception $e")
+                //ToDo - Push exception onto queue?
+//                profiles.value = ProfileResult.fail(e)
             }
         }
-    }
-
-    @OptIn(SupabaseExperimental::class)
-    override fun subscribe() {
-        client.from("profiles")
-            .selectAsFlow(Profile::id)
-            .map { it.associateBy(Profile::id) }
-            .map { ProfileResult.ok(it) }
-            .onEach { profiles.value = it }
-            .catch { println(it) }
-            .launchIn(scope)
-    }
-
-    override fun unsubscribe() {
-        scope.cancel()
     }
 
     @Serializable

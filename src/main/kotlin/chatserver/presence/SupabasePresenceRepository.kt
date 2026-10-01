@@ -1,6 +1,8 @@
 package chatserver.presence
 
-import chatserver.*
+import chatserver.PresenceResult
+import chatserver.ReadChatRepository
+import chatserver.WriteChatRepository
 import chatserver.presence.SupabasePresenceRepository.All.Companion.toAll
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
@@ -18,43 +20,39 @@ import kotlinx.serialization.json.jsonObject
 class SupabasePresenceRepository(
     private val client: SupabaseClient,
     private val scope: CoroutineScope,
-) : ReadChatRepository<PresenceResult>, SubscribeChatRepository {
-    private var channel: RealtimeChannel? = null
-    private val presences: MutableStateFlow<PresenceResult> = MutableStateFlow(PresenceResult.ok(setOf()))
+) : ReadChatRepository<PresenceResult> {
 
-    override fun latest(): PresenceResult = presences.value
+    /*
+    On Observing:
+        1. Create shared flow to track presence
+        2. Subscribe to chatroom channel
+        3. Track our current user
 
-    override fun observe(): Flow<PresenceResult> = presences.asStateFlow()
-
-    override fun subscribe() {
-        channel = client.channel("chatroom")
-        channel?.presenceChangeFlow()
-            ?.map { it.toAll() }
-            ?.onEach { broadcast(it) }
-            ?.catch { println("Error in Presence ${it.message}") }
-            ?.launchIn(scope)
-        scope.launch {
-            channel?.subscribe(blockUntilSubscribed = true)
-            val myUser = client.auth.currentUserOrNull()?.id
-            if (myUser != null) {
-                channel?.track(Presence(myUser).json)
-            }
-        }
+    When ending observe:
+        1. Untrack current user
+        2. Unsub from chatroom channel
+        3. Shutdown shared flow
+     */
+    private val events: SharedFlow<PresenceResult> = with(client.channel("chatroom")) {
+        val out = presenceDataFlow<Presence>()
+            .map { it.map(Presence::id).toSet() }
+            .map(PresenceResult::ok)
+            .catch { println("Error in Presence ${it.message}") }
+            .shareIn(
+                scope = scope,
+                started = SharingStarted.Lazily,
+                replay = 1,
+            )
+        val me = client.auth.currentUserOrNull()?.id
+        if(me != null)
+            this.track(Presence(me).json)
+                out
     }
 
-    override fun unsubscribe() {
-        scope.launch {
-            channel?.unsubscribe()
-            channel = null
-        }
-    }
+    override fun latest(): PresenceResult = events.replayCache.firstOrNull() ?: PresenceResult.ok(emptySet())
 
-    private fun broadcast(all: All) =
-        with(latest().item.toMutableSet()) {
-            addAll(all.joiners)
-            removeAll(all.leavers)
-            presences.update { PresenceResult.ok(this) }
-        }
+    override fun observe(): Flow<PresenceResult> = events
+
 
     private data class All(
         val joiners: Set<String>,

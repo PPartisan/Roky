@@ -4,7 +4,6 @@ import arch.RokyDispatchers
 import chatserver.Message
 import chatserver.MessageResult
 import chatserver.ReadChatRepository
-import chatserver.SubscribeChatRepository
 import chatserver.WriteChatRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -16,29 +15,28 @@ import kotlin.time.Duration.Companion.seconds
 class LocalChatMessages(
     private val dispatchers: RokyDispatchers,
     private val scope: CoroutineScope = CoroutineScope(dispatchers.default + Job()),
-    private val source: () -> Flow<Message> = { emitEveryThreeSeconds(sampleUsers, sampleMessages) },
-) : ReadChatRepository<MessageResult>, SubscribeChatRepository, WriteChatRepository<String> {
-    private var samples: Job? = null
-    private val _events = MutableStateFlow(listOf<Message>())
-    private val events = _events.asStateFlow()
+    source: () -> Flow<Message> = { emitEveryThreeSeconds() },
+) : ReadChatRepository<MessageResult>, WriteChatRepository<String> {
 
-    override fun latest(): MessageResult = MessageResult.ok(events.value)
+    private val manualWrites = MutableSharedFlow<Message>(extraBufferCapacity = 64)
 
-    override fun observe(): Flow<MessageResult> = events.map { MessageResult.ok(it) }
+    private val events: StateFlow<MessageResult> = merge(source(), manualWrites)
+        .runningFold(emptyList<Message>()) { allMessages, newMessage ->
+            allMessages + newMessage
+        }
+        .map(MessageResult::ok)
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = MessageResult.ok(emptyList())
+        )
 
-    override fun subscribe() {
-        samples =
-            scope.launch {
-                source().cancellable().collect { latestMessage ->
-                    _events.update { allMessages ->
-                        allMessages + latestMessage
-                    }
-                }
-            }
-    }
+    override fun latest(): MessageResult = events.value
 
-    override fun unsubscribe() {
-        samples?.cancel()
+    override fun observe(): Flow<MessageResult> = events
+
+    override fun write(item: String) {
+        manualWrites.tryEmit(Message("Me", item))
     }
 
     companion object {
@@ -85,8 +83,8 @@ class LocalChatMessages(
             )
 
         private fun emitEveryThreeSeconds(
-            users: List<String>,
-            messages: List<String>,
+            users: List<String> = sampleUsers,
+            messages: List<String> = sampleMessages,
         ): Flow<Message> =
             flow {
                 while (true) {
@@ -94,9 +92,5 @@ class LocalChatMessages(
                     emit(Message(users.random(), messages.random()))
                 }
             }
-    }
-
-    override fun write(item: String) {
-        _events.update { it + Message("Me", item) }
     }
 }
