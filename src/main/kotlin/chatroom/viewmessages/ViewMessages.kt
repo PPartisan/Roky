@@ -2,7 +2,6 @@ package chatroom.viewmessages
 
 import chatroom.ChatroomWindow
 import chatroom.SEND_MESSAGES_WIDTH
-import chatserver.ChatRepositories
 import org.koin.dsl.module
 import utils.SmartWrap
 
@@ -15,7 +14,6 @@ val viewMessagesModule =
                     windowScope = get<ChatroomWindow>().windowScope,
                     dispatchers = get(),
                     read = get(),
-                    channel = get<ChatRepositories>().subscribeMessages(),
                 )
             }
             scoped { DisplayableMessages(get(), get()) }

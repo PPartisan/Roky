@@ -3,7 +3,10 @@ package chatroom.users
 import arch.RokyDispatchers
 import chatroom.users.UsersViewState.Empty
 import chatroom.users.UsersViewState.Users
-import chatserver.*
+import chatserver.ChatRepositories
+import chatserver.PresenceResult
+import chatserver.ProfileResult
+import chatserver.ReadChatRepository
 import chatserver.profiles.SupabaseProfilesRepository.Profile
 import coAnswersDelayed
 import io.mockk.*
@@ -20,8 +23,6 @@ import org.junit.jupiter.api.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class UsersListPresenterTest {
     private lateinit var scope: CoroutineScope
-    private lateinit var subscribePresence: SubscribeChatRepository
-    private lateinit var subscribeProfiles: SubscribeChatRepository
     private lateinit var readPresence: ReadChatRepository<PresenceResult>
     private lateinit var readProfiles: ReadChatRepository<ProfileResult>
     private lateinit var displayableUsersList: DisplayableUsersList
@@ -32,19 +33,11 @@ class UsersListPresenterTest {
     fun setUp() {
         view = mockk(relaxed = true)
         val repositories: ChatRepositories = mockk(relaxed = true)
-        subscribePresence = mockk()
         readPresence = mockk()
-        every { repositories.subscribePresence() } returns subscribePresence
-        every { subscribePresence.subscribe() } just runs
-        every { subscribePresence.unsubscribe() } just runs
         every { repositories.readPresence() } returns readPresence
         coEvery { readPresence.observe() } coAnswersDelayed { flowOf() }
 
-        subscribeProfiles = mockk()
         readProfiles = mockk()
-        every { repositories.subscribeProfiles() } returns subscribeProfiles
-        every { subscribeProfiles.subscribe() } just runs
-        every { subscribeProfiles.unsubscribe() } just runs
         every { repositories.readProfiles() } returns readProfiles
         coEvery { readProfiles.observe() } coAnswersDelayed { flowOf() }
         val dispatchers: RokyDispatchers =
@@ -54,7 +47,7 @@ class UsersListPresenterTest {
             }
         displayableUsersList = DisplayableUsersList(repositories)
         scope = CoroutineScope(dispatcher)
-        presenter = UsersListPresenter(UsersListTruncation(10), repositories, displayableUsersList, scope, dispatchers)
+        presenter = UsersListPresenter(UsersListTruncation(10), displayableUsersList, scope, dispatchers)
     }
 
     @Test

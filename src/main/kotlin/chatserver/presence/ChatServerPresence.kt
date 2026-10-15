@@ -32,7 +32,7 @@ private fun localPresenceRepository(
     scope: CoroutineScope,
     dispatchers: RokyDispatchers,
     users: () -> Set<String>,
-): LocalPresenceRepository = LocalPresenceRepository(scope, dispatchers, users)
+): LocalPresenceRepository = LocalPresenceRepository(dispatchers, scope, users)
 
 private fun supabasePresenceRepository(
     client: SupabaseClient,

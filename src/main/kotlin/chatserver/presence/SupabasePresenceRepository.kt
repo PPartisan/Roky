@@ -1,60 +1,62 @@
 package chatserver.presence
 
-import chatserver.*
-import chatserver.presence.SupabasePresenceRepository.All.Companion.toAll
+import chatserver.PresenceResult
+import chatserver.ReadChatRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.realtime.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
+import kotlin.time.Duration.Companion.seconds
 
 class SupabasePresenceRepository(
     private val client: SupabaseClient,
     private val scope: CoroutineScope,
-) : ReadChatRepository<PresenceResult>, SubscribeChatRepository {
-    private var channel: RealtimeChannel? = null
-    private val presences: MutableStateFlow<PresenceResult> = MutableStateFlow(PresenceResult.ok(setOf()))
+) : ReadChatRepository<PresenceResult> {
+    private val events: SharedFlow<PresenceResult> =
+        flow {
+            val channel = client.channel("chatroom")
 
-    override fun latest(): PresenceResult = presences.value
+            channel.subscribe(blockUntilSubscribed = true)
 
-    override fun observe(): Flow<PresenceResult> = presences.asStateFlow()
+            val me = client.auth.currentUserOrNull()?.id
+            if (me != null) {
+                channel.track(Presence(me).json)
+            }
 
-    override fun subscribe() {
-        channel = client.channel("chatroom")
-        channel?.presenceChangeFlow()
-            ?.map { it.toAll() }
-            ?.onEach { broadcast(it) }
-            ?.catch { println("Error in Presence ${it.message}") }
-            ?.launchIn(scope)
-        scope.launch {
-            channel?.subscribe(blockUntilSubscribed = true)
-            val myUser = client.auth.currentUserOrNull()?.id
-            if (myUser != null) {
-                channel?.track(Presence(myUser).json)
+            try {
+                emitAll(channel.presenceDataFlow<Presence>())
+            } finally {
+                withContext(NonCancellable) {
+                    try {
+                        if (me != null) channel.untrack()
+                        channel.unsubscribe()
+                    } catch (e: Exception) {
+                        println("Error during presence teardown: ${e.message}")
+                    }
+                }
             }
         }
-    }
+            .map { it.map(Presence::id).toSet() }
+            .map(PresenceResult::ok)
+            .catch { println("Error in Presence ${it.message}") }
+            .shareIn(
+                scope = scope,
+                started = SharingStarted.WhileSubscribed(stopTimeout = 1.seconds),
+                replay = 1,
+            )
 
-    override fun unsubscribe() {
-        scope.launch {
-            channel?.unsubscribe()
-            channel = null
-        }
-    }
+    override fun latest(): PresenceResult = events.replayCache.firstOrNull() ?: PresenceResult.ok(emptySet())
 
-    private fun broadcast(all: All) =
-        with(latest().item.toMutableSet()) {
-            addAll(all.joiners)
-            removeAll(all.leavers)
-            presences.update { PresenceResult.ok(this) }
-        }
+    override fun observe(): Flow<PresenceResult> = events
 
     private data class All(
         val joiners: Set<String>,
