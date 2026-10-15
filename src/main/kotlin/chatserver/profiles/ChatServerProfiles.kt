@@ -9,7 +9,6 @@ val chatServerProfilesModule =
     module {
         single {
             LocalProfilesRepository(
-                get<RokyDispatchers>(),
                 CoroutineScope(
                     SupervisorJob() + get<RokyDispatchers>().default,
                 ),
