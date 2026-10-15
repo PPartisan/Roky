@@ -42,12 +42,13 @@ class LocalChatMessagesTest {
     fun `given messages exist, when observing messages, then receive messages`() =
         runTest(dispatcher) {
             messages = LocalChatMessages(dispatchers, scope, kaimitter())
-            backgroundScope.launch { messages.subscribe() }
+            backgroundScope.launch {
+                messages.observe().map { it.item }.collect {}
+            }
+
             dispatcher.scheduler.advanceTimeBy(10.seconds)
 
             assertEquals(Message(USR, MSG_2), messages.latest().item.last())
-
-            messages.unsubscribe()
         }
 
     @Test
@@ -59,12 +60,10 @@ class LocalChatMessagesTest {
             backgroundScope.launch {
                 messages.observe().map { it.item }.collect(emissions::add)
             }
-            messages.subscribe()
 
             advanceTimeBy(10.seconds)
 
             emissions.shouldHaveSize(3)
-            messages.unsubscribe()
         }
 
     @Test
@@ -76,7 +75,6 @@ class LocalChatMessagesTest {
             backgroundScope.launch {
                 messages.observe().map { it.item }.collect(emissions::add)
             }
-            messages.subscribe()
 
             advanceTimeBy(10.seconds)
             val expected =
@@ -86,7 +84,6 @@ class LocalChatMessagesTest {
                     listOf(Message(USR, MSG_1), Message(USR, MSG_2)),
                 )
             emissions.shouldContainInOrder(expected)
-            messages.unsubscribe()
         }
 
     @Test
@@ -98,14 +95,12 @@ class LocalChatMessagesTest {
             backgroundScope.launch {
                 messages.observe().map { it.item }.collect(emissions::add)
             }
-            messages.subscribe()
             advanceTimeBy(10.seconds)
             messages.write("Barry is the smelliest.")
 
             advanceTimeBy(10.seconds)
 
             emissions.shouldContainInOrder(listOf(), listOf(Message("Me", "Barry is the smelliest.")))
-            messages.unsubscribe()
         }
 
     companion object {

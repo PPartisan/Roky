@@ -3,7 +3,6 @@ package chatroom.users
 import arch.Presenter
 import arch.RokyDispatchers
 import chatroom.users.UsersViewState.*
-import chatserver.ChatRepositories
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +12,6 @@ import kotlinx.coroutines.withContext
 
 class UsersListPresenter(
     private val truncate: UsersListTruncation,
-    private val repository: ChatRepositories,
     private val usersList: DisplayableUsersList,
     private val scope: CoroutineScope,
     dispatchers: RokyDispatchers,
@@ -25,8 +23,6 @@ class UsersListPresenter(
 
         job =
             scope.launch(dispatchers.io) {
-                repository.subscribePresence().subscribe()
-                repository.subscribeProfiles().subscribe()
                 usersList()
                     .truncateUsernames()
                     .map(::Users)
@@ -43,8 +39,6 @@ class UsersListPresenter(
     }
 
     override fun onDetach(view: UsersListView) {
-        repository.subscribePresence().unsubscribe()
-        repository.subscribeProfiles().unsubscribe()
         job?.cancel()
     }
 
