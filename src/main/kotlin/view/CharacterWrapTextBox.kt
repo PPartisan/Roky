@@ -35,17 +35,19 @@ class CharacterWrapTextBox(
         setCaretWarp(true)
     }
 
-    override fun handleKeyStroke(keyStroke: KeyStroke?): Result =
-        if (isReadOnly) {
-            super.handleKeyStroke(keyStroke)
+    override fun handleKeyStroke(keyStroke: KeyStroke?): Result {
+        val default = super.handleKeyStroke(keyStroke)
+        return if (isReadOnly) {
+            default
         } else if (keyStroke?.keyType == Enter) {
-            onEnterPressed(keyStroke)
+            onEnterPressed(default)
         } else {
             keyStroke.toInterceptedKeyStroke()
                 ?.let(wrap::onKeyStroke)
                 ?.let { HANDLED }
-                ?: super.handleKeyStroke(keyStroke)
+                ?: default
         }
+    }
 
     private fun KeyStroke?.toInterceptedKeyStroke(): InterceptedKeyStroke? =
         when (this?.keyType) {
@@ -55,11 +57,11 @@ class CharacterWrapTextBox(
             else -> null
         }
 
-    private fun onEnterPressed(keyStroke: KeyStroke): Result =
+    private fun onEnterPressed(default : Result): Result =
         onEnterPressed?.run {
             invoke()
             HANDLED
-        } ?: super.handleKeyStroke(keyStroke)
+        } ?: default
 
     companion object {
         private val DEFAULT_TEXT_BOX_SIZE = TerminalSize(10, 2)
