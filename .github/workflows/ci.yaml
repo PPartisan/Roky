@@ -20,6 +20,11 @@ jobs:
         runs-on: ubuntu-latest
         needs: validate
         steps:
+            -   name: Use java 17
+                uses: actions/setup-java@v4
+                with:
+                    java-version: '17'
+                    distribution: 'temurin'
             -   name: Checkout repo
                 uses: actions/checkout@v4
             -   name: Setup Gradle
