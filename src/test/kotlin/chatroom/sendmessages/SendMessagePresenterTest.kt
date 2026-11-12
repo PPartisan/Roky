@@ -5,6 +5,7 @@ import chatroom.sendmessages.SendMessageEvent.SendMessage
 import chatroom.sendmessages.SendMessageEvent.TextChange
 import chatroom.sendmessages.SendMessageViewState.Clear
 import chatroom.sendmessages.SendMessageViewState.TextLimitReached
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.mockk.every
 import io.mockk.mockk
@@ -59,9 +60,27 @@ class SendMessagePresenterTest {
     fun `when send message event, then show clear view state`() =
         runTest(dispatcher) {
             presenter.attach(view)
-            presenter.onEvent(SendMessage(""))
+            presenter.onEvent(SendMessage("a"))
             advanceUntilIdle()
             verify { view.show(Clear) }
+        }
+
+    @Test
+    fun `when send message event, and text is empty, then do not send message`() =
+        runTest(dispatcher) {
+            presenter.attach(view)
+            presenter.onEvent(SendMessage(""))
+            advanceUntilIdle()
+            messages.shouldBeEmpty()
+        }
+
+    @Test
+    fun `when send message event, and text is only white space, then send message`() =
+        runTest(dispatcher) {
+            presenter.attach(view)
+            presenter.onEvent(SendMessage("   \t\n"))
+            advanceUntilIdle()
+            messages.shouldContainExactly("   \t\n")
         }
 
     @Test

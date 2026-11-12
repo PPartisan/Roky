@@ -29,6 +29,7 @@ class SendMessagePresenter(
         when (event) {
             is SendMessage ->
                 windowScope.launch(dispatchers.io) {
+                    if (event.message.isEmpty()) return@launch
                     message.write(event.message)
                     withContext(dispatchers.main) {
                         withView { it.show(Clear) }
