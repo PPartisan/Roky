@@ -2,9 +2,13 @@ package chatroom.sendmessages
 
 import arch.RokyDispatchers
 import chatroom.sendmessages.SendMessageEvent.SendMessage
+import chatroom.sendmessages.SendMessageEvent.TextChange
 import chatroom.sendmessages.SendMessageViewState.Clear
+import chatroom.sendmessages.SendMessageViewState.TextLimitReached
 import io.kotest.matchers.collections.shouldContainExactly
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -33,7 +37,7 @@ class SendMessagePresenterTest {
                 every { io } returns dispatcher
             }
         scope = CoroutineScope(dispatcher)
-        presenter = SendMessagePresenter(scope, send, dispatchers)
+        presenter = SendMessagePresenter(scope, send, 10, dispatchers)
     }
 
     @Test
@@ -58,6 +62,24 @@ class SendMessagePresenterTest {
             presenter.onEvent(SendMessage(""))
             advanceUntilIdle()
             verify { view.show(Clear) }
+        }
+
+    @Test
+    fun `when text change event, and text length is within char limit, then show text`() =
+        runTest(dispatcher) {
+            presenter.attach(view)
+            presenter.onEvent(TextChange("Hi!"))
+            advanceUntilIdle()
+            verify { view.show(TextLimitReached("Hi!")) }
+        }
+
+    @Test
+    fun `when text change event, and text length is greater than char limit, then show truncated text`() =
+        runTest(dispatcher) {
+            presenter.attach(view)
+            presenter.onEvent(TextChange("Hi everyone please don't miss this really important message"))
+            advanceUntilIdle()
+            verify { view.show(TextLimitReached("Hi everyon")) }
         }
 
     companion object {
