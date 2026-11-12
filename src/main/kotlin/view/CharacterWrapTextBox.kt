@@ -11,6 +11,8 @@ class CharacterWrapTextBox(
     size: TerminalSize = DEFAULT_TEXT_BOX_SIZE,
     private val onEnterPressed: (() -> Unit)? = null,
 ) : TextBox(size) {
+    private var textChangeListener: TextChangeListener? = null
+
     private val wrap: CharacterWrap =
         object : CharacterWrap() {
             override fun setText(text: String) {
@@ -36,17 +38,24 @@ class CharacterWrapTextBox(
     }
 
     override fun handleKeyStroke(keyStroke: KeyStroke?): Result {
-        val default = super.handleKeyStroke(keyStroke)
-        return if (isReadOnly) {
-            default
-        } else if (keyStroke?.keyType == Enter) {
-            onEnterPressed(default)
-        } else {
-            keyStroke.toInterceptedKeyStroke()
-                ?.let(wrap::onKeyStroke)
-                ?.let { HANDLED }
-                ?: default
+        if (keyStroke?.keyType == Enter && onEnterPressed != null) {
+            onEnterPressed.invoke()
+            return HANDLED
         }
+        val intercepted = keyStroke.toInterceptedKeyStroke()
+        if (intercepted != null) {
+            wrap.onKeyStroke(intercepted)
+            userChangedText()
+            return HANDLED
+        }
+        return super.handleKeyStroke(keyStroke)
+    }
+
+    override fun setTextChangeListener(textListener: TextChangeListener): TextBox =
+        super.setTextChangeListener(textListener).also { textChangeListener = textListener }
+
+    private fun userChangedText() {
+        textChangeListener?.onTextChanged(text, true)
     }
 
     private fun KeyStroke?.toInterceptedKeyStroke(): InterceptedKeyStroke? =
@@ -56,12 +65,6 @@ class CharacterWrapTextBox(
             Delete -> InterceptedKeyStroke.Delete
             else -> null
         }
-
-    private fun onEnterPressed(default : Result): Result =
-        onEnterPressed?.run {
-            invoke()
-            HANDLED
-        } ?: default
 
     companion object {
         private val DEFAULT_TEXT_BOX_SIZE = TerminalSize(10, 2)

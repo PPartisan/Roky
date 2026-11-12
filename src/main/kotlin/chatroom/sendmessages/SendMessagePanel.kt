@@ -26,8 +26,9 @@ class SendMessagePanel(
     init {
         addComponent(message)
         message.setTextChangeListener { text, isUserChange ->
-            if (isUserChange)
+            if (isUserChange) {
                 presenter.onEvent(TextChange(text))
+            }
         }
         presenter.attach(this)
     }
