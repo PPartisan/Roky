@@ -13,26 +13,33 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.coroutines.cancellation.CancellationException
 
 class SupabaseProfilesRepository(
     private val client: SupabaseClient,
     private val userId: LoggedInUserId,
     private val scope: CoroutineScope,
 ) : ReadChatRepository<ProfileResult>, WriteChatRepository<String> {
+
+    private val writeFailures = MutableSharedFlow<ProfileResult>(extraBufferCapacity = 1)
+
     @OptIn(SupabaseExperimental::class)
-    private val events: SharedFlow<ProfileResult> =
+    private val supabaseEvents: Flow<ProfileResult> =
         client.from("profiles")
             .selectAsFlow(Profile::id)
-            .map { it.associateBy(Profile::id) }
-            .map { ProfileResult.ok(it) }
-            .catch { println(it) }
+            .map { ProfileResult.ok(it.associateBy(Profile::id)) }
+            .catch { emit(ProfileResult.fail(RuntimeException(it))) }
+
+    private val events: SharedFlow<ProfileResult> =
+        merge(supabaseEvents, writeFailures)
             .shareIn(
                 scope = scope,
-                started = SharingStarted.WhileSubscribed(),
+                started = SharingStarted.Lazily,
                 replay = 1,
             )
 
-    override fun latest(): ProfileResult = events.replayCache.firstOrNull() ?: ProfileResult.ok(emptyMap())
+    override fun latest(): ProfileResult =
+        events.replayCache.firstOrNull() ?: ProfileResult.ok(emptyMap())
 
     override fun observe(): Flow<ProfileResult> = events
 
@@ -47,10 +54,10 @@ class SupabaseProfilesRepository(
                             eq("id", userId())
                         }
                     }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                println("Exception occurred while sending item. Exception $e")
-                // ToDo - Address in #223
-//                profiles.value = ProfileResult.fail(e)
+                writeFailures.emit(ProfileResult.fail(e))
             }
         }
     }

@@ -15,6 +15,7 @@ import io.github.jan.supabase.realtime.Realtime
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.EMPTY
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -74,7 +75,7 @@ val mainModules =
 
 fun HttpClientConfig<*>.default() {
     install(Logging) {
-        logger = Logger.EMPTY
+        logger = Logger.DEFAULT
         level = LogLevel.ALL
     }
 }

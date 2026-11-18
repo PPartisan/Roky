@@ -5,24 +5,31 @@ import arch.RokyDispatchers
 import chatserver.ChatRepositories
 import chatserver.ProfileResult
 import chatserver.ReadChatRepository
-import chatserver.WriteChatRepository
+import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.VisibleForTesting
 import profile.ProfileEvent.RequestUsername
 import profile.ProfileViewState.*
+import profile.ValidateUsernameRequest.Result.Ok
 
 class ProfilePresenter(
     private val windowScope: CoroutineScope,
-    private val requestUsername: WriteChatRepository<String>,
+    private val requestUsername: ValidateUsernameRequest,
     private val usernames: ReadChatRepository<ProfileResult>,
     dispatchers: RokyDispatchers,
 ) : Presenter<ProfileView>(dispatchers) {
-    constructor(windowScope: CoroutineScope, repositories: ChatRepositories, dispatchers: RokyDispatchers) :
-        this(windowScope, repositories.writeProfiles(), repositories.readProfiles(), dispatchers)
+    constructor(
+        windowScope: CoroutineScope,
+        requestUsername: ValidateUsernameRequest,
+        repositories: ChatRepositories,
+        dispatchers: RokyDispatchers
+    ) :
+        this(windowScope, requestUsername, repositories.readProfiles(), dispatchers)
 
     private val state: MutableStateFlow<ProfileViewState> = MutableStateFlow(Idle)
 
@@ -31,7 +38,7 @@ class ProfilePresenter(
             state.collect(::show)
         }
         windowScope.launch(dispatchers.io) {
-            usernames.observe().drop(1).map { it.toViewState() }.collect { state.value = it }
+            usernames.observe().drop(1).map { it.toViewState() }.collect { upd -> state.update { upd } }
         }
     }
 
@@ -48,7 +55,9 @@ class ProfilePresenter(
     private fun onRequestUsername(event: RequestUsername) {
         state.value = Pending
         windowScope.launch(dispatchers.io) {
-            requestUsername.write(event.username)
+            val result = requestUsername(event.username)
+            if (result !is Ok)
+                state.emit(Failed(result.message))
         }
     }
 
@@ -60,11 +69,20 @@ class ProfilePresenter(
         if (isOk) {
             Success(MESSAGE_OK)
         } else {
-            Failed(error?.message ?: "Unsuccessful!")
+            Failed(error.toErrorViewState())
         }
 
     companion object {
         @VisibleForTesting
         internal const val MESSAGE_OK = "Successfully changed username!"
+        private fun Exception?.toErrorViewState(): String {
+            if (this == null)
+                return "Unsuccessful!"
+            return when {
+                this is PostgrestRestException && code == "23514" -> "Username contains illegal characters."
+                else -> message ?: "Unsuccessful!"
+            }
+        }
+
     }
 }

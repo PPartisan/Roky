@@ -43,9 +43,18 @@ class ValidateUsernameRequest(
         write.write(target.username)
         val result =
             withTimeoutOrNull(timeout) {
-                first { it.isOk && it.item[target.id] == target }
+                first {
+                    it.isUsernameChangeOk(target) || it.isErrorForOurUser(target)
+                }
             }
         return if (result != null) Ok else Timeout
+    }
+
+    companion object {
+        private fun ProfileResult.isUsernameChangeOk(target: Profile) =
+            isOk && item[target.id] == target
+        private fun ProfileResult.isErrorForOurUser(target: Profile) =
+            !isOk && error?.message?.contains(target.id) == true
     }
 
     sealed interface Result {
